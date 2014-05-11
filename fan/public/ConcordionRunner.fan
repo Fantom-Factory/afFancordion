@@ -5,29 +5,6 @@ using compiler
 
 class ConcordionRunner {
 
-//	@Inject	private ConcordionTests concordionTests
-//	
-//	new make(|This|in) { in(this) }
-//	
-//	Void runTests() {
-//		concordionTests.findTests.each |conTestType| { 
-//			efanXtra.component(conTestType).renderTemplate
-//		}
-//	}
-//	
-//	
-//	static Void main(Str[] args) {
-//		reg := RegistryBuilder().addModule(ConcordionModule#).build.startup
-//		
-//		runner := (ConcordionRunner) reg.dependencyByType(ConcordionRunner#)
-//		
-//		reg.shutdown
-//	}
-	
-//	Void main() {
-//		runTest(VerifyEqTest#)
-//	}
-
 	Void runTest(Type testType, File? f4Fudge := null) {
 		srcFromPod := |->Str| {
 			podFile := Env.cur.findPodFile(testType.pod.name)
@@ -52,13 +29,17 @@ class ConcordionRunner {
 		
 		efanStr := FandocToEfanConverter().convert(fandoc)
 		
-		model := PlasticClassModel("ConTest", testType.isConst).extendClass(testType)
+		model := PlasticClassModel("${testType.name}Concordion", testType.isConst).extend(testType)
 		
-		efanMetaData := EfanCompiler().compileWithModel(testType.qname.toUri, efanStr, null, model)
-		test := CtorPlanBuilder(efanMetaData.efanType).set("efanMetaData", efanMetaData).makeObj
+		efanCompiler := EfanCompiler()
+		classModel 	 := efanCompiler.parseTemplateIntoModel(testType.qname.toUri, efanStr, model)
+		efanMetaData := efanCompiler.compileModel(testType.qname.toUri, efanStr, model)
+		test 		 := CtorPlanBuilder(efanMetaData.type).set("efanMetaData", efanMetaData).makeObj
+//		test 		 := CtorPlanBuilder(efanMetaData.type).makeObj
+
 		renderBuf := StrBuf()
 		EfanRenderCtx.renderEfan(renderBuf, test, null) |->| {
-			test->_af_render(null)
+			test->_efan_render(null)
 		}
 		goal := renderBuf.toStr
 		
