@@ -1,3 +1,4 @@
+using afEfan
 
 class ConcordionTest : Test {
 
@@ -6,6 +7,8 @@ class ConcordionTest : Test {
 //	Void verifyEq(Obj? a, Obj? b) {
 //		test.verifyEq(a, b)
 //	}
+
+	EfanMetaData? efanMetaData
 	
 	Void testFixture() {
 		
