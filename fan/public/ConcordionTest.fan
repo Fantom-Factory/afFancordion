@@ -8,8 +8,6 @@ class ConcordionTest : Test {
 //		test.verifyEq(a, b)
 //	}
 
-	EfanMetaData? efanMetaData
-	
 	Void testFixture() {
 		
 		ConcordionRunner().runTest(this.typeof, `file:///C:/Projects/Fantom-Factory/Concordion/test/${this.typeof.name}.fan`.toFile)

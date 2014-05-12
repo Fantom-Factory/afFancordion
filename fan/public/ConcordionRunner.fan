@@ -1,11 +1,14 @@
-using afIoc
+using concurrent
+using compiler
 using afEfan
 using afPlastic
-using compiler
 
 class ConcordionRunner {
 
 	Void runTest(Type testType, File? f4Fudge := null) {
+		// fandoc	:= testType.doc
+		// TODO: if doc is null, then look for a file
+
 		srcFromPod := |->Str| {
 			podFile := Env.cur.findPodFile(testType.pod.name)
 			podZip	:= Zip.open(podFile)
@@ -21,11 +24,6 @@ class ConcordionRunner {
 		docCom	:= tokens.find { it.kind == Token.docComment }		
 		fandoc	:= ((Str[]) docCom.val).join("\n")
 		
-//		fandoc	:= testType.doc
-		
-		Env.cur.err.printLine(fandoc)
-		
-		// TODO: if doc is null, look for a file
 		
 		efanStr := FandocToEfanConverter().convert(fandoc)
 		
@@ -33,16 +31,20 @@ class ConcordionRunner {
 		
 		efanCompiler := EfanCompiler()
 		classModel 	 := efanCompiler.parseTemplateIntoModel(testType.qname.toUri, efanStr, model)
-		efanMetaData := efanCompiler.compileModel(testType.qname.toUri, efanStr, model)
-		test 		 := CtorPlanBuilder(efanMetaData.type).set("efanMetaData", efanMetaData).makeObj
-//		test 		 := CtorPlanBuilder(efanMetaData.type).makeObj
-
-		renderBuf := StrBuf()
-		EfanRenderCtx.renderEfan(renderBuf, test, null) |->| {
-			test->_efan_render(null)
-		}
-		goal := renderBuf.toStr
+		efanOutput	 := classModel.fields.find { it.name == "_efan_output" }
+		classModel.fields.remove(efanOutput)
+		classModel.addField(Obj?#, "_efan_output", """throw Err("_efan_output is write only.")""", """((StrBuf) concurrent::Actor.locals["afConcordion.renderBuf"]).add(it)""")
 		
+		efanMetaData := efanCompiler.compileModel(testType.qname.toUri, efanStr, model)
+		test 		 := efanMetaData.type.make
+
+		// write to our own buf, we don't need nesting and we don't then interfere with other rendering stacks  
+		renderBuf := StrBuf()
+		Actor.locals["afConcordion.renderBuf"] = renderBuf
+		
+		test->_efan_render(null)
+
+		goal := renderBuf.toStr		
 		
 		Env.cur.err.printLine("[$goal]")
 		
