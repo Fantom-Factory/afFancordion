@@ -16,14 +16,13 @@ class Build : BuildPod {
 		depends = [
 			"sys 1.0",
 			"concurrent 1.0",
+			"compiler 1.0",
 			"fandoc 1.0",
 			
 			"afConcurrent 1.0.2+",
-			"afPlastic 1.0.10+",
-			"afIoc 1.6.0+",
-			"afEfan 1.3.8+",
+			"afPlastic 1.0.11+",
+			"afEfan 1.4.0+",
 			
-			"compiler 1.0"
 		]
 
 
