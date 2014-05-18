@@ -10,7 +10,7 @@ internal const class FandocToEfanConverter {
 
 	private Str printDoc(DocElem[] doc) {
 		buf	:= StrBuf()
-		cmds := ConcordionCommands()
+		cmds := ConcordionCommands(buf.out)
 		dw	:= ConcordionDocWriter(buf.out, cmds)
 		doc.each { it.write(dw) }
 		return buf.toStr			

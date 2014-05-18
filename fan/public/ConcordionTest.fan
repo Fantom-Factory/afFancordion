@@ -2,18 +2,15 @@ using afEfan
 
 class ConcordionTest : Test {
 
-//	private Test test := TestInstance()
-//
-//	Void verifyEq(Obj? a, Obj? b) {
-//		test.verifyEq(a, b)
-//	}
+//	ConcordionEfanMeta?	efanMeta	// TODO:
+	ConcordionResults?	concordionResults
+	
+	virtual Void testFixture() {
+		results := ConcordionRunner().runTest(this.typeof, `file:///C:/Projects/Fantom-Factory/Concordion/test/${this.typeof.name}.fan`.toFile)
 
-	Void testFixture() {
+		this.concordionResults = results
 		
-		ConcordionRunner().runTest(this.typeof, `file:///C:/Projects/Fantom-Factory/Concordion/test/${this.typeof.name}.fan`.toFile)
-
-		
+		if (!results.errors.isEmpty)
+			throw results.errors.first
 	}
 }
-
-//internal class TestInstance : Test { }
