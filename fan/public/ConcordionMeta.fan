@@ -1,6 +1,9 @@
 
 const class ConcordionEfanMeta {
 	
+	** The test title
+	const Str title
+
 	** The 'Type' of the compiled efan template.
 	const Type type
 

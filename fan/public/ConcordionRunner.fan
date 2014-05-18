@@ -1,10 +1,11 @@
-using concurrent
+using fandoc
 using compiler
 using afEfan
 using afPlastic
 
 class ConcordionRunner {
-
+	private static const Log log	:= Utils.getLog(ConcordionRunner#)
+	
 	ConcordionResults runTest(Type testType, File? f4Fudge := null) {
 		efanMeta 	:= generateEfan(testType, f4Fudge)
 		testHelper	:= (ConcordionTestHelper) efanMeta.type.make	// TODO: hook for IoC autobuild?
@@ -13,12 +14,12 @@ class ConcordionRunner {
 		try {
 			testHelper->_efan_render(null)
 	
-			goal := testHelper._concordion_renderBuf.toStr
+			goal 		:= testHelper._concordion_renderBuf.toStr
+			result 		:= render(goal, efanMeta.title)
+			resultFile	:= (f4Fudge.parent + `../build/concordion/${testType.name}.html`) 
+			wtf 		:= resultFile.out.print(result).close
 			
-			Env.cur.err.printLine("[$goal]")
-	
-			resultFile := `build/concordion/${testType.name}.html`.toFile 
-			wtf := resultFile.out.print(goal).close
+			log.info(resultFile.normalize.toStr)
 			
 			return ConcordionResults {
 				it.resultFile 	= resultFile
@@ -30,6 +31,18 @@ class ConcordionRunner {
 		}
 	}
 	
+	private Str render(Str content, Str title) {
+		conCss		:= typeof.pod.file(`/res/concordion.css`).readAllStr
+		conXhtml	:= typeof.pod.file(`/res/concordion.html`).readAllStr
+		conVersion	:= typeof.pod.version.toStr
+		xhtml		:= conXhtml 
+						.replace("{{{ title }}}", title)
+						.replace("{{{ concordionCss }}}", conCss)
+						.replace("{{{ content }}}", content)
+						.replace("{{{ concordionVersion }}}", conVersion)
+
+		return xhtml
+	}	
 	
 	private ConcordionEfanMeta generateEfan(Type testType, File? f4Fudge := null) {
 		// fandoc	:= testType.doc
@@ -50,8 +63,9 @@ class ConcordionRunner {
 		docCom	:= tokens.find { it.kind == Token.docComment }		
 		fandoc	:= ((Str[]) docCom.val).join("\n")
 		
-		
-		efanStr := FandocToEfanConverter().convert(fandoc)
+		doc		:= FandocParser().parseStr(fandoc)
+		efanStr	:= printDoc(doc.children).replace("&lt;%", "<%")
+		docTitle:= doc.findHeadings.first?.title ?: testType.name.fromDisplayName
 		
 		model := PlasticClassModel("${testType.name}Concordion", testType.isConst).extend(testType).extend(ConcordionTestHelper#)
 		
@@ -64,10 +78,20 @@ class ConcordionRunner {
 		efanMeta := efanEngine.compileModel(testType.qname.toUri, efanStr, model)
 		
 		return ConcordionEfanMeta {
+			it.title		= docTitle
 			it.type			= efanMeta.type
 			it.typeSrc 		= efanMeta.typeSrc
 			it.templateLoc	= efanMeta.templateLoc
 			it.templateSrc	= efanMeta.templateSrc
 		}
+	}
+	
+
+	private Str printDoc(DocElem[] doc) {
+		buf	:= StrBuf()
+		cmds := ConcordionCommands(buf.out)
+		dw	:= ConcordionDocWriter(buf.out, cmds)
+		doc.each { it.write(dw) }
+		return buf.toStr			
 	}
 }
