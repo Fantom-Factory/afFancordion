@@ -1,24 +1,5 @@
 using fandoc
 
-internal const class FandocToEfanConverter {
-
-	Str convert(Str fandocStr) {
-		fandoc	:= FandocParser().parseStr(fandocStr)
-		efan	:= printDoc(fandoc.children).replace("&lt;%", "<%")
-		return efan
-	}
-
-	private Str printDoc(DocElem[] doc) {
-		buf	:= StrBuf()
-		cmds := ConcordionCommands(buf.out)
-		dw	:= ConcordionDocWriter(buf.out, cmds)
-		doc.each { it.write(dw) }
-		return buf.toStr			
-	}
-	
-}
-
-
 internal class ConcordionDocWriter : DocWriter {
 	static private const Str[]	voidTags	:= "area, base, br, col, embed, hr, img, input, keygen, link, menuitem, meta, param, source, track, wbr".split(',')
 	static private const Log 	log			:= Utils.getLog(ConcordionDocWriter#)
