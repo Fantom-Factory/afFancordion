@@ -12,7 +12,6 @@ class Build : BuildPod {
 			"repo.private"	: "true"
 		]
 
-
 		depends = [
 			"sys 1.0",
 			"concurrent 1.0",
@@ -23,13 +22,21 @@ class Build : BuildPod {
 			"afPlastic 1.0.11+",
 			"afEfan 1.4.0+",
 			
+			
+			// for testing
+			"afBounce 1.0.1+",
+			"afSizzle 1.0.0+"
 		]
-
 
 		srcDirs = [`test/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/utils/`]
 		resDirs = [`res/`]
 
 		docApi = true
 		docSrc = true
+	}
+	
+	override Void compile() {
+		depends.remove("afBounce 1.0.0+")
+		depends.remove("afSizzle 1.0.0+")
 	}
 }
