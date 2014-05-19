@@ -1,6 +1,13 @@
 
-Add listeners for verifyEq / execute
-https://github.com/concordion/concordion/blob/master/src/main/java/org/concordion/api/extension/ConcordionExtender.java
+verifyEq === verifySame, etc
+
+verifyTrue === verifyFalse, etc
+
+execute cmd, copy type coercer over for method param
+
+display Errs in HTML, add helper method to Cmd
+
+
 
 For 1.0.0
 =========
@@ -10,3 +17,5 @@ For 1.0.0
 For Future
 ==========
 
+Add listeners for verifyEq / execute
+https://github.com/concordion/concordion/blob/master/src/main/java/org/concordion/api/extension/ConcordionExtender.java

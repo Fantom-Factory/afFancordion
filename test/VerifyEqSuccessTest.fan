@@ -3,7 +3,7 @@ using afBounce
 ** Command: VerifyEq
 ** #################
 **
-** When a 'VerifyEq' command is successful, the text is wrapped in a <span class="success"> tag. 
+** When a 'VerifyEq' command is successful, the text should be wrapped in a <span class="success"> tag, to highlight it green.
 ** 
 ** Example
 ** -------
