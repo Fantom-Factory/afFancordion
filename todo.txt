@@ -1,4 +1,7 @@
 
+Add listeners for verifyEq / execute
+https://github.com/concordion/concordion/blob/master/src/main/java/org/concordion/api/extension/ConcordionExtender.java
+
 For 1.0.0
 =========
 

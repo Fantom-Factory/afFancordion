@@ -25,6 +25,7 @@ class Build : BuildPod {
 			
 			// for testing
 			"afBounce 1.0.1+",
+			"build 1.0",
 			"afSizzle 1.0.0+"
 		]
 

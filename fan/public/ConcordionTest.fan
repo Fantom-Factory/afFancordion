@@ -7,7 +7,7 @@ abstract class ConcordionTest : Test {
 	
 	virtual Void testFixture() {
 		// TODO: this method should save the result file
-		results := ConcordionRunner().runTest(this.typeof, `file:///C:/Projects/Fantom-Factory/Concordion/test/${this.typeof.name}.fan`.toFile)
+		results := ConcordionRunner().runTest(this.typeof)
 
 		this.concordionResults = results
 		
