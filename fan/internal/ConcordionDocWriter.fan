@@ -6,6 +6,7 @@ internal class ConcordionDocWriter : DocWriter {
 	
 	private Bool 	inLink
 	private StrBuf?	linkText
+	private Bool 	inExample
 	
 	private OutStream out
 	private ConcordionCommands cmds
@@ -16,7 +17,12 @@ internal class ConcordionDocWriter : DocWriter {
 	}
 	
 	override Void docStart(Doc doc) { } 
-	override Void docEnd(Doc doc) { }
+	override Void docEnd(Doc doc) {
+		if (inExample) {
+			inExample = false
+			out.print("</div>")
+		}		
+	}
 	
 	override Void elemStart(DocElem elem) {
 		if (elem.isBlock) out.writeChar('\n')
@@ -25,6 +31,20 @@ internal class ConcordionDocWriter : DocWriter {
 			inLink = true
 			linkText = StrBuf()
 			return
+		}
+		
+		if (elem.id == DocNodeId.heading) {
+			head := elem as Heading
+			
+			if (inExample) {
+				inExample = false
+				out.print("</div>")
+			}
+			
+			if (head.title.equalsIgnoreCase("Example")) {
+				inExample = true
+				out.print("<div class=\"example\">")
+			}
 		}
 
 		out.writeChar('<').print(elem.htmlName)
@@ -51,8 +71,6 @@ internal class ConcordionDocWriter : DocWriter {
 		if (isVoidTag(elem.htmlName) && !elem.children.isEmpty)
 			log.warn(ErrMsgs.voidTagsMustNotHaveContent(elem.htmlName)) 
 		out.writeChar('>')
-		
-//		pre = (elem.id == DocNodeId.pre)
 	}
 	
 	override Void text(DocText docText) {

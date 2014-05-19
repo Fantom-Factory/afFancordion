@@ -1,7 +1,7 @@
 using concurrent
 
 @NoDoc
-mixin ConcordionTestHelper {
+mixin TestHelper {
 
 	Void _concordion_setUp() {
 		// write to our own buf, we don't need nesting and we don't then interfere with other rendering stacks
