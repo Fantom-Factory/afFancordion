@@ -22,6 +22,7 @@ class ConcordionRunner {
 			log.info(resultFile.normalize.toStr)
 			
 			return ConcordionResults {
+				it.result 		= result
 				it.resultFile 	= resultFile
 				it.errors		= testHelper._concordion_errors
 			}
