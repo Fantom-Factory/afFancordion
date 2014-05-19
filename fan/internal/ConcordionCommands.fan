@@ -19,7 +19,7 @@ internal class ConcordionCommands {
 		}
 		
 	}
-		
+
 	Void verifyEq(Str cmd, Str param, Str text) {
 		out.print(
 """<%
