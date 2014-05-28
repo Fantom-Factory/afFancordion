@@ -3,7 +3,7 @@ using afSizzle
 
 abstract class ConTest : ConcordionTest {
 	
-	override Void testFixture() {
+	override Void testConcordionFixture() {
 		this.concordionResults = ConcordionRunner().runTest(this.typeof)
 
 		result := concordionResults.result

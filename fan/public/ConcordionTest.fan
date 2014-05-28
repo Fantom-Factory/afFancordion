@@ -5,7 +5,7 @@ abstract class ConcordionTest : Test {
 //	ConcordionEfanMeta?	efanMeta	// TODO:
 	ConcordionResults?	concordionResults
 	
-	virtual Void testFixture() {
+	virtual Void testConcordionFixture() {
 		// TODO: this method should save the result file
 		results := ConcordionRunner().runTest(this.typeof)
 
