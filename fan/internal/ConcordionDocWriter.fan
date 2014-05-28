@@ -69,7 +69,7 @@ internal class ConcordionDocWriter : DocWriter {
 		}
 		
 		if (isVoidTag(elem.htmlName) && !elem.children.isEmpty)
-			log.warn(ErrMsgs.voidTagsMustNotHaveContent(elem.htmlName)) 
+			log.warn(LogMsgs.voidTagsMustNotHaveContent(elem.htmlName)) 
 		out.writeChar('>')
 	}
 	
