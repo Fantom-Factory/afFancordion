@@ -11,9 +11,9 @@ using afBounce
 ** 
 class VerifyEqFailureTest : ConTest {
 	Str greeting	:= "Ooops!"
-	
+
 	override Void doTest() {
 		html := Element("span.failure").innerHtml
-		verifyEq(html, "<span class='expected'>Kick Ass!</span> Ooops!")
+		verifyEq(html, "<del class='expected'>Kick Ass!</del> Ooops!")
 	}
 }
