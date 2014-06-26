@@ -1,5 +1,5 @@
 
-class CmdVerifyEq : Command {
+class CmdVerifyTrue : Command {
 	
 	override Void doCmd(OutStream out, Str cmd, Str param, Str text) {
 		out.print(
@@ -9,7 +9,7 @@ class CmdVerifyEq : Command {
    try {
        actual := ${param}
        try {
-           ${cmd}(expected, actual)
+           ${cmd}(actual)
            %><%= _concordion_skin.success(expected) %><%
        } catch (Err err) {
            _concordion_errors.add(err)

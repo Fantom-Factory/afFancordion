@@ -20,7 +20,7 @@ internal class ConcordionDocWriter : DocWriter {
 	override Void docEnd(Doc doc) {
 		if (inExample) {
 			inExample = false
-			out.print("</div>")
+			out.print("<%= _concordion_skin.exampleEnd() %>")
 		}		
 	}
 	
@@ -38,12 +38,12 @@ internal class ConcordionDocWriter : DocWriter {
 			
 			if (inExample) {
 				inExample = false
-				out.print("</div>")
+				out.print("<%= _concordion_skin.exampleEnd() %>")
 			}
 			
 			if (head.title.equalsIgnoreCase("Example")) {
 				inExample = true
-				out.print("<div class=\"example\">")
+				out.print("<%= _concordion_skin.example() %>")
 			}
 		}
 

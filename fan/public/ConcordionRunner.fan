@@ -1,26 +1,43 @@
 using fandoc
+using afBeanUtils
 using afEfan
 using afPlastic
 
 class ConcordionRunner {
 	private static const Log log	:= Utils.getLog(ConcordionRunner#)
 	
-	File? outputDir
+	File			outputDir		:= File(`./`)
+	ConcordionSkin	skin			:= ConcordionSkinImpl()
+	Str:Command		commands		:= Str:Command[:] { caseInsensitive = true }
 	
+	@NoDoc
 	new make() {
-		outputDir = File(`./`)
+		commands["verifyEq"]		= CmdVerifyEq()
+		commands["verifyNotEq"]		= CmdVerifyEq()
+		commands["verifySame"]		= CmdVerifyEq()
+		commands["verifyNotSame"]	= CmdVerifyEq()
+		commands["verifyType"]		= CmdVerifyEq()
+
+		commands["verify"]			= CmdVerifyTrue()
+		commands["verifyTrue"]		= CmdVerifyTrue()
+		commands["verifyFalse"]		= CmdVerifyTrue()
+		commands["verifyNull"]		= CmdVerifyTrue()
+		commands["verifyNotNull"]	= CmdVerifyTrue()
 	}
 	
 	ConcordionResults runTest(Type testType) {
 		testStart	:= Duration.now
 		fandocSrc	:= FandocFinder().findFandoc(testType)
-		efanMeta 	:= TestCompiler().generateEfan(fandocSrc)
-		testHelper	:= (TestHelper) efanMeta.type.make	// TODO: hook for IoC autobuild?
+		efanMeta 	:= TestCompiler().generateEfan(fandocSrc, commands)
+		
+		// TODO: hook for IoC autobuild?
+		testBuilder	:= BeanFactory(efanMeta.type).set(TestHelper#_concordion_skin, skin)
+		testHelper	:= (TestHelper) testBuilder.create	
 
 		testHelper._concordion_setUp
 		try {
-			testHelper->_efan_render(null)
 			testTime	:= Duration.now - testStart
+			testHelper	-> _efan_render(null)	// --> RUNS THE TEST!!!
 			goal 		:= testHelper._concordion_renderBuf.toStr
 			result 		:= render(goal, efanMeta.title, testTime)
 			resultFile	:= outputDir + `build/concordion/${testType.name}.html` 
@@ -40,12 +57,15 @@ class ConcordionRunner {
 	}
 	
 	private Str render(Str content, Str title, Duration testDuration) {
-		conCss		:= typeof.pod.file(`/res/concordion.css`).readAllStr
-		conXhtml	:= typeof.pod.file(`/res/concordion.html`).readAllStr
+		// TODO: we could make this part of the efan template
+		conCss		:= typeof.pod.file(`/res/concordion.css`		).readAllStr
+		visToggler	:= typeof.pod.file(`/res/visibility-toggler.js`	).readAllStr
+		conXhtml	:= typeof.pod.file(`/res/concordion.html`		).readAllStr
 		conVersion	:= typeof.pod.version.toStr
 		xhtml		:= conXhtml 
 						.replace("{{{ title }}}", 				title)
 						.replace("{{{ concordionCss }}}", 		conCss)
+						.replace("{{{ visibilityToggler }}}", 	visToggler)
 						.replace("{{{ content }}}", 			content)
 						.replace("{{{ concordionVersion }}}",	conVersion)
 						.replace("{{{ testDuration }}}", 		testDuration.toLocale)

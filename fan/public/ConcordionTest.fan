@@ -7,11 +7,17 @@ abstract class ConcordionTest : Test {
 	
 	virtual Void testConcordionFixture() {
 		// TODO: this method should save the result file
-		results := ConcordionRunner().runTest(this.typeof)
+		results := concordionRunner.runTest(this.typeof)
 
 		this.concordionResults = results
 		
 		if (!results.errors.isEmpty)
 			throw results.errors.first
+	}
+	
+	** Returns a fresh instance of a 'ConcordionRunner'.
+	** Override to change default runner values. 
+	virtual ConcordionRunner concordionRunner() {
+		ConcordionRunner()
 	}
 }

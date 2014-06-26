@@ -18,26 +18,27 @@ class Build : BuildPod {
 			"compiler 1.0",
 			"fandoc 1.0",
 			
-			"afConcurrent 1.0.2+",
-			"afPlastic 1.0.11+",
+			// ---- Core ------------------------
+			"afBeanUtils 1.0.0+",
+			"afConcurrent 1.0.6+",
+			"afPlastic 1.0.14+",
 			"afEfan 1.4.0+",
 			
 			
-			// for testing
-			"afBounce 1.0.1+",
-			"build 1.0",
-			"afSizzle 1.0.0+"
+			// ---- Test ------------------------
+			"afBounce 1.0.4+",
+			"afSizzle 1.0.0+",
+			"build 1.0"
 		]
 
-		srcDirs = [`test/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/utils/`]
+		srcDirs = [`test/`, `fan/`, `fan/public/`, `fan/internal/`]
 		resDirs = [`res/`]
-
-		docApi = true
-		docSrc = true
 	}
 	
 	override Void compile() {
-		depends.remove("afBounce 1.0.0+")
-		depends.remove("afSizzle 1.0.0+")
+		// remove test pods from final build
+		testPods := "afBounce afSizzle build".split
+		depends = depends.exclude { testPods.contains(it.split.first) }
+		super.compile
 	}
 }
