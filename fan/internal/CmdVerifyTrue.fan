@@ -1,5 +1,5 @@
 
-class CmdVerifyTrue : Command {
+internal class CmdVerifyTrue : Command {
 	
 	override Void doCmd(OutStream out, Str cmd, Str param, Str text) {
 		out.print(

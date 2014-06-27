@@ -1,6 +1,6 @@
 using compiler
 
-const class FandocFinder {
+internal const class FandocFinder {
 	
 	FandocSrc findFandoc(Type testType) {
 		
@@ -65,7 +65,7 @@ const class FandocFinder {
 	}
 }
 
-const class FandocSrc {
+internal const class FandocSrc {
 	const Type	type
 	const Str	fandoc
 	const Uri	templateLoc

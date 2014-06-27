@@ -1,5 +1,5 @@
 
-const class ConcordionEfanMeta {
+internal const class ConcordionEfanMeta {
 	
 	** The test title
 	const Str title

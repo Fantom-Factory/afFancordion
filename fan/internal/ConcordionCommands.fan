@@ -19,6 +19,7 @@ internal class ConcordionCommands {
 
 }
 
+@NoDoc
 const class CmdNotFoundErr : Err, NotFoundErr {
 	override const Str?[] 	availableValues
 	override const Str		valueMsg	:= "Available Commands:"
