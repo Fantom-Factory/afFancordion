@@ -1,5 +1,5 @@
 
-class CmdVerifyEq : Command {
+internal class CmdVerifyEq : Command {
 	
 	override Void doCmd(OutStream out, Str cmd, Str param, Str text) {
 		out.print(
