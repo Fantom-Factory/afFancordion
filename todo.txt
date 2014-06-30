@@ -5,8 +5,45 @@ verifyTrue === verifyFalse, etc
 
 execute cmd, copy type coercer over for method param
 
-display Errs in HTML, add helper method to Cmd
+run command 
 
+[Run Other Test]`concordion:run/OtherTest#`
+
+
+[Run Other Test]`run:OtherTest` - should only run tests once! 
+[KickAss]`verifyEq:greeting(#TEXT)`
+
+[KickAss]`verify:greeting(#TEXT)`
+
+[KickAss]`concordion:verifyEq/greeting(#TEXT)`
+
+
+[KickAss]`concordion:verifyEq(greeting, #TEXT)`
+[KickAss]`set:greeting`
+[KickAss]`run:verifyEq(greeting, #TEXT)`
+[KickAss]`test:verifyEq(greeting, #TEXT)`
+[KickAss]`exe:verifyEq(greeting, #TEXT)`
+
+[KickAss]`verify:eq(greeting)`
+
+[Check ticket  KickAss]`set:greeting`
+[Check ticket is valid]`execute:verifyEq(greeting, #TEXT)`
+[Check ticket is valid]`concordion:TestTicketIsValid`
+
+Test normal http: links work
+
+
+** `col[0]:split(#TEXT)` 
+** `row:verifyEq(firstName, #TEXT)` 
+** `table:verifyRows`
+** 
+**   Full Name    First Name  Last Name
+**   -----------  ----------- ----------
+**   John Smith   John        Smith
+**   Steve Eynon  Steve       Eynon
+**   Fred Bloggs  Fred        Bloggs
+**
+**
 
 
 For 1.0.0

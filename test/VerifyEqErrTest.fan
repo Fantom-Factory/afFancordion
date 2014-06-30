@@ -1,14 +1,14 @@
 using afBounce
 
-** Command: VerifyEq
-** #################
+** Command: Verify
+** ###############
 **
-** When a 'VerifyEq' command throws an Err, the expected text should be struck out, followed by the err msg - wrapped in a <span class="failure"> tag to highlight it red.
+** When a 'Verify' command throws an Err, the expected text should be struck out, followed by the err msg - wrapped in a <span class="failure"> tag to highlight it red.
 ** There should also be a button to toggle the stack trace on and off.
 ** 
 ** Example
 ** -------
-** Concordion says [Kick Ass!]`concordion:verifyEq/greeting`
+** Concordion says [Kick Ass!]`verify:eq(greeting)`
 ** 
 class VerifyEqErrTest : ConTest {
 	Str greeting() { throw Err("Bang!") }
