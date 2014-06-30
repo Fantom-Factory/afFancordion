@@ -6,23 +6,18 @@ using afPlastic
 class ConcordionRunner {
 	private static const Log log	:= Utils.getLog(ConcordionRunner#)
 	
-	File			outputDir		:= File(`./`)
+	File			outputDir		:= Env.cur.tempDir + `concordion/`
 	ConcordionSkin	skin			:= ConcordionSkinImpl()
 	Str:Command		commands		:= Str:Command[:] { caseInsensitive = true }
 	
 	@NoDoc
 	new make() {
-		commands["verifyEq"]		= CmdVerifyEq()
-		commands["verifyNotEq"]		= CmdVerifyEq()
-		commands["verifySame"]		= CmdVerifyEq()
-		commands["verifyNotSame"]	= CmdVerifyEq()
-		commands["verifyType"]		= CmdVerifyEq()
-
-		commands["verify"]			= CmdVerifyTrue()
-		commands["verifyTrue"]		= CmdVerifyTrue()
-		commands["verifyFalse"]		= CmdVerifyTrue()
-		commands["verifyNull"]		= CmdVerifyTrue()
-		commands["verifyNotNull"]	= CmdVerifyTrue()
+		commands["verify"]	= CmdVerify()
+//		commands["execute"]	= CmdExecute()
+//		commands["set"]		= CmdSet()
+//		commands["file"]	= CmdLink()
+//		commands["http"]	= CmdLink()
+//		commands["https"]	= CmdLink()
 	}
 	
 	ConcordionResults runTest(Type testType) {
@@ -40,9 +35,10 @@ class ConcordionRunner {
 			testHelper	-> _efan_render(null)	// --> RUNS THE TEST!!!
 			goal 		:= testHelper._concordion_renderBuf.toStr
 			result 		:= render(goal, efanMeta.title, testTime)
-			resultFile	:= outputDir + `build/concordion/${testType.name}.html` 
+			resultFile	:= outputDir + `${testType.name}.html` 
 			wtf 		:= resultFile.out.print(result).close
 			
+			// TODO: print something better
 			log.info(resultFile.normalize.toStr)
 			
 			return ConcordionResults {

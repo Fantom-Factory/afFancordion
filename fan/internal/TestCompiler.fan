@@ -32,7 +32,7 @@ internal const class TestCompiler {
 	
 	private Str renderFandoc(Doc doc, Str:Command commands) {
 		buf	 := StrBuf()
-		cmds := ConcordionCommands(commands, buf.out)
+		cmds := Commands(commands, buf.out)
 		dw	 := ConcordionDocWriter(buf.out, cmds)
 		dw.docStart(doc)
 		doc.writeChildren(dw)

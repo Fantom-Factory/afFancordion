@@ -1,6 +1,6 @@
 using afBeanUtils
 
-internal class ConcordionCommands {
+internal class Commands {
 	private OutStream out
 	
 	private Str:Command commands
@@ -10,11 +10,10 @@ internal class ConcordionCommands {
 		this.out = out
 	}
 	
-	Void doCmd(OutStream out, Uri uri, Str text) {
-		cmd 	:= uri.path[0]
-		param	:= uri.path[1]
-		command := commands[cmd] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmd), commands.keys)
-		command.doCmd(out, cmd, param, text)
+	Void doCmd(OutStream out, Uri url, Str text) {
+		command := commands[url.scheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(url.scheme), commands.keys)
+		efan	:= command.doCmd(url, text)
+		out.print(efan)
 	}
 
 }

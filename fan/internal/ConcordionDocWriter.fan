@@ -8,10 +8,10 @@ internal class ConcordionDocWriter : DocWriter {
 	private StrBuf?	linkText
 	private Bool 	inExample
 	
-	private OutStream out
-	private ConcordionCommands cmds
+	private OutStream	out
+	private Commands 	cmds
 	
-	new make(OutStream out, ConcordionCommands cmds) {
+	new make(OutStream out, Commands cmds) {
 		this.out = out
 		this.cmds = cmds
 	}

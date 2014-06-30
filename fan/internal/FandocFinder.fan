@@ -20,9 +20,13 @@ internal const class FandocFinder {
 	}
 
 	FandocSrc? findFromTypeFandoc(Type testType) {
-		if (testType.doc == null)
+		try  {
+			// TODO: Fantom winge - prints an Err if not in a pod
+			if (testType.doc == null)
+				return null
+		} catch
 			return null
-		
+
 		return FandocSrc() {
 			it.type			= testType
 			it.fandoc		= testType.doc
@@ -35,7 +39,6 @@ internal const class FandocFinder {
 		srcFile := (File?) null
 		File(`./`).walk |file| { if (file.name.equalsIgnoreCase(fileName)) srcFile = file }
 		srcStr	:= srcFile?.readAllStr(true)
-		
 		return (srcStr == null) ? null : FandocSrc {
 			it.type			= testType
 			it.fandoc		= fandocFromFile(srcStr)
@@ -45,6 +48,8 @@ internal const class FandocFinder {
 	
 	FandocSrc? findFromPodFile(Type testType) {
 		podFile := Env.cur.findPodFile(testType.pod.name)
+		if (podFile == null)
+			return null
 		podZip	:= Zip.open(podFile)
 		srcFile	:= podZip.contents.find |file, uri| { uri.path.last == "${testType.name}.fan" }
 		srcStr	:= srcFile?.readAllStr(true)

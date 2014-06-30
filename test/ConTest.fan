@@ -12,5 +12,11 @@ abstract class ConTest : ConcordionTest {
 		Actor.locals.remove("afBounce.sizzleDoc")
 	}
 	
-	abstract Void doTest()	
+	abstract Void doTest()
+	
+	override ConcordionRunner concordionRunner() {
+		ConcordionRunner() {
+			it.outputDir	= `build/concordion/`.toFile
+		}
+	}
 }
