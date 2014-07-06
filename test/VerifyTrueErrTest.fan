@@ -8,7 +8,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** Concordion says [Kick Ass!]`concordion:verify/isKickAss`
+** Concordion says [Kick Ass!]`verify:true(isKickAss)`
 ** 
 class VerifyTrueErrTest : ConTest {
 	Bool isKickAss() { throw Err("Bang!") }

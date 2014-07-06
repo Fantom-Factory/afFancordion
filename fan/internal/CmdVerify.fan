@@ -1,8 +1,8 @@
 
 internal class CmdVerify : Command {
 	
-	private static const Str[] singleArgCmds	:= "eq notEq same notSame type".split
-	private static const Str[] doubleArgCmds	:= "true false null notNull".split
+	private static const Str[] doubleArgCmds	:= "eq notEq same notSame type".split
+	private static const Str[] singleArgCmds	:= "true false null notNull".split
 	
 //		commands["verifyEq"]		= CmdVerifyEq()
 //		commands["verifyNotEq"]		= CmdVerifyEq()
@@ -33,13 +33,17 @@ internal class CmdVerify : Command {
 		
 		actual   := arg
 		expected := cmdText.toCode
-		verify	 := "verify${cmd.capitalize}(expected, actual)"
-//		if (!arg.trim.isEmpty)
-//			arg = ", " + arg
-
-//		echo(cmd + " "  + arg)
 		
-//		verify := "verify${cmd.capitalize}(expected${arg})"
+		verify 	 := ""		
+		if (singleArgCmds.contains(cmd)) {
+			if (cmd.equalsIgnoreCase("true"))
+				cmd = ""
+			verify = "verify${cmd.capitalize}(actual)"
+		}
+
+		if (doubleArgCmds.contains(cmd)) {
+			verify = "verify${cmd.capitalize}(expected, actual)"
+		}
 		
 //		TODO: scope the efan so we can run more that one cmd and re-use var names
 		
