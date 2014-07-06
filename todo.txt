@@ -30,6 +30,8 @@ run command
 [Check ticket is valid]`execute:verifyEq(greeting, #TEXT)`
 [Check ticket is valid]`concordion:TestTicketIsValid`
 
+[Check ticket is valid]`set+file:my/data/file.txt`
+
 Test normal http: links work
 
 
