@@ -7,7 +7,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** If I set 'name' equal to " [Bob]`set:name` " then I expect 'name' to equal " [Bob]`verify:eq(name)` "!
+** If I set 'name' equal to " [Bobins]`set:name` " then I expect 'name' to equal " [Bob]`verify:eq(name)` "!
 ** 
 class CmdSetTest : ConTest {
 	Str? name := "Wotever"
@@ -16,3 +16,5 @@ class CmdSetTest : ConTest {
 		Element("span.success").verifyTextEq("Bob")
 	}
 }
+
+// TODO: CmdSetErrTest 

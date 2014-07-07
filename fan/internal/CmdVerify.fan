@@ -33,7 +33,7 @@ internal class CmdVerify : Command {
 		}
 		
 		return
-"""<% { // scope the local variables so we can embed the command more than once
+"""<% |->| { // scope the local variables so we can embed the command more than once
       cmdUrl  := ${cmdUrl.toCode}
       cmdText := ${cmdText.toCode}
       try {
@@ -50,6 +50,6 @@ internal class CmdVerify : Command {
           _concordion_errors.add(err)
           %><%= _concordion_skin.err(cmdUrl, cmdText, err) %><%
       }
-      } %>"""
+      }() %>"""
 	}	
 }
