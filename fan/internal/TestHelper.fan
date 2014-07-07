@@ -5,6 +5,9 @@ mixin TestHelper {
 
 	// nullable 'cos it probably won't be set in the ctor
 	abstract ConcordionSkin? _concordion_skin
+
+	// nullable 'cos it probably won't be set in the ctor
+	abstract Test? _concordion_testInstance
 	
 	Void _concordion_setUp() {
 		// write to our own StrBuf. 

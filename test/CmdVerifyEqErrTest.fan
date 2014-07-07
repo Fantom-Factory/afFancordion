@@ -1,17 +1,17 @@
 using afBounce
 
-** Command: VerifyTrue
-** ###################
+** Command: Verify
+** ###############
 **
-** When a 'VerifyTrue' command throws an Err, the expected text should be struck out, followed by the err msg - wrapped in a <span class="failure"> tag to highlight it red.
+** When a 'Verify' command throws an Err, the expected text should be struck out, followed by the err msg - wrapped in a <span class="failure"> tag to highlight it red.
 ** There should also be a button to toggle the stack trace on and off.
 ** 
 ** Example
 ** -------
-** Concordion says [Kick Ass!]`verify:true(isKickAss)`
+** Concordion says [Kick Ass!]`verify:eq(greeting)`
 ** 
-class VerifyTrueErrTest : ConTest {
-	Bool isKickAss() { throw Err("Bang!") }
+class CmdVerifyEqErrTest : ConTest {
+	Str greeting() { throw Err("Bang!") }
 
 	override Void doTest() {
 		fail := Element("span.failure").innerHtml

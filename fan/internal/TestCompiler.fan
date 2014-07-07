@@ -18,9 +18,10 @@ internal const class TestCompiler {
 		classModel.fields.remove(efanOutput)
 		classModel.addField(Obj?#, "_efan_output", """throw Err("_efan_output is write only.")""", """_concordion_renderBuf.add(it)""")
 		classModel.overrideField(TestHelper#_concordion_skin)
+		classModel.overrideField(TestHelper#_concordion_testInstance)
 		
 		efanMeta := efanEngine.compileModel(fandocSrc.templateLoc, efanStr, model)
-		
+
 		return ConcordionEfanMeta {
 			it.title		= docTitle
 			it.type			= efanMeta.type

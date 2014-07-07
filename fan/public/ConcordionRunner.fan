@@ -13,21 +13,22 @@ class ConcordionRunner {
 	@NoDoc
 	new make() {
 		commands["verify"]	= CmdVerify()
+		commands["set"]		= CmdSet()
 //		commands["execute"]	= CmdExecute()
-//		commands["set"]		= CmdSet()
 //		commands["file"]	= CmdLink()
 //		commands["http"]	= CmdLink()
 //		commands["https"]	= CmdLink()
 	}
 	
-	ConcordionResults runTest(Type testType) {
+	ConcordionResults runTest(Obj testInstance) {
 		testStart	:= Duration.now
-		fandocSrc	:= FandocFinder().findFandoc(testType)
+		fandocSrc	:= FandocFinder().findFandoc(testInstance.typeof)
 		efanMeta 	:= TestCompiler().generateEfan(fandocSrc, commands)
 		
-		// TODO: hook for IoC autobuild?
-		testBuilder	:= BeanFactory(efanMeta.type).set(TestHelper#_concordion_skin, skin)
-		testHelper	:= (TestHelper) testBuilder.create	
+		testBuilder	:= BeanFactory(efanMeta.type)
+		testBuilder.set(TestHelper#_concordion_skin, skin)
+		testBuilder.set(TestHelper#_concordion_testInstance, testInstance)
+		testHelper	:= (TestHelper) testBuilder.create
 
 		testHelper._concordion_setUp
 		try {
@@ -35,7 +36,7 @@ class ConcordionRunner {
 			testHelper	-> _efan_render(null)	// --> RUNS THE TEST!!!
 			goal 		:= testHelper._concordion_renderBuf.toStr
 			result 		:= render(goal, efanMeta.title, testTime)
-			resultFile	:= outputDir + `${testType.name}.html` 
+			resultFile	:= outputDir + `${testInstance.typeof.name}.html` 
 			wtf 		:= resultFile.out.print(result).close
 			
 			// TODO: print something better
