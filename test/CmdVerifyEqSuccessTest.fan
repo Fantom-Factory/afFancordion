@@ -9,7 +9,7 @@ using afBounce
 ** -------
 ** Concordion says [Kick Ass!]`verify:eq(greeting)`
 ** 
-class VerifyEqSuccessTest : ConTest {
+class CmdVerifyEqSuccessTest : ConTest {
 	Str greeting	:= "Kick Ass!"
 
 	override Void testConcordionFixture() {

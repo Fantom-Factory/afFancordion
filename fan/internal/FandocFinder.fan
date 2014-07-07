@@ -37,7 +37,8 @@ internal const class FandocFinder {
 	FandocSrc? findFromSrcFile(Type testType) {
 		fileName := testType.name + ".fan"
 		srcFile := (File?) null
-		File(`./`).walk |file| { if (file.name.equalsIgnoreCase(fileName)) srcFile = file }
+		baseDir	:= File(`./`).normalize 
+		baseDir.walk |file| { if (file.name.equalsIgnoreCase(fileName)) srcFile = file }
 		srcStr	:= srcFile?.readAllStr(true)
 		return (srcStr == null) ? null : FandocSrc {
 			it.type			= testType

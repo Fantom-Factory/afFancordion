@@ -9,7 +9,7 @@ using afBounce
 ** -------
 ** Concordion says [Kick Ass!]`verify:true(isKickAss)`
 ** 
-class VerifyTrueSuccessTest : ConTest {
+class CmdVerifyTrueSuccessTest : ConTest {
 	Bool isKickAss	:= true
 	
 	override Void doTest() {

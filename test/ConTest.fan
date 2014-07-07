@@ -1,10 +1,12 @@
 using concurrent
 using afSizzle
 
-abstract class ConTest : ConcordionTest {
+abstract class ConTest : Test, ConcordionTest {
+	
+	ConcordionResults? concordionResults
 	
 	override Void testConcordionFixture() {
-		this.concordionResults = ConcordionRunner().runTest(this.typeof)
+		this.concordionResults = ConcordionRunner().runTest(this)
 
 		result := concordionResults.result
 		Actor.locals["afBounce.sizzleDoc"] = SizzleDoc.fromStr(result)
