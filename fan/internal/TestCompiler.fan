@@ -22,8 +22,6 @@ internal const class TestCompiler {
 		
 		efanMeta := efanEngine.compileModel(fandocSrc.templateLoc, efanStr, model)
 
-		echo(efanMeta.typeSrc)
-		
 		return ConcordionEfanMeta {
 			it.title		= docTitle
 			it.type			= efanMeta.type
