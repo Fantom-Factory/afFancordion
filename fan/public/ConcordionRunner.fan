@@ -15,9 +15,9 @@ class ConcordionRunner {
 		commands["verify"]	= CmdVerify()
 		commands["set"]		= CmdSet()
 //		commands["execute"]	= CmdExecute()
-//		commands["file"]	= CmdLink()
-//		commands["http"]	= CmdLink()
-//		commands["https"]	= CmdLink()
+		commands["http"]	= CmdLink()
+		commands["https"]	= CmdLink()
+		commands["file"]	= CmdLink()
 	}
 	
 	ConcordionResults runTest(Obj testInstance) {
