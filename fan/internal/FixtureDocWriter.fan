@@ -1,8 +1,8 @@
 using fandoc
 
-internal class ConcordionDocWriter : DocWriter {
+internal class FixtureDocWriter : DocWriter {
 	static private const Str[]	voidTags	:= "area, base, br, col, embed, hr, img, input, keygen, link, menuitem, meta, param, source, track, wbr".split(',')
-	static private const Log 	log			:= Utils.getLog(ConcordionDocWriter#)
+	static private const Log 	log			:= Utils.getLog(FixtureDocWriter#)
 	
 	private Bool 	inLink
 	private StrBuf?	linkText
@@ -16,12 +16,19 @@ internal class ConcordionDocWriter : DocWriter {
 		this.cmds = cmds
 	}
 	
-	override Void docStart(Doc doc) { } 
+	override Void docStart(Doc doc) { 
+		out.print("<%= _concordion_skin.html() %>")
+		out.print("<%= _concordion_skin.head() %>")
+		out.print("<%= _concordion_skin.body() %>")
+	}
+	
 	override Void docEnd(Doc doc) {
 		if (inExample) {
 			inExample = false
 			out.print("<%= _concordion_skin.exampleEnd() %>")
 		}		
+		out.print("<%= _concordion_skin.bodyEnd() %>")
+		out.print("<%= _concordion_skin.htmlEnd() %>")
 	}
 	
 	override Void elemStart(DocElem elem) {

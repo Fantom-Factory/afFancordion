@@ -13,8 +13,8 @@ class CmdVerifyTypeSuccessTest : ConTest {
 	Str  str	:= "Kick Ass!"
 	Int? int	:= 69
 
-	override Void testConcordionFixture() {
-		super.testConcordionFixture
+	override Void testFixture() {
+		super.testFixture
 	}
 
 	override Void doTest() {

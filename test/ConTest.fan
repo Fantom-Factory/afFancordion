@@ -1,15 +1,14 @@
 using concurrent
 using afSizzle
 
-abstract class ConTest : Test, ConcordionTest {
+abstract class ConTest : Test, Fixture {
 	
-	ConcordionResults? concordionResults
+	FixtureResult? result
 	
-	override Void testConcordionFixture() {
-		this.concordionResults = ConcordionRunner().runTest(this)
+	override Void testFixture() {
+		this.result = ConcordionRunner().runFixture(this)
 
-		result := concordionResults.result
-		Actor.locals["afBounce.sizzleDoc"] = SizzleDoc.fromStr(result)
+		Actor.locals["afBounce.sizzleDoc"] = SizzleDoc.fromStr(result.resultHtml)
 		doTest
 		Actor.locals.remove("afBounce.sizzleDoc")
 	}

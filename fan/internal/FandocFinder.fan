@@ -4,6 +4,8 @@ internal const class FandocFinder {
 	
 	FandocSrc findFandoc(Type testType) {
 		
+		// TODO: find Fandoc via uri in facet
+		
 		src := findFromTypeFandoc(testType)
 		if (src != null)
 			return src
@@ -21,7 +23,7 @@ internal const class FandocFinder {
 
 	FandocSrc? findFromTypeFandoc(Type testType) {
 		try  {
-			// TODO: Fantom winge - prints an Err if not in a pod
+			// TODO: Winge at Fantom - prints an Err if not in a pod
 			if (testType.doc == null)
 				return null
 		} catch

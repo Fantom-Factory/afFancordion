@@ -1,72 +1,92 @@
 using fandoc
 using afBeanUtils
-using afEfan
 using afPlastic
+using concurrent
 
+** Runs Concordion fixtures.
 class ConcordionRunner {
 	private static const Log log	:= Utils.getLog(ConcordionRunner#)
 	
+	** Where the tests are run from. 
+	** Used to work out relative paths from test files to resource directories.
+	File			baseDir			:= File.make(`./`)
+	
+	** Where the generated HTML result files are saved.
 	File			outputDir		:= Env.cur.tempDir + `concordion/`
+	
+	** The skin applied to generated HTML result files.
 	ConcordionSkin	skin			:= ConcordionSkinImpl()
+	
+	** The commands made available to Concordion tests. 
 	Str:Command		commands		:= Str:Command[:] { caseInsensitive = true }
 	
-	@NoDoc
-	new make() {
+	** Creates a 'ConcordionRunner'.
+	new make(|This|? f := null) {
 		commands["verify"]	= CmdVerify()
 		commands["set"]		= CmdSet()
 //		commands["execute"]	= CmdExecute()
 		commands["http"]	= CmdLink()
 		commands["https"]	= CmdLink()
 		commands["file"]	= CmdLink()
+		
+		f?.call(this)
+		
+		// TODO: work out what baseDir should be if running tests from a pod
 	}
 	
-	ConcordionResults runTest(Obj testInstance) {
-		testStart	:= Duration.now
-		fandocSrc	:= FandocFinder().findFandoc(testInstance.typeof)
-		efanMeta 	:= TestCompiler().generateEfan(fandocSrc, commands)
-		
-		testBuilder	:= BeanFactory(efanMeta.type)
-		testBuilder.set(TestHelper#_concordion_skin, skin)
-		testBuilder.set(TestHelper#_concordion_testInstance, testInstance)
-		testHelper	:= (TestHelper) testBuilder.create
+	** Runs the given Concordion fixture.
+	FixtureResult runFixture(Obj fixtureInstance) {
+		if (!Actor.locals.containsKey("afConcordion.isRunning")) {
+			setup()
+			Actor.locals["afConcordion.isRunning"] = true
+		}
 
-		testHelper._concordion_setUp
+		testStart	:= Duration.now
+		fandocSrc	:= FandocFinder().findFandoc(fixtureInstance.typeof)
+		efanMeta 	:= FixtureCompiler().generateEfan(fandocSrc, commands)
+		
+		fixBuilder	:= BeanFactory(efanMeta.type)
+		fixBuilder.set(FixtureHelper#_concordion_skin, skin)
+		fixBuilder.set(FixtureHelper#_concordion_testInstance, fixtureInstance)
+		fixHelper	:= (FixtureHelper) fixBuilder.create
+
+		fixMeta		:= FixtureMeta() {
+			it.title		= efanMeta.title 
+			it.fixtureType	= efanMeta.type
+			it.fixtureSrc	= efanMeta.typeSrc
+			it.templateLoc	= efanMeta.templateLoc
+			it.templateSrc	= efanMeta.templateSrc
+			it.baseDir		= this.baseDir
+			it.outputDir	= this.outputDir
+		}
+		
+		fixHelper._concordion_setUp(fixMeta)
 		try {
 			testTime	:= Duration.now - testStart
-			testHelper	-> _efan_render(null)	// --> RUNS THE TEST!!!
-			goal 		:= testHelper._concordion_renderBuf.toStr
-			result 		:= render(goal, efanMeta.title, testTime)
-			resultFile	:= outputDir + `${testInstance.typeof.name}.html` 
-			wtf 		:= resultFile.out.print(result).close
+			fixHelper	-> _efan_render(null)	// --> RUNS THE TEST!!!
+			resultHtml	:= fixHelper._concordion_renderBuf.toStr
+			resultFile	:= outputDir + `${fixtureInstance.typeof.name}.html` 
+			wtf 		:= resultFile.out.print(resultHtml).close
 			
 			// TODO: print something better
 			log.info(resultFile.normalize.toStr)
 			
-			return ConcordionResults {
-				it.result 		= result
+			return FixtureResult {
+				it.fixtureMeta	= fixMeta
+				it.resultHtml	= resultHtml
 				it.resultFile 	= resultFile
-				it.errors		= testHelper._concordion_errors
+				it.errors		= fixHelper._concordion_errors
 			}
 			
 		} finally {
-			testHelper._concordion_tearDown
+			fixHelper._concordion_tearDown
 		}
 	}
 	
-	private Str render(Str content, Str title, Duration testDuration) {
-		// TODO: we could make this part of the efan template
-		conCss		:= typeof.pod.file(`/res/concordion.css`		).readAllStr
-		visToggler	:= typeof.pod.file(`/res/visibility-toggler.js`	).readAllStr
-		conXhtml	:= typeof.pod.file(`/res/concordion.html`		).readAllStr
-		conVersion	:= typeof.pod.version.toStr
-		xhtml		:= conXhtml 
-						.replace("{{{ title }}}", 				title)
-						.replace("{{{ concordionCss }}}", 		conCss)
-						.replace("{{{ visibilityToggler }}}", 	visToggler)
-						.replace("{{{ content }}}", 			content)
-						.replace("{{{ concordionVersion }}}",	conVersion)
-						.replace("{{{ testDuration }}}", 		testDuration.toLocale)
-						.replace("{{{ testDate }}}", 			DateTime.now(1sec).toLocale("D MMM YYYY, k:mmaa zzzz 'Time'"))
-		return xhtml
+	** Called when the first fixture is run. 
+	virtual Void setup() {
+		// wipe the slate clean to begin with
+		outputDir.delete
+		outputDir.create		
 	}
 }
