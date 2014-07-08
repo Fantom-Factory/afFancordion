@@ -13,6 +13,7 @@ class CmdSetCoerceTest : ConTest {
 	Uri? name
 	
 	override Void doTest() {
-		Element("span.success").verifyTextEq("Bob")
+		Element("span.success")[0].verifyTextEq("Bob")
+		Element("span.success")[1].verifyTextEq("Bob")
 	}
 }

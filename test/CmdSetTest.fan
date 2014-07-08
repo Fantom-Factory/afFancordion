@@ -7,13 +7,14 @@ using afBounce
 ** 
 ** Example
 ** -------
-** If I set 'name' equal to " [Bobins]`set:name` " then I expect 'name' to equal " [Bob]`verify:eq(name)` "!
+** If I set 'name' equal to " [Bob]`set:name` " then I expect 'name' to equal " [Bob]`verify:eq(name)` "!
 ** 
 class CmdSetTest : ConTest {
 	Str? name := "Wotever"
 	
 	override Void doTest() {
-		Element("span.success").verifyTextEq("Bob")
+		Element("span.success")[0].verifyTextEq("Bob")
+		Element("span.success")[1].verifyTextEq("Bob")
 	}
 }
 
