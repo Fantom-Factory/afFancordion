@@ -12,8 +12,8 @@ using afBounce
 class CmdVerifyEqSuccessTest : ConTest {
 	Str greeting	:= "Kick Ass!"
 
-	override Void testConcordionFixture() {
-		super.testConcordionFixture
+	override Void testFixture() {
+		super.testFixture
 	}
 
 	override Void doTest() {

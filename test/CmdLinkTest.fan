@@ -15,7 +15,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** a file link to [me]`file:CmdLinkTest.fan`
+** A file link to [me]`file:CmdLinkTest.fan`
 ** 
 class CmdLinkTest : ConTest {
 
