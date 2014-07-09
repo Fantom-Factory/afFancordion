@@ -1,19 +1,14 @@
 
-** Implement to mark your Test class as a Concordion Fixture.
-mixin Fixture {
+** Place on a class to mark it as a Concordion Fixture.
+@FacetMeta { inherited = true }
+facet class Fixture {
 
-	** Runs this Test class as a Concordion fixture. 
-	** This method name is prefixed with 'test' so it is picked up by 'fant'.
-	virtual Void testFixture() {
-		results := concordionRunner.runFixture(this)
-
-		if (!results.errors.isEmpty)
-			throw results.errors.first
-	}
-	
-	** Returns a fresh instance of a 'ConcordionRunner'.
-	** Override to change default runner values. 
-	virtual ConcordionRunner concordionRunner() {
-		ConcordionRunner()
-	}
+//	** By default Concordion uses the Type's doc comment as the specification.
+//	** If you wish to use an external file then use this to explicitly set the location of the Concordion fandoc specification. 
+//	**  
+//	** The URI may take several forms:
+//	**  - if fully qualified, the specification is resolved, e.g. 'fan://acmePod/templates/Notice.efan' 
+//	**  - if relative, the specification is assumed to be on the file system, e.g. 'etc/templates/Notice.efan' 
+//	**  - if absolute, the specification is assumed to be a pod resource, e.g. '/templates/Notice.efan'
+//	const Uri? specification
 }

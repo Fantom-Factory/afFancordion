@@ -7,7 +7,7 @@ mixin FixtureHelper {
 	abstract ConcordionSkin? _concordion_skin
 
 	// nullable 'cos it probably won't be set in the ctor
-	abstract Test? _concordion_testInstance
+	abstract Obj? _concordion_fixture
 	
 	Void _concordion_setUp(FixtureMeta fixtureMeta) {
 		// write to our own StrBuf. 

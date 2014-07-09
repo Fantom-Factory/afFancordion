@@ -28,15 +28,15 @@ internal class CmdVerify : Command {
 			actual   = expected
 			expected = temp
 		}
-		
+
 		verify 	 := ""
 		if (singleArgCmds.contains(cmd)) {
 			cName := cmd.equalsIgnoreCase("true") ? "" : cmd 
-			verify = "((Test) _concordion_testInstance).verify${cName.capitalize}(actual)"
+			verify = "test.verify${cName.capitalize}(actual)"
 		}
 
 		if (doubleArgCmds.contains(cmd)) {
-			verify = "((Test) _concordion_testInstance).verify${cmd.capitalize}(expected, actual)"
+			verify = "test.verify${cmd.capitalize}(expected, actual)"
 		}
 		
 		return
@@ -47,6 +47,8 @@ internal class CmdVerify : Command {
               actual      := ${actual}
               expected    := ${expected}
               try {
+                  %><%# use the real fixture if we can so it notches up the verify count %><%
+                  test := (_concordion_fixture is Test) ? (Test) _concordion_fixture : afConcordion::TestImpl()
                   ${verify}
                   %><%= _concordion_skin.success(cmdText) %><%
               } catch (Err err) {
@@ -68,3 +70,5 @@ internal class CmdVerify : Command {
 	}
 }
 
+@NoDoc
+class TestImpl : Test { }

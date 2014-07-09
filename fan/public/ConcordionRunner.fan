@@ -33,9 +33,12 @@ class ConcordionRunner {
 		
 		// TODO: work out what baseDir should be if running tests from a pod
 	}
-	
+
 	** Runs the given Concordion fixture.
 	FixtureResult runFixture(Obj fixtureInstance) {
+		if (!fixtureInstance.typeof.hasFacet(Fixture#))
+			throw ArgErr(ErrMsgs.fixtureFacetNotFound(fixtureInstance.typeof))
+		
 		if (!Actor.locals.containsKey("afConcordion.isRunning")) {
 			setup()
 			Actor.locals["afConcordion.isRunning"] = true
@@ -52,7 +55,7 @@ class ConcordionRunner {
 		
 		fixBuilder	:= BeanFactory(efanMeta.type)
 		fixBuilder.set(FixtureHelper#_concordion_skin, skin)
-		fixBuilder.set(FixtureHelper#_concordion_testInstance, fixtureInstance)
+		fixBuilder.set(FixtureHelper#_concordion_fixture, fixtureInstance)
 		fixHelper	:= (FixtureHelper) fixBuilder.create
 
 		// TODO: maintain dir structure of output files
