@@ -18,11 +18,13 @@ const class FixtureMeta {
 	const Str	templateSrc
 
 	** Where the tests are run from. 
-	** Used to work out relative paths from test files to resource directories.
 	const File	baseDir
 	
-	** Where the generated HTML result files are saved.
+	** The base dir of where the generated HTML result files are saved.
 	const File	outputDir
+
+	** Where the generated HTML result file will be saved.
+	const File	resultFile
 
 	internal new make(|This|? in := null) { in?.call(this) }
 

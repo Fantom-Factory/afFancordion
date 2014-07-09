@@ -14,13 +14,13 @@ mixin FixtureHelper {
 		// We don't need nesting and we don't then interfere with other rendering stacks
 		Actor.locals["afConcordion.renderBuf"] 	= StrBuf()
 		Actor.locals["afConcordion.errors"] 	= Err[,]
-		Actor.locals["afConcordion.meta"] 		= fixtureMeta
+		Actor.locals["afConcordion.fixtureMeta"]= fixtureMeta
 	}
 
 	Void _concordion_tearDown() {
 		Actor.locals.remove("afConcordion.renderBuf")
 		Actor.locals.remove("afConcordion.errors")
-		Actor.locals.remove("afConcordion.meta")
+		Actor.locals.remove("afConcordion.fixtureMeta")
 	}
 	
 	StrBuf _concordion_renderBuf() {

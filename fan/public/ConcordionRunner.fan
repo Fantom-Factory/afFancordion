@@ -45,10 +45,18 @@ class ConcordionRunner {
 		fandocSrc	:= FandocFinder().findFandoc(fixtureInstance.typeof)
 		efanMeta 	:= FixtureCompiler().generateEfan(fandocSrc, commands)
 		
+		if (efanMeta.templateLoc.parent.name == "test")
+			baseDir = baseDir + `test/`
+		if (efanMeta.templateLoc.parent.name == "spec")
+			baseDir = baseDir + `spec/`
+		
 		fixBuilder	:= BeanFactory(efanMeta.type)
 		fixBuilder.set(FixtureHelper#_concordion_skin, skin)
 		fixBuilder.set(FixtureHelper#_concordion_testInstance, fixtureInstance)
 		fixHelper	:= (FixtureHelper) fixBuilder.create
+
+		// TODO: maintain dir structure of output files
+		resultFile	:= outputDir + `${fixtureInstance.typeof.name}.html` 
 
 		fixMeta		:= FixtureMeta() {
 			it.title		= efanMeta.title 
@@ -58,6 +66,7 @@ class ConcordionRunner {
 			it.templateSrc	= efanMeta.templateSrc
 			it.baseDir		= this.baseDir
 			it.outputDir	= this.outputDir
+			it.resultFile	= resultFile
 		}
 		
 		fixHelper._concordion_setUp(fixMeta)
@@ -65,7 +74,6 @@ class ConcordionRunner {
 			testTime	:= Duration.now - testStart
 			fixHelper	-> _efan_render(null)	// --> RUNS THE TEST!!!
 			resultHtml	:= fixHelper._concordion_renderBuf.toStr
-			resultFile	:= outputDir + `${fixtureInstance.typeof.name}.html` 
 			wtf 		:= resultFile.out.print(resultHtml).close
 			
 			// TODO: print something better

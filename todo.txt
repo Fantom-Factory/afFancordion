@@ -1,38 +1,25 @@
 
-verifyEq === verifySame, etc
 
-verifyTrue === verifyFalse, etc
+Breadcrumbs
 
 execute cmd, copy type coercer over for method param
 
 run command 
-
-[Run Other Test]`concordion:run/OtherTest#`
-
+echo command
+echoraw / html command???
+html command?
 
 [Run Other Test]`run:OtherTest` - should only run tests once! 
-[KickAss]`verifyEq:greeting(#TEXT)`
 
-[KickAss]`verify:greeting(#TEXT)`
-
-[KickAss]`concordion:verifyEq/greeting(#TEXT)`
+[Run Other Test]`concordion:OtherTest`  
 
 
-[KickAss]`concordion:verifyEq(greeting, #TEXT)`
-[KickAss]`set:greeting`
-[KickAss]`run:verifyEq(greeting, #TEXT)`
-[KickAss]`test:verifyEq(greeting, #TEXT)`
 [KickAss]`exe:verifyEq(greeting, #TEXT)`
+[KickAss]`execute:verifyEq(greeting, #TEXT)`
 
-[KickAss]`verify:eq(greeting)`
-
-[Check ticket  KickAss]`set:greeting`
-[Check ticket is valid]`execute:verifyEq(greeting, #TEXT)`
-[Check ticket is valid]`concordion:TestTicketIsValid`
 
 [Check ticket is valid]`set+file:my/data/file.txt`
 
-Test normal http: links work
 
 
 ** `col[0]:split(#TEXT)` 
@@ -45,7 +32,6 @@ Test normal http: links work
 **   Steve Eynon  Steve       Eynon
 **   Fred Bloggs  Fred        Bloggs
 **
-**
 
 
 For 1.0.0
@@ -56,5 +42,5 @@ For 1.0.0
 For Future
 ==========
 
-Add listeners for verifyEq / execute
+Add listeners for verifyEq / execute...?
 https://github.com/concordion/concordion/blob/master/src/main/java/org/concordion/api/extension/ConcordionExtender.java
