@@ -26,6 +26,9 @@ const class FixtureMeta {
 	** Where the generated HTML result file will be saved.
 	const File	resultFile
 
+	** When the fixture run was started
+	const DateTime StartTime
+
 	internal new make(|This|? in := null) { in?.call(this) }
 
 }

@@ -4,7 +4,7 @@ class Build : BuildPod {
 
 	new make() {
 		podName = "afConcordion"
-		summary = "Automated acceptance testing"
+		summary = "Transform boring unit tests into beautiful specification documents"
 		version = Version("0.0.1")
 
 		meta = [

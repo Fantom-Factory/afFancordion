@@ -22,9 +22,9 @@ html command?
 
 
 
-** `col[0]:split(#TEXT)` 
-** `row:verifyEq(firstName, #TEXT)` 
-** `table:verifyRows`
+** cmd: col[0]:split(#TEXT)` 
+** cmd: row:verifyEq(firstName, #TEXT)` 
+** cmd: table:verifyRows`
 ** 
 **   Full Name    First Name  Last Name
 **   -----------  ----------- ----------

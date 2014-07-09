@@ -37,14 +37,14 @@ class ConcordionRunner {
 	** Runs the given Concordion fixture.
 	FixtureResult runFixture(Obj fixtureInstance) {
 		if (!fixtureInstance.typeof.hasFacet(Fixture#))
-			throw ArgErr(ErrMsgs.fixtureFacetNotFound(fixtureInstance.typeof))
-		
+			throw ArgErr(ErrMsgs.fixtureFacetNotFound(fixtureInstance.typeof))		
+
 		if (!Actor.locals.containsKey("afConcordion.isRunning")) {
 			setup()
 			Actor.locals["afConcordion.isRunning"] = true
 		}
 
-		testStart	:= Duration.now
+		startTime	:= DateTime.now(null)
 		fandocSrc	:= FandocFinder().findFandoc(fixtureInstance.typeof)
 		efanMeta 	:= FixtureCompiler().generateEfan(fandocSrc, commands)
 		
@@ -70,11 +70,11 @@ class ConcordionRunner {
 			it.baseDir		= this.baseDir
 			it.outputDir	= this.outputDir
 			it.resultFile	= resultFile
+			it.StartTime	= startTime
 		}
 		
 		fixHelper._concordion_setUp(fixMeta)
 		try {
-			testTime	:= Duration.now - testStart
 			fixHelper	-> _efan_render(null)	// --> RUNS THE TEST!!!
 			resultHtml	:= fixHelper._concordion_renderBuf.toStr
 			wtf 		:= resultFile.out.print(resultHtml).close
