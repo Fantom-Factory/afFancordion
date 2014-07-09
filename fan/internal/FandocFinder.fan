@@ -24,6 +24,10 @@ internal const class FandocFinder {
 	FandocSrc? findFromTypeFandoc(Type testType) {
 		try  {
 			// TODO: Winge at Fantom - prints an Err if not in a pod
+			// assume if we're running a src file then it's not a pod resource
+			if (Env.cur.args.last.trim.endsWith(".fan"))
+				return null
+
 			if (testType.doc == null)
 				return null
 		} catch

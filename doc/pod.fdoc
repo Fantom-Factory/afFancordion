@@ -2,6 +2,9 @@ Overview [#overview]
 ********************
 Automated acceptance testing.
 
+Transform boring unit tests into beautiful specification documents.
+Enhance your tests by creating pretty
+
 Extensible!
 
 
@@ -25,10 +28,56 @@ Full API & fandocs are available on the [Status302 repository]`http://repo.statu
 
 Quick Start [#quickStart]
 *************************
+1). Create a text file called 'HelloWorldFixture.fan'
 pre>
-  Example here
+syntax: fantom
+
+using afConcordion
+
+** My First Fixture
+** ################
+**
+** This is a simple Condordion fixture that verifies that the method
+** 'greeting()' returns 'Hello World!'.
+**
+** Example
+** -------
+** Condordion says, " [Hello World!]`verify:eq( greeting() )` "
+**
+class HelloWorldFixture : Test, FixtureTest {
+    Str greeting() {
+        "Hello World!"
+    }
+}
 <pre
 
+2). Run 'HelloWorldFixture.fan' as a Fantom test script ( [fant]`docTools::Fant` ) from the command prompt:
+pre>
+C:\> fant HelloWorldFixture.fan
+
+-- Run:  HelloWorldFixture_0::HelloWorldFixture.testConcordionFixture...
+   Pass: HelloWorldFixture_0::HelloWorldFixture.testConcordionFixture [0]
+
+[info] [afConcordion] file:/C:/temp/concordion/HelloWorldFixture.html
+
+Time: 691ms
+
+***
+*** All tests passed! [1 tests, 1 methods, 1 verifies]
+***
+<pre
+
+3). View the generated fixture result file:
+
+![Screenshot of Hello World Fixture Results]`http://static.alienfactory.co.uk/fantom-docs/afConcordion.helloWorldFixture.png`
+
+
+
+Usage [#usage]
+**************
+Use the `ConcordionRunner` class to run your fixtures.
+
+A concordion fixture is any class annotated with the `@Fixture` facet.
 
 
 Release Notes [#releaseNotes]
