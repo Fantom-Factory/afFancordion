@@ -35,9 +35,10 @@ mixin ConcordionSkin {
 		addScript(`fan://afConcordion/res/visibility-toggler.js`.get)
 		
 		Actor.locals["afConcordion.skin.headIndex"] = renderBuf.size + buf.size
-		
-		buf.add("</head>\n")
 		return buf.toStr
+	}
+	virtual Str headEnd() {
+		"""</head>\n"""
 	}
 
 	virtual Str link(Uri href) {

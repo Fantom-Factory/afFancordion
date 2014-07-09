@@ -19,6 +19,7 @@ internal class FixtureDocWriter : DocWriter {
 	override Void docStart(Doc doc) { 
 		out.print("<%= _concordion_skin.html() %>")
 		out.print("<%= _concordion_skin.head() %>")
+		out.print("<%= _concordion_skin.headEnd() %>")
 		out.print("<%= _concordion_skin.body() %>")
 	}
 	

@@ -18,7 +18,7 @@ internal const class FixtureCompiler {
 		classModel.fields.remove(efanOutput)
 		classModel.addField(Obj?#, "_efan_output", """throw Err("_efan_output is write only.")""", """_concordion_renderBuf.add(it)""")
 		classModel.overrideField(FixtureHelper#_concordion_skin)
-		classModel.overrideField(FixtureHelper#_concordion_testInstance)
+		classModel.overrideField(FixtureHelper#_concordion_fixture)
 		
 		efanMeta := efanEngine.compileModel(fandocSrc.templateLoc, efanStr, model)
 

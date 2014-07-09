@@ -1,7 +1,7 @@
 using concurrent
 using afSizzle
 
-abstract class ConTest : Test, Fixture {
+abstract class ConTest : Test, FixtureTest {
 	
 	FixtureResult? result
 	
