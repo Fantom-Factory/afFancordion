@@ -24,10 +24,11 @@ class ConcordionRunner {
 	new make(|This|? f := null) {
 		commands["verify"]	= CmdVerify()
 		commands["set"]		= CmdSet()
-//		commands["execute"]	= CmdExecute()
+//		commands["execute"]	= CmdExecute()	// FIXME: execute command
 		commands["http"]	= CmdLink()
 		commands["https"]	= CmdLink()
 		commands["file"]	= CmdLink()
+		commands["test"]	= CmdTest()
 		
 		f?.call(this)
 		
@@ -36,12 +37,15 @@ class ConcordionRunner {
 
 	** Runs the given Concordion fixture.
 	FixtureResult runFixture(Obj fixtureInstance) {
+		// we want the fixture _instance_ for if it is a test, the setup has already been done...@~£%]&? 
+		// TODO: Need use case for needing to -> simple, we verify and test against stuff in setup()!  
+		// Oh, and verify cmd uses it to notch up the verify count 
 		if (!fixtureInstance.typeof.hasFacet(Fixture#))
 			throw ArgErr(ErrMsgs.fixtureFacetNotFound(fixtureInstance.typeof))		
 
-		if (!Actor.locals.containsKey("afConcordion.isRunning")) {
+		if (!Actor.locals.containsKey("afConcordion.runner")) {
 			setup()
-			Actor.locals["afConcordion.isRunning"] = true
+			Actor.locals["afConcordion.runner"] = this
 		}
 
 		startTime	:= DateTime.now(null)
@@ -91,6 +95,8 @@ class ConcordionRunner {
 			
 		} finally {
 			fixHelper._concordion_tearDown
+			
+			// FIXME: have a suite teardown
 		}
 	}
 	
@@ -98,6 +104,8 @@ class ConcordionRunner {
 	virtual Void setup() {
 		// wipe the slate clean to begin with
 		outputDir.delete
-		outputDir.create		
+		outputDir.create
+		
+		
 	}
 }
