@@ -6,12 +6,14 @@ mixin ConcordionSkin {
 	// ---- HTML Methods --------------------------------------------------------------------------
 	
 	virtual Str html() {
+		// TODO: split into setup & teardown
 		Actor.locals["afConcordion.skin.buttonId"] 		= 0
 		Actor.locals["afConcordion.skin.cssUrls"]		= Uri[,]
 		Actor.locals["afConcordion.skin.scriptUrls"]	= Uri[,]
 		return """<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n"""
 	}
 	virtual Str htmlEnd() {
+		// TODO: split into teardown and htmlEnd
 		// Add CSS links to the <head> tag
 		headBuf	:= StrBuf()
 		headIdx := Actor.locals["afConcordion.skin.headIndex"]
@@ -87,15 +89,15 @@ mixin ConcordionSkin {
 	
 	// ---- Test Results --------------------------------------------------------------------------
 	
-	virtual Str success(Str expected) {
+	virtual Str cmdSuccess(Str expected) {
 		"""<span class="success">${expected.toXml}</span>"""
 	}
 
-	virtual Str failure(Str expected, Obj? actual) {
+	virtual Str cmdFailure(Str expected, Obj? actual) {
 		"""<span class="failure"><del class="expected">${expected.toXml}</del> ${actual?.toStr?.toXml}</span>"""
 	}
 
-	virtual Str err(Uri cmdUrl, Str cmdText, Err err) {
+	virtual Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
 		Actor.locals["afConcordion.skin.buttonId"] = buttonId + 1
 		stack := err.traceToStr.splitLines.join("") { "<span class=\"stackTraceEntry\">${it}</span>\n" }
 		return
@@ -118,6 +120,10 @@ mixin ConcordionSkin {
 	
 	virtual FixtureMeta fixtureMeta() {
 		Actor.locals["afConcordion.fixtureMeta"]
+	}
+
+	virtual FixtureCtx fixtureCtx() {
+		Actor.locals["afConcordion.fixtureCtx"]
 	}
 	
 	virtual Void addCss(File cssFile) {
@@ -146,7 +152,7 @@ mixin ConcordionSkin {
 		srcFile.copyTo(dstFile, ["overwrite": false])
 		
 		dstRel := dstFile.normalize.uri.relTo(fixtureMeta.outputDir.normalize.uri)
-		srcRel := fixtureMeta.templateLoc.parent.relTo(fixtureMeta.baseDir.normalize.uri)
+		srcRel := fixtureMeta.specificationLoc.parent.relTo(fixtureMeta.baseDir.normalize.uri)
 		
 		url	:= dstRel.relTo(srcRel)
 		return url
@@ -160,7 +166,7 @@ mixin ConcordionSkin {
 	}
 
 	private StrBuf renderBuf() {
-		Actor.locals["afConcordion.renderBuf"]
+		fixtureCtx.renderBuf
 	}
 }
 

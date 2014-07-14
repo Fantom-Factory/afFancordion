@@ -1,19 +1,15 @@
 using afBeanUtils
 
 internal class Commands {
-	private OutStream out
-	
 	private Str:Command commands
 	
-	new make(Str:Command commands, OutStream out) {
+	new make(Str:Command commands) {
 		this.commands = commands
-		this.out = out
 	}
 	
-	Void doCmd(OutStream out, Uri url, Str text) {
+	Void doCmd(FixtureCtx fixCtx, Uri url, Str text) {
 		command := commands[url.scheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(url.scheme), commands.keys)
-		efan	:= command.doCmd(url, text)
-		out.print(efan)
+		command.doCmd(fixCtx, url, text)
 	}
 
 }
