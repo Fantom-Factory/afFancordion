@@ -8,28 +8,32 @@ internal class FixtureDocWriter : DocWriter {
 	private StrBuf?	linkText
 	private Bool 	inExample
 	
-	private OutStream	out
 	private Commands 	cmds
+	private FixtureCtx	fixCtx
 	
-	new make(OutStream out, Commands cmds) {
-		this.out = out
-		this.cmds = cmds
+	@Deprecated	// all output should go through the Skin
+	private OutStream	out
+	
+	new make(Commands cmds, FixtureCtx fixCtx) {
+		this.cmds	= cmds
+		this.fixCtx	= fixCtx
+		this.out	= fixCtx.renderBuf.out
 	}
 	
-	override Void docStart(Doc doc) { 
-		out.print("<%= _concordion_skin.html() %>")
-		out.print("<%= _concordion_skin.head() %>")
-		out.print("<%= _concordion_skin.headEnd() %>")
-		out.print("<%= _concordion_skin.body() %>")
+	override Void docStart(Doc doc) {
+		append(fixCtx.skin.html)
+		append(fixCtx.skin.head)
+		append(fixCtx.skin.headEnd)
+		append(fixCtx.skin.body)
 	}
 	
 	override Void docEnd(Doc doc) {
 		if (inExample) {
 			inExample = false
-			out.print("<%= _concordion_skin.exampleEnd() %>")
+			append(fixCtx.skin.exampleEnd)
 		}		
-		out.print("<%= _concordion_skin.bodyEnd() %>")
-		out.print("<%= _concordion_skin.htmlEnd() %>")
+		append(fixCtx.skin.bodyEnd)
+		append(fixCtx.skin.htmlEnd)
 	}
 	
 	override Void elemStart(DocElem elem) {
@@ -46,12 +50,12 @@ internal class FixtureDocWriter : DocWriter {
 			
 			if (inExample) {
 				inExample = false
-				out.print("<%= _concordion_skin.exampleEnd() %>")
+				append(fixCtx.skin.exampleEnd)
 			}
 			
 			if (head.title.equalsIgnoreCase("Example")) {
 				inExample = true
-				out.print("<%= _concordion_skin.example() %>")
+				append(fixCtx.skin.example)
 			}
 		}
 
@@ -59,6 +63,20 @@ internal class FixtureDocWriter : DocWriter {
 		if (elem.anchorId != null) 
 			attr("id", elem.anchorId)
 		
+//  text,
+//  doc,
+//  heading,
+//  para,
+//  pre,
+//  blockQuote,
+//  orderedList,
+//  unorderedList,
+//  listItem,
+//  emphasis,
+//  strong,
+//  code,
+//  link,
+//  image
 		switch (elem.id) {
 			case DocNodeId.image:
 				img := elem as Image
@@ -91,7 +109,7 @@ internal class FixtureDocWriter : DocWriter {
 	override Void elemEnd(DocElem elem) {
 		if (inLink) {
 			inLink = false
-			cmds.doCmd(out, ((Link) elem).uri.toUri, linkText.toStr)
+			cmds.doCmd(fixCtx, ((Link) elem).uri.toUri, linkText.toStr)
 			linkText = null
 			return
 		}
@@ -119,6 +137,10 @@ internal class FixtureDocWriter : DocWriter {
 			else if (ch == '&') out.print("&amp;")
 			else out.writeChar(ch)
 		}
+	}
+	
+	private Void append(Str s) {
+		fixCtx.renderBuf.add(s)
 	}
 	
 	Bool isVoidTag(Str tag) {

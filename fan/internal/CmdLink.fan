@@ -1,7 +1,10 @@
 
 internal class CmdLink : Command {
 	
-	override Str doCmd(Uri cmdUrl, Str cmdText) {
-		"""<a href="${cmdUrl}">${cmdText}</a>"""
+	override Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+		// FIXME: route through skin
+//		html := fixCtx.skin.a(cmdUrl, cmdText)
+		html := """<a href="${cmdUrl}">${cmdText}</a>"""
+		fixCtx.renderBuf.add(html)
 	}
 }

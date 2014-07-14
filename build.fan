@@ -22,7 +22,6 @@ class Build : BuildPod {
 			"afBeanUtils 1.0.0+",
 			"afConcurrent 1.0.6+",
 			"afPlastic 1.0.14+",
-			"afEfan 1.4.0+",
 			
 			
 			// ---- Test ------------------------

@@ -10,8 +10,9 @@ using afBounce
 ** -------
 ** [Verify Command]`verify:eq(verCmd)`
 ** 
-internal class FixtureInstanceTest : ConTest {
+class FixtureInstanceTest : ConTest {
 	Str? verCmd
+	Str? verSet
 	
 	override Void setup() {
 		verCmd = "Verify Command"

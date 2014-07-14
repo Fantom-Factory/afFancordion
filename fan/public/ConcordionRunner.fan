@@ -49,38 +49,52 @@ class ConcordionRunner {
 		}
 
 		startTime	:= DateTime.now(null)
-		fandocSrc	:= FandocFinder().findFandoc(fixtureInstance.typeof)
-		efanMeta 	:= FixtureCompiler().generateEfan(fandocSrc, commands)
+		specMeta	:= SpecificationFinder().findSpecification(fixtureInstance.typeof)
 		
-		if (efanMeta.templateLoc.parent.name == "test")
+		doc			:= FandocParser().parseStr(specMeta.specificationSrc)
+		docTitle	:= doc.findHeadings.first?.title ?: specMeta.fixtureType.name.fromDisplayName
+
+		
+		
+		if (specMeta.specificationLoc.parent.name == "test")
 			baseDir = baseDir + `test/`
-		if (efanMeta.templateLoc.parent.name == "spec")
+		if (specMeta.specificationLoc.parent.name == "spec")
 			baseDir = baseDir + `spec/`
 		
-		fixBuilder	:= BeanFactory(efanMeta.type)
-		fixBuilder.set(FixtureHelper#_concordion_skin, skin)
-		fixBuilder.set(FixtureHelper#_concordion_fixture, fixtureInstance)
-		fixHelper	:= (FixtureHelper) fixBuilder.create
-
-		// TODO: maintain dir structure of output files
-		resultFile	:= outputDir + `${fixtureInstance.typeof.name}.html` 
+//		fixBuilder	:= BeanFactory(specMeta.fixtureType)
+//		fixBuilder.set(FixtureHelper#_concordion_skin, skin)
+//		fixBuilder.set(FixtureHelper#_concordion_fixture, fixtureInstance)
+//		fixHelper	:= (FixtureHelper) fixBuilder.create
 
 		fixMeta		:= FixtureMeta() {
-			it.title		= efanMeta.title 
-			it.fixtureType	= efanMeta.type
-			it.fixtureSrc	= efanMeta.typeSrc
-			it.templateLoc	= efanMeta.templateLoc
-			it.templateSrc	= efanMeta.templateSrc
-			it.baseDir		= this.baseDir
-			it.outputDir	= this.outputDir
-			it.resultFile	= resultFile
-			it.StartTime	= startTime
+			it.title			= docTitle
+			it.fixtureType		= specMeta.fixtureType
+			it.specificationLoc	= specMeta.specificationLoc
+			it.specificationSrc	= specMeta.specificationSrc
+			it.baseDir			= this.baseDir
+			it.outputDir		= this.outputDir
+			it.StartTime		= startTime
 		}
 		
-		fixHelper._concordion_setUp(fixMeta)
+		fixCtx		:= FixtureCtx() {
+			it.fixtureInstance	= fixtureInstance
+			it.skin				= this.skin
+			it.renderBuf		= StrBuf(specMeta.specificationSrc.size * 2)
+			it.errs				= Err[,]
+		}
+
+
+		
+		Actor.locals["afConcordion.fixtureMeta"]	= fixMeta
+		Actor.locals["afConcordion.fixtureCtx"]		= fixCtx
 		try {
-			fixHelper	-> _efan_render(null)	// --> RUNS THE TEST!!!
-			resultHtml	:= fixHelper._concordion_renderBuf.toStr
+			
+			// TODO: have a fixture setup / teardown
+			
+			resultHtml	:= renderFixture(doc, fixCtx)	// --> RUN THE TEST!!!
+			
+			// TODO: maintain dir structure of output files
+			resultFile	:= outputDir + `${fixtureInstance.typeof.name}.html` 
 			wtf 		:= resultFile.out.print(resultHtml).close
 			
 			// TODO: print something better
@@ -90,14 +104,17 @@ class ConcordionRunner {
 				it.fixtureMeta	= fixMeta
 				it.resultHtml	= resultHtml
 				it.resultFile 	= resultFile
-				it.errors		= fixHelper._concordion_errors
+				it.errors		= fixCtx.errs
 			}
 			
 		} finally {
-			fixHelper._concordion_tearDown
+			Actor.locals.remove("afConcordion.fixtureMeta")
+			Actor.locals.remove("afConcordion.fixtureCtx")
 			
 			// FIXME: have a suite teardown
 		}
+		
+		return FixtureResult()
 	}
 	
 	** Called when the first fixture is run. 
@@ -105,7 +122,15 @@ class ConcordionRunner {
 		// wipe the slate clean to begin with
 		outputDir.delete
 		outputDir.create
-		
-		
+	}
+	
+	
+	private Str renderFixture(Doc doc, FixtureCtx fixCtx) {
+		cmds := Commands(commands)
+		fdw	 := FixtureDocWriter(cmds, fixCtx)
+		fdw.docStart(doc)
+		doc.writeChildren(fdw)
+		fdw.docEnd(doc)
+		return fixCtx.renderBuf.toStr			
 	}
 }

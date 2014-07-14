@@ -1,6 +1,7 @@
 using concurrent
 using afSizzle
 
+@NoDoc
 abstract class ConTest : Test, FixtureTest {
 	
 	FixtureResult? result
