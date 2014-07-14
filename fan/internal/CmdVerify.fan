@@ -21,7 +21,7 @@ internal class CmdVerify : Command {
 		
 		aType	 := coerceTo[cmd].qname + "#"
 		actual   := "afBeanUtils::TypeCoercer().coerce(${arg}, ${aType})"
-		expected := (cmd == "type") ? findTypeCode(cmdText) : cmdText.toCode
+		expected := (cmd == "type") ? findTypeCode(cmdText) : cmdText.toCode	// FIXME: run against instance -> write test type cast in efan... write test
 		
 		if (cmd == "type") {
 			temp    := actual

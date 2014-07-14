@@ -2,7 +2,7 @@ Overview [#overview]
 ********************
 Automated acceptance testing.
 
-Transform boring unit tests into beautiful specification documents.
+Transform boring unit tests into beautiful specification documents!
 Enhance your tests by creating pretty
 
 Extensible!
@@ -37,12 +37,12 @@ using afConcordion
 ** My First Fixture
 ** ################
 **
-** This is a simple Condordion fixture that verifies that the method
+** This is a simple Concordion fixture that verifies that the method
 ** 'greeting()' returns 'Hello World!'.
 **
 ** Example
 ** -------
-** Condordion says, " [Hello World!]`verify:eq( greeting() )` "
+** Concordion says, [Hello World!]`verify:eq(greeting)`
 **
 class HelloWorldFixture : Test, FixtureTest {
     Str greeting() {
