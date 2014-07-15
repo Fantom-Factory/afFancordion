@@ -19,6 +19,10 @@ using afBounce
 ** 
 class CmdLinkTest : ConTest {
 
+	override Void testFixture() {
+		super.testFixture
+	}
+
 	override Void doTest() {
 		Link("a")[0].verifyTextEq("Fantom-Factory")
 		verifyEq(Link("a")[0].href, "http://www.fantomfactory.org/")

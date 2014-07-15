@@ -12,8 +12,12 @@ using afBounce
 class CmdSetErrTest : ConTest {
 	Void name() { }
 
+	override Void testFixture() {
+		super.testFixture
+	}
+
 	override Void doTest() {
-		fail := Element("span.failure").innerHtml
+		fail := Element("span.error").innerHtml
 		verifyEq(fail, "<del class='expected'>Michael Caine</del>")
 		Element("span.exceptionMessage").verifyTextEq("java.lang.ClassCastException: fan.sys.Method cannot be cast to fan.sys.Field")
 		input := Element("#stackTraceButton1").html

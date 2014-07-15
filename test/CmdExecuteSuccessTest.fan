@@ -19,6 +19,10 @@ using afBounce
 ** 
 class CmdExecuteSuccessTest : ConTest {
 
+	override Void testFixture() {
+		super.testFixture
+	}
+
 	Void method1() {
 		
 	}

@@ -18,6 +18,10 @@ class FixtureInstanceTest : ConTest {
 		verCmd = "Verify Command"
 	}
 	
+	override Void testFixture() {
+		super.testFixture
+	}
+
 	override Void doTest() {
 		Element("span.success")[0].verifyTextEq("Verify Command")
 	}

@@ -16,6 +16,10 @@ class CmdVerifyX2Test : ConTest {
 	Bool isTrue		:= true
 	Bool isFalse	:= false
 	
+	override Void testFixture() {
+		super.testFixture
+	}
+
 	override Void doTest() {
 		Element("span.success")[0].verifyTextEq("true")
 		Element("span.success")[1].verifyTextEq("false")
