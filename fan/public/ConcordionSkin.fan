@@ -5,12 +5,14 @@ mixin ConcordionSkin {
 
 	// ---- Setup / Tear Down ---------------------------------------------------------------------
 	
+	** Called before every fixture run.
 	virtual Void setup() {
 		ThreadStack.push("afConcordion.skin.buttonId", 		0)
 		ThreadStack.push("afConcordion.skin.cssUrls", 		Uri[,])
 		ThreadStack.push("afConcordion.skin.scriptUrls",	Uri[,])		
 	}
 
+	** Called after every fixture run.
 	virtual Void tearDown() {
 		ThreadStack.pop("afConcordion.skin.buttonId")
 		ThreadStack.pop("afConcordion.skin.cssUrls")
@@ -22,8 +24,9 @@ mixin ConcordionSkin {
 	
 	// ---- HTML Methods --------------------------------------------------------------------------
 	
+	** Render
 	virtual Str html() {
-		return """<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n"""
+		return """<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n"""	// TODO: VOID TAG!
 	}
 	virtual Str htmlEnd() {
 		// Add CSS links to the <head> tag
@@ -41,8 +44,8 @@ mixin ConcordionSkin {
 		buf.add("<head>\n")
 		buf.add("\t<title>${fixtureMeta.title.toXml} : Concordion</title>\n")
 
-		addCss(`fan://afConcordion/res/concordion.css`.get)
-		addScript(`fan://afConcordion/res/visibility-toggler.js`.get)
+		addCss(`fan://afConcordion/res/classicSkin/concordion.css`.get)
+		addScript(`fan://afConcordion/res/classicSkin/visibility-toggler.js`.get)
 		
 		ThreadStack.push("afConcordion.skin.headIndex", renderBuf.size + buf.size)
 		return buf.toStr
@@ -74,22 +77,22 @@ mixin ConcordionSkin {
 	}
 
 	virtual Str p(Str? admonition) { admonition == null ? "<p>" : """<p class="${admonition.lower.toXml}">""" }
-	virtual Str pEnd() { "</p>" }
+	virtual Str pEnd() { "</p>\n" }
 
 	virtual Str pre() 			{ "<pre>" }
-	virtual Str preEnd()		{ "</pre>" }
+	virtual Str preEnd()		{ "</pre>\n" }
 	
 	virtual Str blockQuote()	{ "<blockquote>" }
-	virtual Str blockQuoteEnd() { "</blockquote>" }
+	virtual Str blockQuoteEnd() { "</blockquote>\n" }
 	
 	virtual Str ol(OrderedListStyle style)	{ """<ol style="list-style-type: ${style.htmlType};">""" }
 	virtual Str olEnd() 		{ "</ol>" }
 	
 	virtual Str ul()			{ "<ul>" }
-	virtual Str ulEnd() 		{ "</ul>" }
+	virtual Str ulEnd() 		{ "</ul>\n" }
 	
 	virtual Str li()			{ "<li>" }
-	virtual Str liEnd() 		{ "</li>" }
+	virtual Str liEnd() 		{ "</li>\n" }
 	
 	virtual Str emphasis()		{ "<emphasis>" }
 	virtual Str emphasisEnd()	{ "</emphasis>" }
@@ -104,17 +107,17 @@ mixin ConcordionSkin {
 	
 	// ---- Un-Matched HTML ---------------------
 
-	virtual Str link(Uri href)			{ """<link rel="stylesheet" type="text/css" href="${href}" />\n""" }	
+	virtual Str link(Uri href)			{ """<link rel="stylesheet" type="text/css" href="${href.encode.toXml}" />\n""" }	// TODO: VOID TAG!
 	
-	virtual Str script(Uri src)			{ """<script type="text/javascript" src="${src}"></script>\n""" }
+	virtual Str script(Uri src)			{ """<script type="text/javascript" src="${src.encode.toXml}"></script>\n""" }
 	
-	virtual Str a(Uri href, Str text) 	{ """<a href="${href}">${text.toXml}</a>""" }
+	virtual Str a(Uri href, Str text) 	{ """<a href="${href.encode.toXml}">${text.toXml}</a>""" }
 	
 	virtual Str text(Str text)			{ text.toXml }
 
 	virtual Str img(Uri src, Str alt)	{
-		// FIXME: copy rel images over + test!
-		"""<img src="${src}" alt="${alt.toXml}/>""" 		
+		srcUrl := copyFile(src.get, `images/`.plusName(src.name))
+		return """<img src="${srcUrl.encode.toXml}" alt="${alt.toXml}" />""" 		// TODO: VOID TAG!
 	}
 
 	virtual Str footer() {
@@ -194,17 +197,17 @@ mixin ConcordionSkin {
 	**   copyFile(`fan://afConcordion/res/concordion.css`.get, `etc/concordion.css`)
 	**   --> `../../etc/concordion.css`
 	virtual Uri copyFile(File srcFile, Uri destUrl) {
-		// TODO: verify args
-		// - destDir is rel (and dir!)
-		
-		dstFile := fixtureMeta.outputDir + destUrl
+		if (!destUrl.isPathOnly)
+			throw ArgErr(ErrMsgs.urlMustBePathOnly("Dest URL", destUrl, `etc/concordion.css`))
+		if (destUrl.isPathAbs)
+			throw ArgErr(ErrMsgs.urlMustNotStartWithSlash("Dest URL", destUrl, `etc/concordion.css`))
+		if (destUrl.isDir)
+			throw ArgErr(ErrMsgs.urlMustNotEndWithSlash("Dest URL", destUrl, `etc/concordion.css`))
+
+		dstFile := fixtureMeta.baseOutputDir + destUrl
 		srcFile.copyTo(dstFile, ["overwrite": false])
 		
-		dstRel := dstFile.normalize.uri.relTo(fixtureMeta.outputDir.normalize.uri)
-		srcRel := fixtureMeta.specificationLoc.parent.relTo(fixtureMeta.baseDir.normalize.uri)
-		
-		url	:= dstRel.relTo(srcRel)
-		return url
+		return dstFile.normalize.uri.relTo(fixtureMeta.fixtureOutputDir.normalize.uri)
 	}
 	
 	
@@ -219,4 +222,7 @@ mixin ConcordionSkin {
 	}
 }
 
-internal class ConcordionSkinImpl : ConcordionSkin { }
+class ClassicSkin : ConcordionSkin { 
+	
+	
+}

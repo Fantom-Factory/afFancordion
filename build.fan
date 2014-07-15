@@ -31,7 +31,7 @@ class Build : BuildPod {
 		]
 
 		srcDirs = [`test/`, `fan/`, `fan/public/`, `fan/internal/`]
-		resDirs = [`res/`]
+		resDirs = [`test/`, `res/classicSkin/`]
 	}
 	
 	override Void compile() {

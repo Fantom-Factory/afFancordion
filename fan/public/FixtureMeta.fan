@@ -14,11 +14,13 @@ const class FixtureMeta {
 	** The original efan template source string. Usually the fixture's doc comment.
 	const Str	specificationSrc
 
-	** Where the tests are run from. 
-	const File	baseDir
-	
-	** The base dir of where the generated HTML result files are saved.
-	const File	outputDir
+	** The base directory of where the generated HTML result files are saved.
+	const File	baseOutputDir
+
+	** The directory where the generated HTML result file will be saved.
+	** 
+	** Defaults to '`%{baseOutputDir}/%{fixtureType.pod.name}/`' 
+	const File	fixtureOutputDir
 
 	** When the fixture run was started
 	const DateTime StartTime

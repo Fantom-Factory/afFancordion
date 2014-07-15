@@ -6,15 +6,11 @@ using afPlastic
 class ConcordionRunner {
 	private static const Log log	:= Utils.getLog(ConcordionRunner#)
 	
-	** Where the tests are run from. 
-	** Used to work out relative paths from test files to resource directories.
-	File			baseDir			:= File.make(`./`)
-	
 	** Where the generated HTML result files are saved.
 	File			outputDir		:= Env.cur.tempDir + `concordion/`
 	
 	** The skin applied to generated HTML result files.
-	ConcordionSkin	skin			:= ConcordionSkinImpl()
+	ConcordionSkin	skin			:= ClassicSkin()
 	
 	** The commands made available to Concordion tests. 
 	Str:Command		commands		:= Str:Command[:] { caseInsensitive = true }
@@ -71,19 +67,18 @@ class ConcordionRunner {
 		specMeta	:= SpecificationFinder().findSpecification(fixtureInstance.typeof)
 		doc			:= FandocParser().parseStr(specMeta.specificationSrc)
 		docTitle	:= doc.findHeadings.first?.title ?: specMeta.fixtureType.name.fromDisplayName
+		podName		:= specMeta.fixtureType.pod?.name ?: "no-name"
 		
-		if (specMeta.specificationLoc.parent.name == "test")
-			baseDir = baseDir + `test/`
-		if (specMeta.specificationLoc.parent.name == "spec")
-			baseDir = baseDir + `spec/`
+		if (podName.contains("_"))	podName = "no-name"	// scripts are called `FileName_0`
+		outputDir.createDir(podName)
 		
 		fixMeta		:= FixtureMeta() {
 			it.title			= docTitle
 			it.fixtureType		= specMeta.fixtureType
 			it.specificationLoc	= specMeta.specificationLoc
 			it.specificationSrc	= specMeta.specificationSrc
-			it.baseDir			= this.baseDir
-			it.outputDir		= this.outputDir
+			it.baseOutputDir	= this.outputDir
+			it.fixtureOutputDir	= baseOutputDir.plus(podName.toUri, false)
 			it.StartTime		= startTime
 		}
 		
@@ -103,7 +98,7 @@ class ConcordionRunner {
 			
 			resultHtml	:= renderFixture(doc, fixCtx)	// --> RUN THE TEST!!!
 			
-			resultFile	:= outputDir + `${fixtureInstance.typeof.name}.html` 
+			resultFile	:= fixMeta.fixtureOutputDir + `${fixtureInstance.typeof.name}.html` 
 			resultFile.out.print(resultHtml).close
 						
 			result := FixtureResult {
@@ -134,7 +129,6 @@ class ConcordionRunner {
 	** 
 	** By default this empties the output dir. 
 	virtual Void suiteSetup() {
-		// FIXME: with multiple tests in fant - this gets run every time!
 		// wipe the slate clean to begin with
 		outputDir.delete
 		outputDir.create
