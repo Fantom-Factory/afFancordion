@@ -3,17 +3,29 @@ using fandoc
 ** Implement to create a skin for generated HTML result files.
 mixin ConcordionSkin {
 
+	// ---- Setup / Tear Down ---------------------------------------------------------------------
+	
+	virtual Void setup() {
+		ThreadStack.push("afConcordion.skin.buttonId", 		0)
+		ThreadStack.push("afConcordion.skin.cssUrls", 		Uri[,])
+		ThreadStack.push("afConcordion.skin.scriptUrls",	Uri[,])		
+	}
+
+	virtual Void tearDown() {
+		ThreadStack.pop("afConcordion.skin.buttonId")
+		ThreadStack.pop("afConcordion.skin.cssUrls")
+		ThreadStack.pop("afConcordion.skin.scriptUrls")
+		ThreadStack.pop("afConcordion.skin.headIndex")
+	}
+	
+	
+	
 	// ---- HTML Methods --------------------------------------------------------------------------
 	
 	virtual Str html() {
-		// TODO: split into setup & teardown
-		ThreadStack.push("afConcordion.skin.buttonId", 0)
-		ThreadStack.push("afConcordion.skin.cssUrls", Uri[,])
-		ThreadStack.push("afConcordion.skin.scriptUrls", Uri[,])
 		return """<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n"""
 	}
 	virtual Str htmlEnd() {
-		// TODO: split into teardown and htmlEnd
 		// Add CSS links to the <head> tag
 		headBuf	:= StrBuf()
 		headIdx := ThreadStack.peek("afConcordion.skin.headIndex")
@@ -21,10 +33,6 @@ mixin ConcordionSkin {
 		cssUrls.each { headBuf.add(link(it)) }
 		renderBuf.insert(headIdx, headBuf.toStr)
 		
-		ThreadStack.pop("afConcordion.skin.buttonId")
-		ThreadStack.pop("afConcordion.skin.cssUrls")
-		ThreadStack.pop("afConcordion.skin.scriptUrls")
-		ThreadStack.pop("afConcordion.skin.headIndex")
 		return """</html>\n"""
 	}
 	
@@ -64,7 +72,7 @@ mixin ConcordionSkin {
 	virtual Str headingEnd(Int level) {
 		"""</h${level}>\n"""
 	}
-	
+
 	virtual Str p(Str? admonition) { admonition == null ? "<p>" : """<p class="${admonition.lower.toXml}">""" }
 	virtual Str pEnd() { "</p>" }
 
@@ -102,9 +110,12 @@ mixin ConcordionSkin {
 	
 	virtual Str a(Uri href, Str text) 	{ """<a href="${href}">${text.toXml}</a>""" }
 	
-	virtual Str img(Uri src, Str alt)	{ """<img src="${src}" alt="${alt.toXml}/>""" }
-
 	virtual Str text(Str text)			{ text.toXml }
+
+	virtual Str img(Uri src, Str alt)	{
+		// FIXME: copy rel images over + test!
+		"""<img src="${src}" alt="${alt.toXml}/>""" 		
+	}
 
 	virtual Str footer() {
 		buf := StrBuf()
