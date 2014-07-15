@@ -16,6 +16,7 @@ internal class FixtureDocWriter : DocWriter {
 	}
 	
 	override Void docStart(Doc doc) {
+		fixCtx.skin.setup
 		append(fixCtx.skin.html)
 		append(fixCtx.skin.head)
 		append(fixCtx.skin.headEnd)
@@ -29,6 +30,7 @@ internal class FixtureDocWriter : DocWriter {
 		}		
 		append(fixCtx.skin.bodyEnd)
 		append(fixCtx.skin.htmlEnd)
+		fixCtx.skin.tearDown
 	}
 	
 	override Void elemStart(DocElem elem) {
