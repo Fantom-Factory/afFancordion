@@ -11,7 +11,6 @@ using afBounce
 **  - Linking to [a Fixture instance]`test:CmdTestSuccessTest_Fixture`
 ** 
 class CmdTestSuccessTest : ConTest {
-	Str greeting	:= "Kick Ass!"
 
 	override Void testFixture() {
 		super.testFixture

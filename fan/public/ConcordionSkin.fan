@@ -99,7 +99,7 @@ mixin ConcordionSkin {
 
 	virtual Str cmdFailure(Str expected, Obj? actual, Bool escape := true) {
 		html := escape ? expected.toXml : expected
-		return """<span class="failure"><del class="expected">${html}</del> ${actual?.toStr?.toXml}</span>"""
+		return """<span class="failure"><del class="expected">${html}</del> <span class="actual">${actual?.toStr?.toXml}</span></span>"""
 	}
 
 	virtual Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
