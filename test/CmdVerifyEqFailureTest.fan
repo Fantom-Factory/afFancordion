@@ -14,6 +14,6 @@ class CmdVerifyEqFailureTest : ConTest {
 
 	override Void doTest() {
 		html := Element("span.failure").innerHtml
-		verifyEq(html, "<del class='expected'>Kick Ass!</del> Ooops!")
+		verifyEq(html, "<del class='expected'>Kick Ass!</del><span class='actual'>Ooops!</span>")
 	}
 }
