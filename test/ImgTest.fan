@@ -22,7 +22,6 @@ class ImgTest : ConTest {
 		verifyEq(Element("img")["alt"], "Alien-Head")
 		
 		imgFile := result.fixtureMeta.baseOutputDir + `images/alienFactory.png` 
-		Env.cur.err.printLine(imgFile)
 		verify(imgFile.exists)
 	}
 }
