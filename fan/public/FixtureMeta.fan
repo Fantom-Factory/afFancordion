@@ -17,10 +17,8 @@ const class FixtureMeta {
 	** The base directory of where the generated HTML result files are saved.
 	const File	baseOutputDir
 
-	** The directory where the generated HTML result file will be saved.
-	** 
-	** Defaults to '`%{baseOutputDir}/%{fixtureType.pod.name}/`' 
-	const File	fixtureOutputDir
+	** The file that the generated HTML result file will be saved as.
+	const File	resultFile
 
 	** When the fixture run was started
 	const DateTime StartTime

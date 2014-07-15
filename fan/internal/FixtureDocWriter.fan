@@ -1,7 +1,6 @@
 using fandoc
 
 internal class FixtureDocWriter : DocWriter {
-//	static private const Log 	log			:= Utils.getLog(FixtureDocWriter#)
 	
 	private Bool 	inLink
 	private StrBuf?	linkText
@@ -16,7 +15,6 @@ internal class FixtureDocWriter : DocWriter {
 	}
 	
 	override Void docStart(Doc doc) {
-		fixCtx.skin.setup
 		append(fixCtx.skin.html)
 		append(fixCtx.skin.head)
 		append(fixCtx.skin.headEnd)
@@ -30,7 +28,6 @@ internal class FixtureDocWriter : DocWriter {
 		}		
 		append(fixCtx.skin.bodyEnd)
 		append(fixCtx.skin.htmlEnd)
-		fixCtx.skin.tearDown
 	}
 	
 	override Void elemStart(DocElem elem) {
@@ -148,20 +145,6 @@ internal class FixtureDocWriter : DocWriter {
 				throw Err("WTF is a ${elem.id} element???")
 		}
 	}
-
-//	private Void attr(Str name, Obj val) {
-//		out.writeChar(' ').print(name).print("=\"")
-//		out.writeXml(val.toStr, OutStream.xmlEscQuotes)
-//		out.writeChar('"')
-//	}
-//
-//	private Void safeText(Str s) {
-//		s.each |Int ch| {
-//			if (ch == '<') out.print("&lt;")
-//			else if (ch == '&') out.print("&amp;")
-//			else out.writeChar(ch)
-//		}
-//	}
 	
 	private Void append(Str s) {
 		fixCtx.renderBuf.add(s)

@@ -7,13 +7,13 @@ class ConcordionRunner {
 	private static const Log log	:= Utils.getLog(ConcordionRunner#)
 	
 	** Where the generated HTML result files are saved.
-	File			outputDir		:= Env.cur.tempDir + `concordion/`
+	File		outputDir		:= Env.cur.tempDir + `concordion/`
 	
 	** The skin applied to generated HTML result files.
-	ConcordionSkin	skin			:= ClassicSkin()
+	Type		skinType		:= ClassicSkin#
 	
 	** The commands made available to Concordion tests. 
-	Str:Command		commands		:= Str:Command[:] { caseInsensitive = true }
+	Str:Command	commands		:= Str:Command[:] { caseInsensitive = true }
 		
 	** Creates a 'ConcordionRunner'.
 	new make(|This|? f := null) {
@@ -75,6 +75,7 @@ class ConcordionRunner {
 		
 		if (podName.contains("_"))	podName = "no-name"	// scripts are called `FileName_0`
 		outputDir.createDir(podName)
+		resultFile	:= this.outputDir.plus(podName.toUri, false) + `${fixtureInstance.typeof.name}.html` 
 		
 		fixMeta		:= FixtureMeta() {
 			it.title			= docTitle
@@ -82,13 +83,13 @@ class ConcordionRunner {
 			it.specificationLoc	= specMeta.specificationLoc
 			it.specificationSrc	= specMeta.specificationSrc
 			it.baseOutputDir	= this.outputDir
-			it.fixtureOutputDir	= baseOutputDir.plus(podName.toUri, false)
+			it.resultFile		= resultFile
 			it.StartTime		= startTime
 		}
 		
 		fixCtx		:= FixtureCtx() {
 			it.fixtureInstance	= fixtureInstance
-			it.skin				= this.skin
+			it.skin				= gimmeSomeSkin
 			it.renderBuf		= StrBuf(specMeta.specificationSrc.size * 2)
 			it.errs				= Err[,]
 		}
@@ -105,10 +106,9 @@ class ConcordionRunner {
 				resultHtml	= renderFixture(doc, fixCtx)	// --> RUN THE TEST!!!
 			} catch (Err err) {
 				fixCtx.errs.add(err)
-				resultHtml = fixCtx.skin.defaultErrorPage(err)
+				resultHtml = fixCtx.skin.errorPage(err)
 			}
 			
-			resultFile	:= fixMeta.fixtureOutputDir + `${fixtureInstance.typeof.name}.html` 
 			resultFile.out.print(resultHtml).close
 						
 			result := FixtureResult {
@@ -173,12 +173,23 @@ class ConcordionRunner {
 		log.info(result.resultFile.normalize.osPath)		
 	}
 	
+	** A hook that creates an 'ConcordionSkin' instance.
+	** 
+	** Simply returns 'skinType.make()' by default.
+	virtual ConcordionSkin gimmeSomeSkin() {
+		skinType.make
+	}
+	
 	private Str renderFixture(Doc doc, FixtureCtx fixCtx) {
 		cmds := Commands(commands)
 		fdw	 := FixtureDocWriter(cmds, fixCtx)
-		fdw.docStart(doc)
-		doc.writeChildren(fdw)
-		fdw.docEnd(doc)
+		fixCtx.skin.setup
+		try {
+			fdw.docStart(doc)
+			doc.writeChildren(fdw)
+			fdw.docEnd(doc)
+		} finally
+			fixCtx.skin.tearDown
 		return fixCtx.renderBuf.toStr			
 	}
 }

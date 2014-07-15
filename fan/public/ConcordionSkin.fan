@@ -47,10 +47,11 @@ mixin ConcordionSkin {
 	}
 	virtual Str headEnd() { "</head>\n" }
 	
-	** Starts a '<body>' tag. 
+	** Starts a '<body>' tag and renders the breadcrumbs. 
+	virtual Str body() { "<body>\n" + breadcrumbs }
+	** Ends a '</body>' tag.
+	**  
 	** This also calls 'footer()' and renders the 'scriptUrls' as '<script>' tags.
-	virtual Str body() { "<body>\n" }
-	** Ends a '</body>' tag. 
 	virtual Str bodyEnd() {
 		bodyBuf	:= StrBuf().add(footer)
 
@@ -161,14 +162,31 @@ mixin ConcordionSkin {
 		return """<img src="${srcUrl.encode.toXml}" alt="${alt.toXml}" />"""
 	}
 
+	** Renders the breadcrumbs.
+	virtual Str breadcrumbs() {
+		"""<span class="breadcrumbs">""" + breadcrumbPaths.join(" > ") |text, href| { a(href, text) } + "</span>"
+	}
+	
+	** Returns an ordered map of URLs to fixture titles to use for the breadcrumbs.
+	virtual Uri:Str breadcrumbPaths() {
+		paths := Uri:Str[:] { ordered = true}
+		metas := (FixtureMeta[]) ThreadStack.elements("afConcordion.fixtureMeta")
+		metas.each |meta| {			
+			url := meta.resultFile.normalize.uri.relTo(fixtureMeta.resultFile.parent.normalize.uri)
+			str := meta.title
+			paths[url] = str
+		}
+		return paths
+	}
+	
 	** Renders a footer.
 	** This is (usually) called by 'bodyEnd()'. 
 	** By default it just renders a link to the Concordion website.
 	virtual Str footer() {
 		"<footer>\n" + a(`http://www.fantomfactory.org/pods/afConcordion`, "Concordion v${Pod.of(this).version}") + "</footer>"
 	}
-	
-	
+
+
 	
 	// ---- Test Results --------------------------------------------------------------------------
 	
@@ -197,7 +215,7 @@ mixin ConcordionSkin {
 	** Rendered when a Fixture fails for an unknown reason - like an unknown command.
 	** 
 	** By default this just renders the stack trace.
-	virtual Str defaultErrorPage(Err err) { 
+	virtual Str errorPage(Err err) { 
 """<!DOCTYPE html>
    <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
@@ -225,7 +243,7 @@ mixin ConcordionSkin {
 	virtual FixtureCtx fixtureCtx() {
 		ThreadStack.peek("afConcordion.fixtureCtx")
 	}
-	
+
 	** Copies the given css file to the output dir and adds the resultant URL to 'cssUrls'.
 	virtual Void addCss(File cssFile) {
 		cssUrl	:= copyFile(cssFile, `css/`.plusName(cssFile.name))
@@ -255,7 +273,7 @@ mixin ConcordionSkin {
 		dstFile := fixtureMeta.baseOutputDir + destUrl
 		srcFile.copyTo(dstFile, ["overwrite": false])
 		
-		return dstFile.normalize.uri.relTo(fixtureMeta.fixtureOutputDir.normalize.uri)
+		return dstFile.normalize.uri.relTo(fixtureMeta.resultFile.parent.normalize.uri)
 	}
 	
 	

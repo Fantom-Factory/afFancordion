@@ -17,11 +17,11 @@ class CmdTestSuccessTest : ConTest {
 	}
 
 	override Void doTest() {
-		verifyEq(Element("a")[0]["href"], "CmdTestSuccessTest_Test.html")
-		verifyEq(Element("span.success > a")[0].text, "another Test instance")
+		verifyEq(Element("ul a")[0]["href"], "CmdTestSuccessTest_Test.html")
+		verifyEq(Element("ul span.success > a")[0].text, "another Test instance")
 
-		verifyEq(Element("a")[1]["href"], "CmdTestSuccessTest_Fixture.html")
-		verifyEq(Element("span.success > a")[1].text, "a Fixture instance")
+		verifyEq(Element("ul a")[1]["href"], "CmdTestSuccessTest_Fixture.html")
+		verifyEq(Element("ul span.success > a")[1].text, "a Fixture instance")
 	}
 }
 
