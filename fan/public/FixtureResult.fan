@@ -13,6 +13,8 @@ class FixtureResult {
 	
 	** List of (any) Errs encountered (includes failures) during the fixture run.
 	const Err[] errors
+	
+	// FIXME: duration and rendertimestamp
 
 	internal new make(|This|? in := null) { in?.call(this) }
 	

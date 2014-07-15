@@ -28,6 +28,7 @@ const class FixtureMeta {
 	internal new make(|This|? in := null) { in?.call(this) }
 }
 
+** Contains contextual information about a Condordion fixture.
 class FixtureCtx {
 	
 	** The fixture being run.

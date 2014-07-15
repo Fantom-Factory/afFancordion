@@ -12,6 +12,10 @@ using afBounce
 class CmdSetSuccessTest : ConTest {
 	Str? name := "Wotever"
 	
+	override Void testFixture() {
+		super.testFixture
+	}
+
 	override Void doTest() {
 		Element("span.success")[0].verifyTextEq("Bob")
 		Element("span.success")[1].verifyTextEq("Bob")

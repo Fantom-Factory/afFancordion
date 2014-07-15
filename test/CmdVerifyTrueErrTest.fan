@@ -13,8 +13,12 @@ using afBounce
 class CmdVerifyTrueErrTest : ConTest {
 	Bool isKickAss() { throw Err("Bang!") }
 
+	override Void testFixture() {
+		super.testFixture
+	}
+
 	override Void doTest() {
-		fail := Element("span.failure").innerHtml
+		fail := Element("span.error").innerHtml
 		verifyEq(fail, "<del class='expected'>Kick Ass!</del>")
 		Element("span.exceptionMessage").verifyTextEq("Bang!")
 		input := Element("#stackTraceButton1").html

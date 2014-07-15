@@ -1,192 +1,222 @@
 using fandoc
 
-** Implement to create a skin for generated HTML result files.
+** Implement to create a skin for specification output. 
+** Skins are used by Concordion and its command to generate the HTML result files.
+** 
+** This mixin by default renders bare, but valid, HTML5 code. Override methods to alter the markup generated.
 mixin ConcordionSkin {
 
+	abstract Uri[] cssUrls
+	abstract Uri[] scriptUrls
+	
 	// ---- Setup / Tear Down ---------------------------------------------------------------------
 	
 	** Called before every fixture run.
-	virtual Void setup() {
-		ThreadStack.push("afConcordion.skin.buttonId", 		0)
-		ThreadStack.push("afConcordion.skin.cssUrls", 		Uri[,])
-		ThreadStack.push("afConcordion.skin.scriptUrls",	Uri[,])		
-	}
+	** This should reset any state held by the skin, e.g. the 'cssUrls' and 'scriptUrls'.
+	virtual Void setup() { }
 
 	** Called after every fixture run.
-	virtual Void tearDown() {
-		ThreadStack.pop("afConcordion.skin.buttonId")
-		ThreadStack.pop("afConcordion.skin.cssUrls")
-		ThreadStack.pop("afConcordion.skin.scriptUrls")
-		ThreadStack.pop("afConcordion.skin.headIndex")
-	}
+	** This should reset / cleardown any state held by the skin, e.g. the 'cssUrls' and 'scriptUrls'.
+	virtual Void tearDown() { }
 	
-	
+
 	
 	// ---- HTML Methods --------------------------------------------------------------------------
 	
-	** Render
+	** Starts a '<html>' tag - this should also render the DOCTYPE.
+	** 
+	** Note that XHTML5 documents require the 'xmlns':
+	** 
+	**   <html xmlns="http://www.w3.org/1999/xhtml"> 
 	virtual Str html() {
-		return """<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n"""	// TODO: VOID TAG!
+		"""<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n"""
 	}
+	** Ends a '<html>' tag. 
+	** This also renders the 'cssUrls' as link tags into the '<head>'.
 	virtual Str htmlEnd() {
-		// Add CSS links to the <head> tag
-		headBuf	:= StrBuf()
-		headIdx := ThreadStack.peek("afConcordion.skin.headIndex")
-		cssUrls	:= (Uri[]) ThreadStack.peek("afConcordion.skin.cssUrls")
-		cssUrls.each { headBuf.add(link(it)) }
-		renderBuf.insert(headIdx, headBuf.toStr)
+		// insert the CSS links to the <head> tag
+		headIdx := renderBuf.toStr.index("</head>")
+		cssUrls.eachr { renderBuf.insert(headIdx, link(it)) }
 		
-		return """</html>\n"""
+		return "</html>\n"
 	}
 	
+	** Starts a <head> tag - this should also render a <title> tag.
 	virtual Str head() {
-		buf	:= StrBuf()
-		buf.add("<head>\n")
-		buf.add("\t<title>${fixtureMeta.title.toXml} : Concordion</title>\n")
-
-		addCss(`fan://afConcordion/res/classicSkin/concordion.css`.get)
-		addScript(`fan://afConcordion/res/classicSkin/visibility-toggler.js`.get)
-		
-		ThreadStack.push("afConcordion.skin.headIndex", renderBuf.size + buf.size)
-		return buf.toStr
+		"<head>\n\t<title>${fixtureMeta.title.toXml} : Concordion</title>\n"
 	}
 	virtual Str headEnd() { "</head>\n" }
 	
-	virtual Str body() { "<body>\n\t<main>\n" }
+	** Starts a '<body>' tag. 
+	** This also calls 'footer()' and renders the 'scriptUrls' as '<script>' tags.
+	virtual Str body() { "<body>\n" }
+	** Ends a '</body>' tag. 
 	virtual Str bodyEnd() {
-		bodyBuf	:= StrBuf().add("\t</main>\n")
-		
-		bodyBuf.add(footer)
+		bodyBuf	:= StrBuf().add(footer)
 
-		// Add script tags to the end of <body>
-		scriptUrls	:= (Uri[]) ThreadStack.peek("afConcordion.skin.scriptUrls")
+		// render the script tags
 		scriptUrls.each { bodyBuf.add(script(it)) }
 
 		return bodyBuf.add("</body>\n").toStr
 	}
 	
+	** Starts an *example* section.
+	** By default this returns a 'div' with the class 'example':
+	** 
+	**   <div class="example">
 	virtual Str example() 		{ """<div class="example">\n""" }
+	** Ends an *example* section.
+	** By default this ends a div:
+	** 
+	**   </div>
 	virtual Str exampleEnd()	{ "</div>\n" }
 
+	** Starts a heading tag, e.g. '<h1>'
 	virtual Str heading(Int level, Str title, Str? anchorId) {
 		id := (anchorId == null) ? Str.defVal : " id=\"${anchorId.toXml}\"" 
 		return "<h${level}${id}>"
 	}
+	** Ends a heading tag, e.g. '</h1>'
 	virtual Str headingEnd(Int level) {
 		"""</h${level}>\n"""
 	}
 
+	** Starts a '<p>' tag.
+	** The admonition is added as a class (lowercase):
+	** 
+	**   LEAD: Here I am  --> <p class="lead">Here I am</p>
 	virtual Str p(Str? admonition) { admonition == null ? "<p>" : """<p class="${admonition.lower.toXml}">""" }
+	** Ends a '</p>' tag.
 	virtual Str pEnd() { "</p>\n" }
 
+	** Starts a '<pre>' tag.
 	virtual Str pre() 			{ "<pre>" }
+	** Ends a '</pre>' tag.
 	virtual Str preEnd()		{ "</pre>\n" }
 	
+	** Starts a '<blockquote>' tag.
 	virtual Str blockQuote()	{ "<blockquote>" }
+	** Ends a '</blockquote>' tag.
 	virtual Str blockQuoteEnd() { "</blockquote>\n" }
 	
+	** Starts an '<ol>' tag.
+	** By default the list style is added as a CSS style attribute:
+	** 
+	**    <ol style="list-style-type: upper-roman;">
 	virtual Str ol(OrderedListStyle style)	{ """<ol style="list-style-type: ${style.htmlType};">""" }
+	** Ends an '</ol>' tag.
 	virtual Str olEnd() 		{ "</ol>" }
 	
+	** Starts a '<ul>' tag.
 	virtual Str ul()			{ "<ul>" }
+	** Ends a '</ul>' tag.
 	virtual Str ulEnd() 		{ "</ul>\n" }
 	
+	** Starts a '<li>' tag.
 	virtual Str li()			{ "<li>" }
+	** Ends a '</li>' tag.
 	virtual Str liEnd() 		{ "</li>\n" }
 	
+	** Starts an '<emphasis>' tag.
 	virtual Str emphasis()		{ "<emphasis>" }
+	** Ends an '</emphasis>' tag.
 	virtual Str emphasisEnd()	{ "</emphasis>" }
 	
+	** Starts an '<strong>' tag.
 	virtual Str strong()		{ "<strong>" }
+	** Ends an '</strong>' tag.
 	virtual Str strongEnd()		{ "</strong>" }
 	
+	** Starts an '<code>' tag.
 	virtual Str code()			{ "<code>" }
+	** Ends an '</code>' tag.
 	virtual Str codeEnd()		{ "</code>" }
 	
 	
 	
 	// ---- Un-Matched HTML ---------------------
 
-	virtual Str link(Uri href)			{ """<link rel="stylesheet" type="text/css" href="${href.encode.toXml}" />\n""" }	// TODO: VOID TAG!
+	** Renders a complete '<link>' tag. 
+	** 
+	** Note that in HTML5 the '<link>' tag is a [Void element]`http://www.w3.org/TR/html5/syntax.html#void-elements` and may be self closing. 
+	virtual Str link(Uri href)			{ """<link rel="stylesheet" type="text/css" href="${href.encode.toXml}" />\n""" }
 	
+	** Renders a complete '<script>' tag.
+	** 
+	** Note that in HTML5 the '<script>' tag is NOT a [Void element]`http://www.w3.org/TR/html5/syntax.html#void-elements` and therefore MUST not be self colsing. 
 	virtual Str script(Uri src)			{ """<script type="text/javascript" src="${src.encode.toXml}"></script>\n""" }
 	
+	** Renders a complete '<a>' tag.
 	virtual Str a(Uri href, Str text) 	{ """<a href="${href.encode.toXml}">${text.toXml}</a>""" }
 	
+	** Renders the given text. 
+	** By default the text is XML escaped.
 	virtual Str text(Str text)			{ text.toXml }
 
+	** Renders a complete '<img>' tag. 
+	** 
+	** Note that in HTML5 the '<img>' tag is a [Void element]`http://www.w3.org/TR/html5/syntax.html#void-elements` and may be self closing. 
 	virtual Str img(Uri src, Str alt)	{
 		srcUrl := copyFile(src.get, `images/`.plusName(src.name))
-		return """<img src="${srcUrl.encode.toXml}" alt="${alt.toXml}" />""" 		// TODO: VOID TAG!
+		return """<img src="${srcUrl.encode.toXml}" alt="${alt.toXml}" />"""
 	}
 
+	** Renders a footer.
+	** This is (usually) called by 'bodyEnd()'. 
+	** By default it just renders a link to the Concordion website.
 	virtual Str footer() {
-		buf := StrBuf()
-		ver	:= Pod.of(this).version
-		now := DateTime.now(1sec).toLocale("D MMM YYYY, k:mmaa zzzz 'Time'")
-		dur := DateTime.now(null) - fixtureMeta.StartTime
-		buf.add("<footer>\n")
-		buf.add("""\tResults generated by <a href="http://www.fantomfactory.org/pods/afConcordion" style="font-weight: bold; text-decoration: none; color: #89C;">Concordion v${ver}</a>\n""")
-		buf.add("""\t<div class="testTime">in ${dur.toLocale} on ${now}</div>\n""")
-		buf.add("</footer>\n")
-		return buf.toStr
+		"<footer>\n" + a(`http://www.fantomfactory.org/pods/afConcordion`, "Concordion v${Pod.of(this).version}") + "</footer>"
 	}
 	
 	
 	
 	// ---- Test Results --------------------------------------------------------------------------
 	
+	** Called to render a command success.
 	virtual Str cmdSuccess(Str expected, Bool escape := true) {
 		html := escape ? expected.toXml : expected
 		return """<span class="success">${html}</span>"""
 	}
 
+	** Called to render a command failure.
 	virtual Str cmdFailure(Str expected, Obj? actual, Bool escape := true) {
 		html := escape ? expected.toXml : expected
 		return """<span class="failure"><del class="expected">${html}</del> <span class="actual">${actual?.toStr?.toXml}</span></span>"""
 	}
 
+	** Called to render a command error.
 	virtual Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
-		newButtonId := buttonId + 1
-		ThreadStack.pop("afConcordion.skin.buttonId")
-		ThreadStack.push("afConcordion.skin.buttonId", newButtonId)
-
-		stack := err.traceToStr.splitLines.join("") { "<span class=\"stackTraceEntry\">${it}</span>\n" }
-		return
-		"""<span class="failure">
-		     <del class="expected">${cmdText.toXml}</del>
-		   </span>
-		   <span class="exceptionMessage">${err.msg.toXml}</span>
-		   <input id="stackTraceButton${buttonId}" type="button" class="stackTraceButton" onclick="javascript:toggleStackTrace('${buttonId}')" value="View Stack" />
-		   <span class="stackTrace" id="stackTrace${buttonId}">
-		     <span>While evaluating command: <code>${cmdUrl}</code></span>
-		     <span class="stackTraceExceptionMessage">${err.typeof} : ${err.msg}</span>
-		     ${stack}
-		   </span>
-		   """
+		"""<span class="error"><del class="expected">${cmdText.toXml}</del> <span class="actual">${err.msg.toXml}</span></span>"""
 	}
 	
-	
+	** Custom commands may use this method as a generic hook into the skin.
+	** 
+	** By default this method returns an empty string.
+	virtual Str cmdHook(Uri cmdUrl, Str cmdText, Obj?[]? data) { Str.defVal }
+
+
 	
 	// ---- Helper Methods ------------------------------------------------------------------------
 	
+	** Returns meta associated with the current fixture.
 	virtual FixtureMeta fixtureMeta() {
 		ThreadStack.peek("afConcordion.fixtureMeta")
 	}
 
+	** Returns the context associated with the current fixture.
 	virtual FixtureCtx fixtureCtx() {
 		ThreadStack.peek("afConcordion.fixtureCtx")
 	}
 	
+	** Copies the given css file to the output dir and adds the resultant URL to 'cssUrls'.
 	virtual Void addCss(File cssFile) {
 		cssUrl	:= copyFile(cssFile, `css/`.plusName(cssFile.name))
-		cssUrls	:= (Uri[]) ThreadStack.peek("afConcordion.skin.cssUrls")
 		cssUrls.add(cssUrl)
 	}
 
+	** Copies the given script file to the output dir and adds the resultant URL to 'scriptUrls'.
 	virtual Void addScript(File scriptFile) {
 		scriptUrl	:= copyFile(scriptFile, `scripts/`.plusName(scriptFile.name))
-		scriptUrls	:= (Uri[]) ThreadStack.peek("afConcordion.skin.scriptUrls")
 		scriptUrls.add(scriptUrl)
 	}
 
@@ -213,16 +243,7 @@ mixin ConcordionSkin {
 	
 	// ---- Private Helpers -----------------------------------------------------------------------
 	
-	private Int buttonId() {
-		ThreadStack.peek("afConcordion.skin.buttonId")
-	}
-
 	private StrBuf renderBuf() {
 		fixtureCtx.renderBuf
 	}
-}
-
-class ClassicSkin : ConcordionSkin { 
-	
-	
 }

@@ -12,6 +12,10 @@ using afBounce
 class CmdVerifyTrueFailureTest : ConTest {
 	Bool isKickAss	:= false
 
+	override Void testFixture() {
+		super.testFixture
+	}
+
 	override Void doTest() {
 		html := Element("span.failure").innerHtml
 		verifyEq(html, "<del class='expected'>Kick Ass!</del><span class='actual'>false</span>")
