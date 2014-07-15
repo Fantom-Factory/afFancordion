@@ -13,6 +13,10 @@ internal const class ErrMsgs {
 		"Could not find Verify command '${cmd}'"
 	}
 
+	static Str specFinder_couldNotFindSpec(Type fixtureType) {
+		stripSys("Could not find a specification for fixture '${fixtureType.qname}'")
+	}
+
 	private static Str stripSys(Str str) {
 		str.replace("sys::", "")
 	}

@@ -19,7 +19,7 @@ internal const class SpecificationFinder {
 		if (src != null)
 			return src
 		
-		throw Err("Could not find fandoc for Type ${fixtureType.qname}")	// TODO: move err msg
+		throw Err(ErrMsgs.specFinder_couldNotFindSpec(fixtureType))
 	}
 
 	SpecificationMeta? findFromTypeFandoc(Type fixtureType) {
