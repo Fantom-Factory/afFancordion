@@ -1,6 +1,18 @@
 
 internal const class ErrMsgs {
 
+	static Str urlMustBePathOnly(Str type, Uri url, Uri example) {
+		"${type} URL `${url}` must ONLY be a path. e.g. `${example}`"
+	}
+
+	static Str urlMustNotStartWithSlash(Str type, Uri url, Uri example) {
+		"${type} URL `${url}` must NOT start with a slash. e.g. `${example}`"
+	}
+
+	static Str urlMustNotEndWithSlash(Str type, Uri url, Uri example) {
+		"${type} URL `${url}` must NOT end with a slash. e.g. `${example}`"
+	}
+
 	static Str fixtureFacetNotFound(Type fixtureType) {
 		stripSys("Could not find facet '@Fixture' on instance '${fixtureType.qname}'")
 	}
@@ -17,6 +29,10 @@ internal const class ErrMsgs {
 		stripSys("Could not find a specification for fixture '${fixtureType.qname}'")
 	}
 
+	static Str cmdTest_fixtureNotFound(Str fixtureType) {
+		"Could not find Fixture '${fixtureType}'"
+	}
+	
 	private static Str stripSys(Str str) {
 		str.replace("sys::", "")
 	}

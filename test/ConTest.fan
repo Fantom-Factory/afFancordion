@@ -9,6 +9,7 @@ abstract class ConTest : Test, FixtureTest {
 	override Void testFixture() {
 		this.result = ConcordionRunner().runFixture(this)
 
+		echo(result.resultHtml)
 		Actor.locals["afBounce.sizzleDoc"] = SizzleDoc.fromStr(result.resultHtml)
 		doTest
 		Actor.locals.remove("afBounce.sizzleDoc")

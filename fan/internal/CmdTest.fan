@@ -1,19 +1,21 @@
 
 internal class CmdTest : Command {
 	
-	override Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {		
-		testPod := fixCtx.fixtureInstance.typeof.pod
+	override Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+		typeName	:= cmdUrl.pathStr
 		
-		// TODO: allow qnames to test multiple pods
-		// maybe not - 'cos then we also need to qualify the output file name
-		newType		:= testPod.type(cmdUrl.pathStr, false)
+		newType 
+			:= (typeName.contains("::")) 
+			? Type.find(typeName, false)
+			: fixCtx.fixtureInstance.typeof.pod?.type(typeName, false)
+
 		if (newType == null) {
 			// TODO: scan file system for type and load fixture as script
 			// but currently our runner is only launched via fant which only runs from a pod 
 			// actually - that's a lie, fant can run scripts too! - http://fantom.org/doc/docTools/Fant.html#running
-			throw Err("Wot no Fixture?")
+			throw Err(ErrMsgs.cmdTest_fixtureNotFound(typeName))
 		}
-		
+	
 		// ensure it's a fixture so we have an output HTML file to link to
 		// we could link to unit tests - but then we'd need to make it look pretty.
 		// save it for the next project - or a plugin!

@@ -1,8 +1,10 @@
 
 
+qnmaes
+images copy
+
 Breadcrumbs
 
-execute cmd, copy type coercer over for method param
 
 run command 
 echo command
