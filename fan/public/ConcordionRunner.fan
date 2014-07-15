@@ -46,14 +46,18 @@ class ConcordionRunner {
 			// when multiple tests (e.g. a pod) are run with fant we have NO way of knowing which is 
 			// the last test because sadly fant has no hooks. So for a clean teardown the best we can
 			// do is a shutdown hook.
+			// AND Actor.locals() has been cleaned up by the time we get here, so we need to keep our
+			// own references.
+			safeRunner 	 := Unsafe(locals.originalRunner)
+			safeResults	 := Unsafe(locals.resultsCache)
 			shutdownHook := |->| { 
-				Locals.instance.originalRunner?.suiteTearDown
+				((ConcordionRunner) safeRunner.val).suiteTearDown(safeResults.val)
 				Locals.instance.shutdownHook = null
 				Locals.instance.resultsCache = null
 			}
 			Env.cur.addShutdownHook(shutdownHook)
 			
-			// stick the hook in Actor locals incase someone wants to remove it
+			// stick the hook in Actor locals in case someone wants to remove it
 			locals.shutdownHook = shutdownHook
 		}
 		
@@ -96,7 +100,13 @@ class ConcordionRunner {
 					
 			fixtureSetup()
 			
-			resultHtml	:= renderFixture(doc, fixCtx)	// --> RUN THE TEST!!!
+			resultHtml := (Str?) null
+			try {
+				resultHtml	= renderFixture(doc, fixCtx)	// --> RUN THE TEST!!!
+			} catch (Err err) {
+				fixCtx.errs.add(err)
+				resultHtml = fixCtx.skin.defaultErrorPage(err)
+			}
 			
 			resultFile	:= fixMeta.fixtureOutputDir + `${fixtureInstance.typeof.name}.html` 
 			resultFile.out.print(resultHtml).close
@@ -116,9 +126,6 @@ class ConcordionRunner {
 			return result
 			
 		} finally {
-			if (firstFixture)
-				suiteTearDown()
-
 			ThreadStack.pop("afConcordion.runner")
 			ThreadStack.pop("afConcordion.fixtureMeta")
 			ThreadStack.pop("afConcordion.fixtureCtx")
@@ -130,14 +137,28 @@ class ConcordionRunner {
 	** By default this empties the output dir. 
 	virtual Void suiteSetup() {
 		// wipe the slate clean to begin with
-		outputDir.delete
-		outputDir.create
+		try {
+			outputDir.delete
+			outputDir.create
+		} catch (Err err) {
+			Env.cur.err.printLine
+			Env.cur.err.printLine("*******************************************************************************")
+			Env.cur.err.printLine("** ${err.msg}")
+			Env.cur.err.printLine("*******************************************************************************")
+			Env.cur.err.printLine
+		}
 	}
 
 	** Called after the last fixture has run.
 	** 
 	** By default does nothing. 
-	virtual Void suiteTearDown() { }
+	virtual Void suiteTearDown(Type:FixtureResult resultsCache) {
+		indexFile := outputDir + `index.html`
+		if (!indexFile.exists) {
+			url := resultsCache.vals.first.resultFile.uri.relTo(outputDir.uri)
+			indexFile.out.print("""<html><head><meta http-equiv="refresh" content="0; url=${url.encode.toXml}" /></head></html>""").close
+		}
+	}
 
 	** Called before every fixture.
 	** 
@@ -149,7 +170,7 @@ class ConcordionRunner {
 	** By default prints the location of the result file. 
 	virtual Void fixtureTearDown(FixtureResult result) {
 		// TODO: print something better
-		log.info(result.resultFile.normalize.osPath)
+		log.info(result.resultFile.normalize.osPath)		
 	}
 	
 	private Str renderFixture(Doc doc, FixtureCtx fixCtx) {

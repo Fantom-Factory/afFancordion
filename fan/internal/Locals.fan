@@ -14,7 +14,7 @@ internal class Locals {
 	}
 	
 	[Type:FixtureResult]? resultsCache {
-		get { getOrAdd("afConcordion.resultsCache", Type:FixtureResult[:]) }
+		get { getOrAdd("afConcordion.resultsCache", Type:FixtureResult[:] { ordered=true }) }
 		set { set("afConcordion.resultsCache", it) }		
 	}
 
