@@ -1,4 +1,3 @@
-using concurrent
 
 ** Implement to create a skin for generated HTML result files.
 mixin ConcordionSkin {
@@ -7,24 +6,24 @@ mixin ConcordionSkin {
 	
 	virtual Str html() {
 		// TODO: split into setup & teardown
-		Actor.locals["afConcordion.skin.buttonId"] 		= 0
-		Actor.locals["afConcordion.skin.cssUrls"]		= Uri[,]
-		Actor.locals["afConcordion.skin.scriptUrls"]	= Uri[,]
+		ThreadStack.push("afConcordion.skin.buttonId", 0)
+		ThreadStack.push("afConcordion.skin.cssUrls", Uri[,])
+		ThreadStack.push("afConcordion.skin.scriptUrls", Uri[,])
 		return """<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n"""
 	}
 	virtual Str htmlEnd() {
 		// TODO: split into teardown and htmlEnd
 		// Add CSS links to the <head> tag
 		headBuf	:= StrBuf()
-		headIdx := Actor.locals["afConcordion.skin.headIndex"]
-		cssUrls	:= (Uri[]) Actor.locals["afConcordion.skin.cssUrls"]
+		headIdx := ThreadStack.peek("afConcordion.skin.headIndex")
+		cssUrls	:= (Uri[]) ThreadStack.peek("afConcordion.skin.cssUrls")
 		cssUrls.each { headBuf.add(link(it)) }
 		renderBuf.insert(headIdx, headBuf.toStr)
 		
-		Actor.locals.remove("afConcordion.skin.buttonId")
-		Actor.locals.remove("afConcordion.skin.cssUrls")
-		Actor.locals.remove("afConcordion.skin.scriptUrls")
-		Actor.locals.remove("afConcordion.skin.headIndex")
+		ThreadStack.pop("afConcordion.skin.buttonId")
+		ThreadStack.pop("afConcordion.skin.cssUrls")
+		ThreadStack.pop("afConcordion.skin.scriptUrls")
+		ThreadStack.pop("afConcordion.skin.headIndex")
 		return """</html>\n"""
 	}
 	
@@ -36,7 +35,7 @@ mixin ConcordionSkin {
 		addCss(`fan://afConcordion/res/concordion.css`.get)
 		addScript(`fan://afConcordion/res/visibility-toggler.js`.get)
 		
-		Actor.locals["afConcordion.skin.headIndex"] = renderBuf.size + buf.size
+		ThreadStack.push("afConcordion.skin.headIndex", renderBuf.size + buf.size)
 		return buf.toStr
 	}
 	virtual Str headEnd() {
@@ -60,12 +59,23 @@ mixin ConcordionSkin {
 		bodyBuf.add(footer)
 
 		// Add script tags to the end of <body>
-		scriptUrls	:= (Uri[]) Actor.locals["afConcordion.skin.scriptUrls"]
+		scriptUrls	:= (Uri[]) ThreadStack.peek("afConcordion.skin.scriptUrls")
 		scriptUrls.each { bodyBuf.add(script(it)) }
 
 		return bodyBuf.add("</body>\n").toStr
 	}
 	
+	virtual Str a(Uri href, Str text) {
+		"""<a href="${href}">${text.toXml}</a>"""
+	}
+	
+	virtual Str example() {
+		"""<div class="example">\n"""
+	}
+	virtual Str exampleEnd() {
+		"""</div>\n"""
+	}
+
 	virtual Str footer() {
 		buf := StrBuf()
 		ver	:= Pod.of(this).version
@@ -78,27 +88,25 @@ mixin ConcordionSkin {
 		return buf.toStr
 	}
 	
-	virtual Str example() {
-		"""<div class="example">\n"""
-	}
-	virtual Str exampleEnd() {
-		"""</div>\n"""
-	}
-	
 	
 	
 	// ---- Test Results --------------------------------------------------------------------------
 	
-	virtual Str cmdSuccess(Str expected) {
-		"""<span class="success">${expected.toXml}</span>"""
+	virtual Str cmdSuccess(Str expected, Bool escape := true) {
+		html := escape ? expected.toXml : expected
+		return """<span class="success">${html}</span>"""
 	}
 
-	virtual Str cmdFailure(Str expected, Obj? actual) {
-		"""<span class="failure"><del class="expected">${expected.toXml}</del> ${actual?.toStr?.toXml}</span>"""
+	virtual Str cmdFailure(Str expected, Obj? actual, Bool escape := true) {
+		html := escape ? expected.toXml : expected
+		return """<span class="failure"><del class="expected">${html}</del> ${actual?.toStr?.toXml}</span>"""
 	}
 
 	virtual Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
-		Actor.locals["afConcordion.skin.buttonId"] = buttonId + 1
+		newButtonId := buttonId + 1
+		ThreadStack.pop("afConcordion.skin.buttonId")
+		ThreadStack.push("afConcordion.skin.buttonId", newButtonId)
+
 		stack := err.traceToStr.splitLines.join("") { "<span class=\"stackTraceEntry\">${it}</span>\n" }
 		return
 		"""<span class="failure">
@@ -119,22 +127,22 @@ mixin ConcordionSkin {
 	// ---- Helper Methods ------------------------------------------------------------------------
 	
 	virtual FixtureMeta fixtureMeta() {
-		Actor.locals["afConcordion.fixtureMeta"]
+		ThreadStack.peek("afConcordion.fixtureMeta")
 	}
 
 	virtual FixtureCtx fixtureCtx() {
-		Actor.locals["afConcordion.fixtureCtx"]
+		ThreadStack.peek("afConcordion.fixtureCtx")
 	}
 	
 	virtual Void addCss(File cssFile) {
 		cssUrl	:= copyFile(cssFile, `css/`.plusName(cssFile.name))
-		cssUrls	:= (Uri[]) Actor.locals["afConcordion.skin.cssUrls"]
+		cssUrls	:= (Uri[]) ThreadStack.peek("afConcordion.skin.cssUrls")
 		cssUrls.add(cssUrl)
 	}
 
 	virtual Void addScript(File scriptFile) {
 		scriptUrl	:= copyFile(scriptFile, `scripts/`.plusName(scriptFile.name))
-		scriptUrls	:= (Uri[]) Actor.locals["afConcordion.skin.scriptUrls"]
+		scriptUrls	:= (Uri[]) ThreadStack.peek("afConcordion.skin.scriptUrls")
 		scriptUrls.add(scriptUrl)
 	}
 
@@ -162,7 +170,7 @@ mixin ConcordionSkin {
 	// ---- Private Helpers -----------------------------------------------------------------------
 	
 	private Int buttonId() {
-		Actor.locals["afConcordion.skin.buttonId"]
+		ThreadStack.peek("afConcordion.skin.buttonId")
 	}
 
 	private StrBuf renderBuf() {

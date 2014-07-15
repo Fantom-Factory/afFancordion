@@ -1,7 +1,6 @@
 using fandoc
 using afBeanUtils
 using afPlastic
-using concurrent
 
 ** Runs Concordion fixtures.
 class ConcordionRunner {
@@ -37,35 +36,28 @@ class ConcordionRunner {
 
 	** Runs the given Concordion fixture.
 	FixtureResult runFixture(Obj fixtureInstance) {
-		// we want the fixture _instance_ for if it is a test, the setup has already been done...@~£%]&? 
-		// TODO: Need use case for needing to -> simple, we verify and test against stuff in setup()!  
-		// Oh, and verify cmd uses it to notch up the verify count 
+		// we need the fixture *instance* so it can have any state, 
+		// and if a Test instance, verify cmd uses it to notch up the verify count
+
 		if (!fixtureInstance.typeof.hasFacet(Fixture#))
 			throw ArgErr(ErrMsgs.fixtureFacetNotFound(fixtureInstance.typeof))		
 
-		if (!Actor.locals.containsKey("afConcordion.runner")) {
-			setup()
-			Actor.locals["afConcordion.runner"] = this
+		firstFixture := false
+		if (ThreadStack.peek("afConcordion.runner", false) == null) {
+			firstFixture = true
+			suiteSetup()
 		}
 
 		startTime	:= DateTime.now(null)
 		specMeta	:= SpecificationFinder().findSpecification(fixtureInstance.typeof)
-		
 		doc			:= FandocParser().parseStr(specMeta.specificationSrc)
 		docTitle	:= doc.findHeadings.first?.title ?: specMeta.fixtureType.name.fromDisplayName
-
-		
 		
 		if (specMeta.specificationLoc.parent.name == "test")
 			baseDir = baseDir + `test/`
 		if (specMeta.specificationLoc.parent.name == "spec")
 			baseDir = baseDir + `spec/`
 		
-//		fixBuilder	:= BeanFactory(specMeta.fixtureType)
-//		fixBuilder.set(FixtureHelper#_concordion_skin, skin)
-//		fixBuilder.set(FixtureHelper#_concordion_fixture, fixtureInstance)
-//		fixHelper	:= (FixtureHelper) fixBuilder.create
-
 		fixMeta		:= FixtureMeta() {
 			it.title			= docTitle
 			it.fixtureType		= specMeta.fixtureType
@@ -82,48 +74,69 @@ class ConcordionRunner {
 			it.renderBuf		= StrBuf(specMeta.specificationSrc.size * 2)
 			it.errs				= Err[,]
 		}
-
-
 		
-		Actor.locals["afConcordion.fixtureMeta"]	= fixMeta
-		Actor.locals["afConcordion.fixtureCtx"]		= fixCtx
 		try {
-			
-			// TODO: have a fixture setup / teardown
+			ThreadStack.push("afConcordion.runner", this)
+			ThreadStack.push("afConcordion.fixtureMeta", fixMeta)
+			ThreadStack.push("afConcordion.fixtureCtx", fixCtx)
+					
+			fixtureSetup()
 			
 			resultHtml	:= renderFixture(doc, fixCtx)	// --> RUN THE TEST!!!
 			
-			// TODO: maintain dir structure of output files
 			resultFile	:= outputDir + `${fixtureInstance.typeof.name}.html` 
-			wtf 		:= resultFile.out.print(resultHtml).close
-			
-			// TODO: print something better
-			log.info(resultFile.normalize.toStr)
-			
-			return FixtureResult {
+			resultFile.out.print(resultHtml).close
+						
+			result := FixtureResult {
 				it.fixtureMeta	= fixMeta
 				it.resultHtml	= resultHtml
 				it.resultFile 	= resultFile
 				it.errors		= fixCtx.errs
 			}
 			
-		} finally {
-			Actor.locals.remove("afConcordion.fixtureMeta")
-			Actor.locals.remove("afConcordion.fixtureCtx")
+			fixtureTearDown(result)
+
+			return result
 			
-			// FIXME: have a suite teardown
+		} finally {
+			if (firstFixture)
+				suiteTearDown()
+
+			ThreadStack.pop("afConcordion.runner")
+			ThreadStack.pop("afConcordion.fixtureMeta")
+			ThreadStack.pop("afConcordion.fixtureCtx")
 		}
-		
-		return FixtureResult()
 	}
 	
-	** Called when the first fixture is run. 
-	virtual Void setup() {
+	** Called before the first fixture is run.
+	** 
+	** By default this empties the output dir. 
+	virtual Void suiteSetup() {
+		// FIXME: with multiple tests in fant - this gets run every time!
 		// wipe the slate clean to begin with
 		outputDir.delete
 		outputDir.create
+		
+		Env.cur.err.printLine("Suite Setup!")
 	}
-	
+
+	** Called after the last fixture has run.
+	** 
+	** By default does nothing. 
+	virtual Void suiteTearDown() { }
+
+	** Called before every fixture.
+	** 
+	** By default does nothing. 
+	virtual Void fixtureSetup() { }
+
+	** Called after every fixture.
+	** 
+	** By default prints the location of the result file. 
+	virtual Void fixtureTearDown(FixtureResult result) {
+		// TODO: print something better
+		log.info(result.resultFile.normalize.osPath)
+	}
 	
 	private Str renderFixture(Doc doc, FixtureCtx fixCtx) {
 		cmds := Commands(commands)
