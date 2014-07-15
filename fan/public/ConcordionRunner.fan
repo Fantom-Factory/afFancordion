@@ -1,6 +1,7 @@
 using fandoc
 using afBeanUtils
 using afPlastic
+using concurrent
 
 ** Runs Concordion fixtures.
 class ConcordionRunner {
@@ -18,7 +19,7 @@ class ConcordionRunner {
 	
 	** The commands made available to Concordion tests. 
 	Str:Command		commands		:= Str:Command[:] { caseInsensitive = true }
-	
+		
 	** Creates a 'ConcordionRunner'.
 	new make(|This|? f := null) {
 		commands["verify"]	= CmdVerify()
@@ -28,10 +29,8 @@ class ConcordionRunner {
 		commands["https"]	= CmdLink()
 		commands["file"]	= CmdLink()
 		commands["test"]	= CmdTest()
-		
+
 		f?.call(this)
-		
-		// TODO: work out what baseDir should be if running tests from a pod
 	}
 
 	** Runs the given Concordion fixture.
@@ -46,7 +45,18 @@ class ConcordionRunner {
 		if (ThreadStack.peek("afConcordion.runner", false) == null) {
 			firstFixture = true
 			suiteSetup()
+
+			// when multiple tests (e.g. a pod) are run with fant we have NO way of knowing which is 
+			// the last test because sadly fant has no hooks. So for a clean teardown the best we can
+			// do is a shutdown hook.
+			unsafeThis := Unsafe(this)
+			shutdownHook := |->| { ((ConcordionRunner) unsafeThis.val).suiteTearDown }
+			Env.cur.addShutdownHook(shutdownHook)
+			
+			// stick the hook in Actor locals incase someone wants to remove it
+			Actor.locals["afConcordion.shutdownHook"] = shutdownHook
 		}
+		
 
 		startTime	:= DateTime.now(null)
 		specMeta	:= SpecificationFinder().findSpecification(fixtureInstance.typeof)
@@ -94,6 +104,9 @@ class ConcordionRunner {
 				it.errors		= fixCtx.errs
 			}
 			
+			// keep the last result in Actor locals, mainly so CmdTest can use the filename
+			Actor.locals["afConcordion.lastResult"] = result
+
 			fixtureTearDown(result)
 
 			return result
@@ -116,8 +129,6 @@ class ConcordionRunner {
 		// wipe the slate clean to begin with
 		outputDir.delete
 		outputDir.create
-		
-		Env.cur.err.printLine("Suite Setup!")
 	}
 
 	** Called after the last fixture has run.

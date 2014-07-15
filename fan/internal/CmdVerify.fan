@@ -67,8 +67,7 @@ abstract class CmdVerifyHelper {
 
 			} catch (Err err) {
 				fixCtx.errs.add(err)
-				html := fixCtx.skin.cmdFailure(cmdText, actual)
-				fixCtx.renderBuf.add(html)
+				fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdText, actual))
 			}
 			
 		} catch (Err err) {
