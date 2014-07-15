@@ -1,3 +1,4 @@
+using fandoc
 
 ** Implement to create a skin for generated HTML result files.
 mixin ConcordionSkin {
@@ -30,7 +31,7 @@ mixin ConcordionSkin {
 	virtual Str head() {
 		buf	:= StrBuf()
 		buf.add("<head>\n")
-		buf.add("\t<title>${fixtureMeta.title} : Concordion</title>\n")
+		buf.add("\t<title>${fixtureMeta.title.toXml} : Concordion</title>\n")
 
 		addCss(`fan://afConcordion/res/concordion.css`.get)
 		addScript(`fan://afConcordion/res/visibility-toggler.js`.get)
@@ -38,21 +39,9 @@ mixin ConcordionSkin {
 		ThreadStack.push("afConcordion.skin.headIndex", renderBuf.size + buf.size)
 		return buf.toStr
 	}
-	virtual Str headEnd() {
-		"""</head>\n"""
-	}
-
-	virtual Str link(Uri href) {
-		"""<link rel="stylesheet" type="text/css" href="${href}" />\n"""
-	}
+	virtual Str headEnd() { "</head>\n" }
 	
-	virtual Str script(Uri src) {
-		"""<script type="text/javascript" src="${src}"></script>\n"""
-	}
-	
-	virtual Str body() {
-		"""<body>\n\t<main>\n"""
-	}
+	virtual Str body() { "<body>\n\t<main>\n" }
 	virtual Str bodyEnd() {
 		bodyBuf	:= StrBuf().add("\t</main>\n")
 		
@@ -65,16 +54,57 @@ mixin ConcordionSkin {
 		return bodyBuf.add("</body>\n").toStr
 	}
 	
-	virtual Str a(Uri href, Str text) {
-		"""<a href="${href}">${text.toXml}</a>"""
+	virtual Str example() 		{ """<div class="example">\n""" }
+	virtual Str exampleEnd()	{ "</div>\n" }
+
+	virtual Str heading(Int level, Str title, Str? anchorId) {
+		id := (anchorId == null) ? Str.defVal : " id=\"${anchorId.toXml}\"" 
+		return "<h${level}${id}>"
+	}
+	virtual Str headingEnd(Int level) {
+		"""</h${level}>\n"""
 	}
 	
-	virtual Str example() {
-		"""<div class="example">\n"""
-	}
-	virtual Str exampleEnd() {
-		"""</div>\n"""
-	}
+	virtual Str p(Str? admonition) { admonition == null ? "<p>" : """<p class="${admonition.lower.toXml}">""" }
+	virtual Str pEnd() { "</p>" }
+
+	virtual Str pre() 			{ "<pre>" }
+	virtual Str preEnd()		{ "</pre>" }
+	
+	virtual Str blockQuote()	{ "<blockquote>" }
+	virtual Str blockQuoteEnd() { "</blockquote>" }
+	
+	virtual Str ol(OrderedListStyle style)	{ """<ol style="list-style-type: ${style.htmlType};">""" }
+	virtual Str olEnd() 		{ "</ol>" }
+	
+	virtual Str ul()			{ "<ul>" }
+	virtual Str ulEnd() 		{ "</ul>" }
+	
+	virtual Str li()			{ "<li>" }
+	virtual Str liEnd() 		{ "</li>" }
+	
+	virtual Str emphasis()		{ "<emphasis>" }
+	virtual Str emphasisEnd()	{ "</emphasis>" }
+	
+	virtual Str strong()		{ "<strong>" }
+	virtual Str strongEnd()		{ "</strong>" }
+	
+	virtual Str code()			{ "<code>" }
+	virtual Str codeEnd()		{ "</code>" }
+	
+	
+	
+	// ---- Un-Matched HTML ---------------------
+
+	virtual Str link(Uri href)			{ """<link rel="stylesheet" type="text/css" href="${href}" />\n""" }	
+	
+	virtual Str script(Uri src)			{ """<script type="text/javascript" src="${src}"></script>\n""" }
+	
+	virtual Str a(Uri href, Str text) 	{ """<a href="${href}">${text.toXml}</a>""" }
+	
+	virtual Str img(Uri src, Str alt)	{ """<img src="${src}" alt="${alt.toXml}/>""" }
+
+	virtual Str text(Str text)			{ text.toXml }
 
 	virtual Str footer() {
 		buf := StrBuf()
