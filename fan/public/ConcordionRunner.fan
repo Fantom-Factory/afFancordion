@@ -1,7 +1,6 @@
 using fandoc
 using afBeanUtils
 using afPlastic
-using concurrent
 
 ** Runs Concordion fixtures.
 class ConcordionRunner {
@@ -38,26 +37,36 @@ class ConcordionRunner {
 		// we need the fixture *instance* so it can have any state, 
 		// and if a Test instance, verify cmd uses it to notch up the verify count
 
+		locals := Locals.instance
+		
 		if (!fixtureInstance.typeof.hasFacet(Fixture#))
 			throw ArgErr(ErrMsgs.fixtureFacetNotFound(fixtureInstance.typeof))		
 
-		firstFixture := false
-		if (ThreadStack.peek("afConcordion.runner", false) == null) {
-			firstFixture = true
+		firstFixture := (locals.originalRunner == null) 
+		if (firstFixture) {
+			locals.originalRunner = this
 			suiteSetup()
 
 			// when multiple tests (e.g. a pod) are run with fant we have NO way of knowing which is 
 			// the last test because sadly fant has no hooks. So for a clean teardown the best we can
 			// do is a shutdown hook.
-			unsafeThis := Unsafe(this)
-			shutdownHook := |->| { ((ConcordionRunner) unsafeThis.val).suiteTearDown }
+			shutdownHook := |->| { 
+				Locals.instance.originalRunner?.suiteTearDown
+				Locals.instance.shutdownHook = null
+				Locals.instance.resultsCache = null
+			}
 			Env.cur.addShutdownHook(shutdownHook)
 			
 			// stick the hook in Actor locals incase someone wants to remove it
-			Actor.locals["afConcordion.shutdownHook"] = shutdownHook
+			locals.shutdownHook = shutdownHook
 		}
 		
+		
+		// don't run tests twice - e.g. from fant and from a `test:cmd`
+		if (locals.resultsCache.containsKey(fixtureInstance.typeof))
+			return locals.resultsCache[fixtureInstance.typeof]
 
+		
 		startTime	:= DateTime.now(null)
 		specMeta	:= SpecificationFinder().findSpecification(fixtureInstance.typeof)
 		doc			:= FandocParser().parseStr(specMeta.specificationSrc)
@@ -104,8 +113,8 @@ class ConcordionRunner {
 				it.errors		= fixCtx.errs
 			}
 			
-			// keep the last result in Actor locals, mainly so CmdTest can use the filename
-			Actor.locals["afConcordion.lastResult"] = result
+			// cache the result so we can short-circuit should it called again
+			locals.resultsCache[fixtureInstance.typeof] = result
 
 			fixtureTearDown(result)
 
