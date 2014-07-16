@@ -7,10 +7,10 @@ mixin FixtureTest {
 	** This method name is prefixed with 'test' so it is picked up by 'fant' and other test runners.
 	virtual Void testFixture() {
 		runner := ((ConcordionRunner?) ThreadStack.peek("afConcordion.runner", false)) ?: concordionRunner
-		results := runner.runFixture(this)
+		result := runner.runFixture(this)
 
-		if (!results.errors.isEmpty)
-			throw results.errors.first
+		if (!result.errors.isEmpty)
+			throw result.errors.first
 	}
 	
 	** Returns a fresh instance of a 'ConcordionRunner'.

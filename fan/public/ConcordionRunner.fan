@@ -19,11 +19,11 @@ class ConcordionRunner {
 	new make(|This|? f := null) {
 		commands["verify"]	= CmdVerify()
 		commands["set"]		= CmdSet()
-//		commands["execute"]	= CmdExecute()	// FIXME: execute command
+		commands["execute"]	= CmdExecute()
 		commands["http"]	= CmdLink()
 		commands["https"]	= CmdLink()
 		commands["file"]	= CmdLink()
-		commands["test"]	= CmdTest()
+		commands["run"]		= CmdRun()
 
 		f?.call(this)
 	}
@@ -32,12 +32,11 @@ class ConcordionRunner {
 	FixtureResult runFixture(Obj fixtureInstance) {
 		// we need the fixture *instance* so it can have any state, 
 		// and if a Test instance, verify cmd uses it to notch up the verify count
-
-		locals := Locals.instance
 		
 		if (!fixtureInstance.typeof.hasFacet(Fixture#))
-			throw ArgErr(ErrMsgs.fixtureFacetNotFound(fixtureInstance.typeof))		
+			throw ArgErr(ErrMsgs.fixtureFacetNotFound(fixtureInstance.typeof))
 
+		locals := Locals.instance
 		firstFixture := (locals.originalRunner == null) 
 		if (firstFixture) {
 			locals.originalRunner = this
@@ -62,7 +61,7 @@ class ConcordionRunner {
 		}
 		
 		
-		// don't run tests twice - e.g. from fant and from a `test:cmd`
+		// don't run tests twice - e.g. from fant and from a `run:cmd`
 		if (locals.resultsCache.containsKey(fixtureInstance.typeof))
 			return locals.resultsCache[fixtureInstance.typeof]
 
@@ -99,14 +98,14 @@ class ConcordionRunner {
 			ThreadStack.push("afConcordion.fixtureMeta", fixMeta)
 			ThreadStack.push("afConcordion.fixtureCtx", fixCtx)
 					
-			fixtureSetup()
+			fixtureSetup(fixtureInstance)
 			
 			resultHtml := (Str?) null
 			try {
 				resultHtml	= renderFixture(doc, fixCtx)	// --> RUN THE TEST!!!
 			} catch (Err err) {
 				fixCtx.errs.add(err)
-				resultHtml = fixCtx.skin.errorPage(err)
+				resultHtml = errorPage(fixMeta, err)
 			}
 			
 			resultFile.out.print(resultHtml).close
@@ -121,7 +120,7 @@ class ConcordionRunner {
 			// cache the result so we can short-circuit should it called again
 			locals.resultsCache[fixtureInstance.typeof] = result
 
-			fixtureTearDown(result)
+			fixtureTearDown(fixtureInstance, result)
 
 			return result
 			
@@ -140,12 +139,14 @@ class ConcordionRunner {
 		try {
 			outputDir.delete
 			outputDir.create
+
 		} catch (Err err) {
-			Env.cur.err.printLine
-			Env.cur.err.printLine("*******************************************************************************")
-			Env.cur.err.printLine("** ${err.msg}")
-			Env.cur.err.printLine("*******************************************************************************")
-			Env.cur.err.printLine
+			msg := "\n"
+			msg += "*******************************************************************************"
+			msg += "** ${err.msg}"
+			msg += "*******************************************************************************"
+			msg += "\n"
+			log.warn(msg)
 		}
 	}
 
@@ -163,12 +164,12 @@ class ConcordionRunner {
 	** Called before every fixture.
 	** 
 	** By default does nothing. 
-	virtual Void fixtureSetup() { }
+	virtual Void fixtureSetup(Obj fixtureInstance) { }
 
 	** Called after every fixture.
 	** 
 	** By default prints the location of the result file. 
-	virtual Void fixtureTearDown(FixtureResult result) {
+	virtual Void fixtureTearDown(Obj fixtureInstance, FixtureResult result) {
 		// TODO: print something better
 		log.info(result.resultFile.normalize.osPath)		
 	}
@@ -178,6 +179,24 @@ class ConcordionRunner {
 	** Simply returns 'skinType.make()' by default.
 	virtual ConcordionSkin gimmeSomeSkin() {
 		skinType.make
+	}
+	
+	** Rendered when a Fixture fails for an unknown reason - usually due to an error in the skin.
+	** 
+	** By default this just renders the stack trace.
+	virtual Str errorPage(FixtureMeta fixMeta, Err err) { 
+"""<!DOCTYPE html>
+   <html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+   	<title>${fixMeta.title.toXml} : Concordion</title>
+   </head>
+   <body>
+   <pre>
+   ${err.traceToStr}
+   </pre>
+   </body>
+   </html>
+   """
 	}
 	
 	private Str renderFixture(Doc doc, FixtureCtx fixCtx) {

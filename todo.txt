@@ -1,19 +1,9 @@
 
 
-qnmaes
-images copy
-
-Breadcrumbs
-
-
-run command 
 echo command
 echoraw / html command???
 html command?
-
-[Run Other Test]`run:OtherTest` - should only run tests once! 
-
-[Run Other Test]`concordion:OtherTest`  
+print command
 
 
 [KickAss]`exe:verifyEq(greeting, #TEXT)`

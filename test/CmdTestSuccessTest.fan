@@ -7,8 +7,8 @@ using afBounce
 ** 
 ** Example
 ** -------
-**  - Linking to [another Test instance]`test:CmdTestSuccessTest_Test`
-**  - Linking to [a Fixture instance]`test:CmdTestSuccessTest_Fixture`
+**  - Linking to [another Test instance]`run:CmdTestSuccessTest_Test`
+**  - Linking to [a Fixture instance]`run:CmdTestSuccessTest_Fixture`
 ** 
 class CmdTestSuccessTest : ConTest {
 

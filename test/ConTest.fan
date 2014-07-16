@@ -1,13 +1,14 @@
 using concurrent
 using afSizzle
 
-@NoDoc
-abstract class ConTest : Test, FixtureTest {
+@NoDoc @Fixture
+abstract class ConTest : Test {
 	
 	FixtureResult? result
 	
-	override Void testFixture() {
-		this.result = ConcordionRunner().runFixture(this)
+	virtual Void testFixture() {
+		runner := ((ConcordionRunner?) ThreadStack.peek("afConcordion.runner", false)) ?: concordionRunner
+		result = runner.runFixture(this)
 
 		Actor.locals["afBounce.sizzleDoc"] = SizzleDoc.fromStr(result.resultHtml)
 		doTest
@@ -16,7 +17,7 @@ abstract class ConTest : Test, FixtureTest {
 	
 	abstract Void doTest()
 	
-	override ConcordionRunner concordionRunner() {
+	virtual ConcordionRunner concordionRunner() {
 		ConcordionRunner() {
 			it.outputDir	= `build/concordion/`.toFile
 		}

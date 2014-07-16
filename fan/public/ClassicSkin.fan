@@ -1,6 +1,6 @@
 
-** A skin that mimics the style of the classic Java Concordion library.
-class ClassicSkin : ConcordionSkin { 	
+** A Concordion Skin that mimics the style of the classic Java Concordion library.
+class ClassicSkin : ConcordionSkin {
 	override Uri[]	cssUrls		:= [,]
 	override Uri[]	scriptUrls	:= [,]
 	private	 Int	buttonId	:= 0
@@ -21,11 +21,6 @@ class ClassicSkin : ConcordionSkin {
 		addCss(`fan://afConcordion/res/classicSkin/concordion.css`.get)
 		return ConcordionSkin.super.head
 	}
-
-	@NoDoc
-	override Str body() 	{ ConcordionSkin.super.body + "\t<main>\n" }
-	@NoDoc
-	override Str bodyEnd()	{ "\t</main>\n" + ConcordionSkin.super.bodyEnd }
 
 	@NoDoc
 	override Str footer() {
