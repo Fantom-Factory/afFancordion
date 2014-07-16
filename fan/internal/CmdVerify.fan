@@ -39,7 +39,6 @@ abstract class CmdVerifyHelper {
 
 	Void verify(FixtureCtx fixCtx, Str cmd, Uri cmdUrl, Str cmdText) {
 		try {
-			
 			actual		:= TypeCoercer().coerce(findActual(fixCtx.fixtureInstance), coerceTo[cmd])
 			expected	:= (cmd == "type") ? findType(cmdText) : cmdText
 			

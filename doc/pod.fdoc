@@ -1,11 +1,26 @@
 Overview [#overview]
 ********************
-Automated acceptance testing.
+'Concordion' transforms your boring unit tests into beautiful specification documents!
 
-Transform boring unit tests into beautiful specification documents!
-Enhance your tests by creating pretty
+Concordion is similar to [Cucumber]`http://cukes.info/` but focuses on readability and presentation.
+It gives your test documentation real *meaning*.
 
-Extensible!
+Steps:
+ 1. Write acceptence tests in plain Fantom Fandoc.
+ 2. Annotate them with special links that call commands.
+ 3. The commands then call methods and
+
+Features:
+
+ - Run Concordion tests with [fant]`docTools::Fant`, just like a unit test!
+
+ - Linkable - create an organised
+
+Live example of Concordion results:
+http://concordion.org/dist/1.4.4/spec/concordion/Concordion.html
+
+Easily extensible too! write you own commands
+Skinnable
 
 
 Install [#Install]
@@ -70,6 +85,18 @@ Time: 691ms
 3). View the generated fixture result file:
 
 ![Screenshot of Hello World Fixture Results]`http://static.alienfactory.co.uk/fantom-docs/afConcordion.helloWorldFixture.png`
+
+
+
+Terminology [#terminology]
+**************************
+An **Acceptance Test* is your standard Fantom test that has been enhanced to verify real user requirements.
+
+**Specification* refers to the documentation part of the *acceptance test*.
+
+**Commands** are special links in the *specification* that drive the test, specifing input and verifing output.
+
+The **Fixture** is the code part of the *Acceptance Test* that does the actual work.
 
 
 

@@ -181,7 +181,7 @@ mixin ConcordionSkin {
 	
 	** Renders a footer.
 	** This is (usually) called by 'bodyEnd()'. 
-	** By default it just renders a link to the Concordion website.
+	** By default it just renders a simple link to the Concordion website.
 	virtual Str footer() {
 		"<footer>\n" + a(`http://www.fantomfactory.org/pods/afConcordion`, "Concordion v${Pod.of(this).version}") + "</footer>"
 	}
@@ -211,24 +211,6 @@ mixin ConcordionSkin {
 	** 
 	** By default this method returns an empty string.
 	virtual Str cmdHook(Uri cmdUrl, Str cmdText, Obj?[]? data) { Str.defVal }
-
-	** Rendered when a Fixture fails for an unknown reason - like an unknown command.
-	** 
-	** By default this just renders the stack trace.
-	virtual Str errorPage(Err err) { 
-"""<!DOCTYPE html>
-   <html xmlns="http://www.w3.org/1999/xhtml">
-   <head>
-   	<title>${fixtureMeta.title.toXml} : Concordion</title>
-   </head>
-   <body>
-   <pre>
-   ${err.traceToStr}
-   </pre>
-   </body>
-   </html>
-   """
-	}
 
 
 	

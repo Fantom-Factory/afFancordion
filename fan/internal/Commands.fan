@@ -7,9 +7,15 @@ internal class Commands {
 		this.commands = commands
 	}
 	
-	Void doCmd(FixtureCtx fixCtx, Uri url, Str text) {
-		command := commands[url.scheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(url.scheme), commands.keys)
-		command.doCmd(fixCtx, url, text)
+	Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+		try {
+			command := commands[cmdUrl.scheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmdUrl.scheme), commands.keys)
+			command.doCmd(fixCtx, cmdUrl, cmdText)
+
+		} catch (Err err) {
+			fixCtx.errs.add(err)
+			fixCtx.renderBuf.add(fixCtx.skin.cmdErr(cmdUrl, cmdText, err))
+		}
 	}
 
 }
