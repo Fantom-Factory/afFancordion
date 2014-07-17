@@ -3,6 +3,7 @@ using fandoc
 internal class FixtureDocWriter : DocWriter {
 	
 	private Bool 	inLink
+	private Bool 	inPre
 	private StrBuf?	linkText
 	private Bool 	inExample
 	
@@ -56,7 +57,8 @@ internal class FixtureDocWriter : DocWriter {
 				append(fixCtx.skin.p(para.admonition))
 			
 			case DocNodeId.pre:
-				append(fixCtx.skin.pre)
+				inPre = true
+				linkText = StrBuf()
 			
 			case DocNodeId.blockQuote:
 				append(fixCtx.skin.blockQuote)
@@ -90,7 +92,7 @@ internal class FixtureDocWriter : DocWriter {
 	}
 	
 	override Void text(DocText docText) {
-		if (inLink) {
+		if (inLink || inPre) {
 			linkText.out.print(docText.str)
 			return
 		}
@@ -105,6 +107,25 @@ internal class FixtureDocWriter : DocWriter {
 				cmds.doCmd(fixCtx, ((Link) elem).uri.toUri, linkText.toStr)
 				linkText = null
 				
+			case DocNodeId.pre:
+				inPre	  = false
+				preText  := linkText.toStr
+				linkText  = null
+				preLines := preText.splitLines
+				cmdUrl	 := Uri(preLines.first.trim, false)
+				if (!preLines.isEmpty && cmds.isCmd(cmdUrl?.scheme)) {
+					append(fixCtx.skin.pre)
+					preLines.removeAt(0)
+					preText = preLines.join("\n")
+					cmds.doCmd(fixCtx, cmdUrl, preText.trim)
+					append(fixCtx.skin.preEnd)
+					
+				} else {
+					append(fixCtx.skin.pre)
+					append(fixCtx.skin.text(preText))
+					append(fixCtx.skin.preEnd)
+				}
+			
 			case DocNodeId.heading:
 				head := elem as Heading
 				append(fixCtx.skin.headingEnd(head.level))
@@ -112,9 +133,6 @@ internal class FixtureDocWriter : DocWriter {
 			case DocNodeId.para:
 				para := elem as Para
 				append(fixCtx.skin.pEnd)
-			
-			case DocNodeId.pre:
-				append(fixCtx.skin.preEnd)
 			
 			case DocNodeId.blockQuote:
 				append(fixCtx.skin.blockQuoteEnd)
