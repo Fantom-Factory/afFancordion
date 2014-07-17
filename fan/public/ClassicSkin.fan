@@ -41,16 +41,16 @@ class ClassicSkin : ConcordionSkin {
 
 		buttonId++
 
-		stack := err.traceToStr.splitLines.join("") { "<span class=\"stackTraceEntry\">${it}</span>\n" }
+		stack := err.traceToStr.splitLines.join("") { "<span class=\"stackTraceEntry\">${it.toXml}</span>\n" }
 		return
 		"""<span class="error">
 		     <del class="expected">${cmdText.toXml}</del>
 		   </span>
-		   <span class="exceptionMessage">${err.msg.toXml}</span>
+		   <span class="exceptionMessage">${err.msg.splitLines[0].toXml}</span>
 		   <input id="stackTraceButton${buttonId}" type="button" class="stackTraceButton" onclick="javascript:toggleStackTrace('${buttonId}')" value="View Stack" />
 		   <span class="stackTrace" id="stackTrace${buttonId}">
 		     <span>While evaluating command: <code>${cmdUrl}</code></span>
-		     <span class="stackTraceExceptionMessage">${err.typeof} : ${err.msg}</span>
+		     <span class="stackTraceExceptionMessage">${err.typeof} : ${err.msg.toXml}</span>
 		     ${stack}
 		   </span>
 		   """

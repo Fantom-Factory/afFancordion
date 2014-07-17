@@ -107,13 +107,14 @@ ins {
 	font-size:			8pt;
 	white-space:		wrap;
 	padding:			1px 0;
+	white-space:		pre;
 }
 .stackTraceEntry {
-	white-space:		nowrap;
+	white-space:		pre;
 	font-family:		Courier New, Courier, Monospace;
 	display:			block;
 	font-size:			8pt;
-	padding:			1px 0 1px 32px;
+	padding-left:		32px;
 }
 .stackTraceButton {
 	font-size:			8pt;
