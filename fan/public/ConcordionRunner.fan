@@ -115,6 +115,8 @@ class ConcordionRunner {
 				it.resultHtml	= resultHtml
 				it.resultFile 	= resultFile
 				it.errors		= fixCtx.errs
+				it.timestamp	= DateTime.now(null)
+				it.duration		= startTime - it.timestamp
 			}
 			
 			// cache the result so we can short-circuit should it called again

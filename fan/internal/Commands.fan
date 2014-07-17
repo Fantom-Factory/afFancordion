@@ -7,6 +7,10 @@ internal class Commands {
 		this.commands = commands
 	}
 	
+	Bool isCmd(Str? maybe) {
+		(maybe == null) ? false : commands.containsKey(maybe)
+	}
+	
 	Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
 		try {
 			cmd := cmdUrl.scheme ?: "NULL"

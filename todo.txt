@@ -5,6 +5,7 @@ echoraw / html command???
 html command?
 print command
 
+Add "failFast=true" attribute to @Fixture facet - TRUE by default
 
 [KickAss]`exe:verifyEq(greeting, #TEXT)`
 [KickAss]`execute:verifyEq(greeting, #TEXT)`
@@ -14,9 +15,10 @@ print command
 
 
 
-** cmd: col[0]:split(#TEXT)` 
-** cmd: row:verifyEq(firstName, #TEXT)` 
-** cmd: table:verifyRows`
+**   cmd: col[0]:split(#TEXT) 
+**   verify:rowEq(firstName) 
+**   verify:rows(data)
+**   table:
 ** 
 **   Full Name    First Name  Last Name
 **   -----------  ----------- ----------
