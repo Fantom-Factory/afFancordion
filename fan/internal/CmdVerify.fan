@@ -5,7 +5,6 @@ internal class CmdVerify : Command {
 	private static const PlasticCompiler compiler	:= PlasticCompiler()
 	
 	override Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
-		
 		i 	:= cmdUrl.pathStr.index("(")?.minus(1) ?: -1
 		cmd := cmdUrl.pathStr[0..i]
 		arg	:= (i != -1) ? cmdUrl.pathStr[i+1..-1].trim : ""
@@ -38,40 +37,34 @@ abstract class CmdVerifyHelper {
 	static const Str:Type coerceTo		:= ["eq":Str#, "notEq":Str#, "type":Obj#, "true":Bool#, "false":Bool#, "null":Obj?#, "notNull":Obj?#]
 
 	Void verify(FixtureCtx fixCtx, Str cmd, Uri cmdUrl, Str cmdText) {
-		try {
-			actual		:= TypeCoercer().coerce(findActual(fixCtx.fixtureInstance), coerceTo[cmd])
-			expected	:= (cmd == "type") ? findType(cmdText) : cmdText
-			
-			if (cmd == "type") {
-				temp    := actual
-				actual   = expected
-				expected = temp
-			}
-
-			try {
-				// try to use the real fixture if we can so it notches up the verify count
-				test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
-				
-				if (singleArgCmds.contains(cmd)) {
-					vName := "verify" + (cmd.equalsIgnoreCase("true") ? "" : cmd).capitalize
-					test.typeof.method(vName).callOn(test, [actual])
-				}
+		actual		:= TypeCoercer().coerce(findActual(fixCtx.fixtureInstance), coerceTo[cmd])
+		expected	:= (cmd == "type") ? findType(cmdText) : cmdText
 		
-				if (doubleArgCmds.contains(cmd)) {
-					vName := "verify${cmd.capitalize}"
-					test.typeof.method(vName).callOn(test, [expected, actual])
-				}
-				
-				fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
+		if (cmd == "type") {
+			temp    := actual
+			actual   = expected
+			expected = temp
+		}
 
-			} catch (Err err) {
-				fixCtx.errs.add(err)
-				fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdText, actual))
+		try {
+			// try to use the real fixture if we can so it notches up the verify count
+			test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
+			
+			if (singleArgCmds.contains(cmd)) {
+				vName := "verify" + (cmd.equalsIgnoreCase("true") ? "" : cmd).capitalize
+				test.typeof.method(vName).callOn(test, [actual])
+			}
+	
+			if (doubleArgCmds.contains(cmd)) {
+				vName := "verify${cmd.capitalize}"
+				test.typeof.method(vName).callOn(test, [expected, actual])
 			}
 			
+			fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
+
 		} catch (Err err) {
 			fixCtx.errs.add(err)
-			fixCtx.renderBuf.add(fixCtx.skin.cmdErr(cmdUrl, cmdText, err))
+			fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdText, actual))
 		}
 	}
 	
