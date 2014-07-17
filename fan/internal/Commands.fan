@@ -9,7 +9,8 @@ internal class Commands {
 	
 	Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
 		try {
-			command := commands[cmdUrl.scheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmdUrl.scheme), commands.keys)
+			cmd := cmdUrl.scheme ?: "NULL"
+			command := commands[cmd] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmd, cmdUrl), commands.keys)
 			command.doCmd(fixCtx, cmdUrl, cmdText)
 
 		} catch (Err err) {

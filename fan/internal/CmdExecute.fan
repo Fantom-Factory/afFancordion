@@ -5,7 +5,7 @@ internal class CmdExecute : Command {
 	private static const PlasticCompiler compiler	:= PlasticCompiler()
 
 	override Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
-		
+		// can't use Uri.pathStr as it strips off the fragment #TEXT!!!
 		fcode := cmdUrl.toStr[cmdUrl.scheme.size+1..-1].replace("#TEXT", cmdText.toCode)
 		model := PlasticClassModel("ExecuteCmd", false)
 		model.extend(CmdExecuteHelper#)
@@ -21,14 +21,8 @@ internal class CmdExecute : Command {
 abstract class CmdExecuteHelper {
 
 	Void execute(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
-		try {
-			doExecute(fixCtx.fixtureInstance)
-			fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
-
-		} catch (Err err) {
-			fixCtx.errs.add(err)
-			fixCtx.renderBuf.add(fixCtx.skin.cmdErr(cmdUrl, cmdText, err))
-		}
+		doExecute(fixCtx.fixtureInstance)
+		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
 	}
 	
 	abstract Void doExecute(Obj fixture)

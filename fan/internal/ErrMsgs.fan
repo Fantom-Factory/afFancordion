@@ -17,8 +17,8 @@ internal const class ErrMsgs {
 		stripSys("Could not find facet '@Fixture' on instance '${fixtureType.qname}'")
 	}
 
-	static Str cmdNotFound(Str cmd) {
-		"Could not find Command '${cmd}'"
+	static Str cmdNotFound(Str cmd, Uri cmdUrl) {
+		"Could not find Command '${cmd}': ${cmdUrl}"
 	}
 
 	static Str verifyCmdNotFound(Str cmd) {
