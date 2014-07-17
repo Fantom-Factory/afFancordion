@@ -11,7 +11,7 @@ internal class Commands {
 		try {
 			cmd := cmdUrl.scheme ?: "NULL"
 			command := commands[cmd] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmd, cmdUrl), commands.keys)
-			command.doCmd(fixCtx, cmdUrl, cmdText)
+			command.runCommand(fixCtx, cmdUrl, cmdText)
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)

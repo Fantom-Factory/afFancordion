@@ -1,43 +1,25 @@
 using afBeanUtils::TypeCoercer
-using afPlastic
 
 internal class CmdVerify : Command {
-	private static const PlasticCompiler compiler	:= PlasticCompiler()
-	
-	override Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+	static const Str[] doubleArgCmds	:= "eq notEq type".split 
+	static const Str[] singleArgCmds	:= "true false null notNull".split
+	static const Str:Type coerceTo		:= ["eq":Str#, "notEq":Str#, "type":Obj#, "true":Bool#, "false":Bool#, "null":Obj?#, "notNull":Obj?#]
+
+	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
 		i 	:= cmdUrl.pathStr.index("(")?.minus(1) ?: -1
 		cmd := cmdUrl.pathStr[0..i]
 		arg	:= (i != -1) ? cmdUrl.pathStr[i+1..-1].trim : ""
 
-		if (!CmdVerifyHelper.singleArgCmds.contains(cmd) && !CmdVerifyHelper.doubleArgCmds.contains(cmd))
-			throw CmdNotFoundErr(ErrMsgs.verifyCmdNotFound(cmd), CmdVerifyHelper.singleArgCmds.addAll(CmdVerifyHelper.doubleArgCmds))
+		if (!singleArgCmds.contains(cmd) && !doubleArgCmds.contains(cmd))
+			throw CmdNotFoundErr(ErrMsgs.verifyCmdNotFound(cmd), singleArgCmds.addAll(doubleArgCmds))
 		
 		if (arg.startsWith("("))
 			arg = arg[1..-1]
 		if (arg.endsWith(")"))
 			arg = arg[0..-2]
 		
-		model := PlasticClassModel("VerifyCmd", false)
-		model.extend(CmdVerifyHelper#)
-		model.overrideMethod(CmdVerifyHelper#findActual, "((${fixCtx.fixtureInstance.typeof.qname}) fixture).${arg}")
-		help := (CmdVerifyHelper) compiler.compileModel(model).make
-		
-		// run the command!
-		help.verify(fixCtx, cmd, cmdUrl, cmdText)
-	}
-}
-
-@NoDoc
-class TestImpl : Test { }
-
-@NoDoc
-abstract class CmdVerifyHelper {
-	static const Str[] doubleArgCmds	:= "eq notEq type".split 
-	static const Str[] singleArgCmds	:= "true false null notNull".split
-	static const Str:Type coerceTo		:= ["eq":Str#, "notEq":Str#, "type":Obj#, "true":Bool#, "false":Bool#, "null":Obj?#, "notNull":Obj?#]
-
-	Void verify(FixtureCtx fixCtx, Str cmd, Uri cmdUrl, Str cmdText) {
-		actual		:= TypeCoercer().coerce(findActual(fixCtx.fixtureInstance), coerceTo[cmd])
+		fromFixture	:= getFromFixture(fixCtx.fixtureInstance, arg)
+		actual		:= TypeCoercer().coerce(fromFixture, coerceTo[cmd])
 		expected	:= (cmd == "type") ? findType(cmdText) : cmdText
 		
 		if (cmd == "type") {
@@ -68,8 +50,6 @@ abstract class CmdVerifyHelper {
 		}
 	}
 	
-	abstract Obj findActual(Obj fixture)
-
 	private static Obj findType(Str cmdText) {
 		cmdText = cmdText.trim
 		cmdText = cmdText.contains("::") ? cmdText : "sys::${cmdText}" 
@@ -77,3 +57,6 @@ abstract class CmdVerifyHelper {
 		return Type.find(cmdText, true)
 	}
 }
+
+@NoDoc
+class TestImpl : Test { }

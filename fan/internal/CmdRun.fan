@@ -1,7 +1,7 @@
 
 internal class CmdRun : Command {
 	
-	override Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
 		typeName	:= cmdUrl.pathStr
 		
 		newType 
