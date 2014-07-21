@@ -4,16 +4,20 @@ using afPlastic
 
 ** Runs Concordion fixtures.
 class ConcordionRunner {
-	private static const Log log	:= Utils.getLog(ConcordionRunner#)
+	private static const Log log		:= Utils.getLog(ConcordionRunner#)
 	
 	** Where the generated HTML result files are saved.
-	File		outputDir		:= Env.cur.tempDir + `concordion/`
+	File		outputDir				:= Env.cur.tempDir + `concordion/`
 	
 	** The skin applied to generated HTML result files.
-	Type		skinType		:= ClassicSkin#
+	Type		skinType				:= ClassicSkin#
 	
 	** The commands made available to Concordion tests. 
-	Str:Command	commands		:= Str:Command[:] { caseInsensitive = true }
+	Str:Command	commands				:= Str:Command[:] { caseInsensitive = true }
+
+	** A command chain of 'SpecificationFinders'.
+	@NoDoc
+	SpecificationFinder[] specFinders	:= SpecificationFinder[,]
 		
 	** Creates a 'ConcordionRunner'.
 	new make(|This|? f := null) {
@@ -22,8 +26,14 @@ class ConcordionRunner {
 		commands["execute"]	= CmdExecute()
 		commands["http"]	= CmdLink()
 		commands["https"]	= CmdLink()
+		commands["mailto"]	= CmdLink()
 		commands["file"]	= CmdLink()
 		commands["run"]		= CmdRun()
+		
+		specFinders.add(FindSpecFromFacetValue())
+		specFinders.add(FindSpecFromTypeFandoc())
+		specFinders.add(FindSpecFromSrcFile())
+		specFinders.add(FindSpecFromPodFile())
 
 		f?.call(this)
 	}
@@ -67,7 +77,7 @@ class ConcordionRunner {
 
 		
 		startTime	:= DateTime.now(null)
-		specMeta	:= SpecificationFinder().findSpecification(fixtureInstance.typeof)
+		specMeta	:= SpecificationFinders(specFinders).findSpecification(fixtureInstance.typeof)
 		doc			:= FandocParser().parseStr(specMeta.specificationSrc)
 		docTitle	:= doc.findHeadings.first?.title ?: specMeta.fixtureType.name.fromDisplayName
 		podName		:= specMeta.fixtureType.pod?.name ?: "no-name"
