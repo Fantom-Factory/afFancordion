@@ -6,9 +6,12 @@ Concordion is similar to [Cucumber]`http://cukes.info/` but focuses on readabili
 It gives your test documentation real *meaning*.
 
 Steps:
- 1. Write acceptence tests in plain Fantom Fandoc.
- 2. Annotate them with special links that call commands.
- 3. The commands then call methods and
+ 1. Write readable acceptance tests in plain Fantom fandoc.
+ 2. Annotate the fandoc with special links
+    - these links then execute commands
+    - these commands call methods in your code
+    - the results of which are captured
+ 3.
 
 Features:
 
@@ -90,11 +93,11 @@ Time: 691ms
 
 Terminology [#terminology]
 **************************
-An **Acceptance Test* is your standard Fantom test that has been enhanced to verify real user requirements.
+An **Acceptance Test** is a standard Fantom Test that has been enhanced to verify real user requirements.
 
-**Specification* refers to the documentation part of the *acceptance test*.
+**Specification** refers to the documentation part of the *acceptance test*.
 
-**Commands** are special links in the *specification* that drive the test, specifing input and verifing output.
+**Commands** are special links in the *specification* that drive the test, specifying input and verifying output.
 
 The **Fixture** is the code part of the *Acceptance Test* that does the actual work.
 
@@ -102,9 +105,226 @@ The **Fixture** is the code part of the *Acceptance Test* that does the actual w
 
 Usage [#usage]
 **************
-Use the `ConcordionRunner` class to run your fixtures.
+Any Fantom class annotated with the [@Fixture]`Fixture` facet can be run as a Concordion fixture.
+Just pass it into 'ConcordionRunner.runFixture()':
 
-A concordion fixture is any class annotated with the `@Fixture` facet.
+pre>
+syntax: fantom
+
+using afConcordion
+
+** My first Concordion fixture.
+@Fixture
+class MyFixture { }
+
+...
+
+fixture := MyFixture()
+runner  := ConcordionRunner()
+runner.runFixture(fixture)
+<pre
+
+`ConcordionRunner` is designed to be subclassed and has several methods, or hooks, that change it's behaviour:
+
+ - 'suiteSetup()' is only ever called once no matter how many fixtures are run, or 'ConcordionRunners' created.
+   Typically I would use this to start the web application under test (via [Bounce]`pod:afBounce`).
+   Since all web app state is (usually) stored in a database, there is no need to re-start the web app for every test.
+
+- 'suiteTearDown()' again is only ever called the once (currently in an Env shutdown hook).
+  Typically I would gracefully shutdown the web application.
+
+- 'fixtureSetup()' is called before every fixture.
+
+- 'fixtureTearDown()' is called after every fixture.
+
+- 'skinType' & 'gimmeSomeSkin()' determine & create an instance of the 'ConcordionSkin' class used to render the result HTML.
+  You could, for instance, change this to use the Bootstrap or Classic skin.
+
+- 'outputDir' is where the result files are saved.
+
+- 'commands' is a map of all the [Commands]`Commands` made available to the test.
+  To extend Concordion, simply add your own Command implementation to the map! (Super easy!)
+
+To help you bridge the gap between Concordion and standard Fantom tests, Concordion ships with `FixtureTest`.
+This handy mixin lets you run any Fixture as a Fantom Test. (Note your test classes still have to extend 'Test' as well.)
+
+To use a specific 'ConcordionRunner' in your tests, override 'concordionRunner()' to return desired instance.
+Even though all your tests will extend 'FixtureTest', the 'concordionRunner()' method will only be called once.
+This means you can run a single test with [fant]`docTools:Fant`, or all of them, and they will still only use the same runner instance.
+
+
+
+Specifications [#specifications]
+********************************
+Specifications are documents written in Fantom's own [Fandoc]`fandoc::index` format, similar to [Markdown]`http://daringfireball.net/projects/markdown/` and [Almost Plain Text]`http://maven.apache.org/doxia/references/apt-format.html`.
+
+By marking text in the specification as links, you turn them into commands.
+Your specification can now be thought of as a simple script.
+
+When you run the specification script, the Fandoc is converted into HTML and the commands executed as they are encountered.
+The commands generate HTML markup to show whether they passed or failed.
+
+By default the specification is assumed to be the doc comment on the fixture:
+
+pre>
+syntax: fantom
+
+** This comment is the specification.
+@Fixture
+class MyFixture { }
+<pre
+
+By doing so, every line in the doc comment must start with a double asterisk '**'.
+The specification may exist in its own file, just give a URL to its location in the '@Fixture' facet:
+
+pre>
+syntax: fantom
+
+** This comment is the specification.
+@Fixture { specification=`/myproj/specs/Spec1.fandoc` }
+class MyFixture { }
+<pre
+
+Specifications, when they exist in their own file, do *not* start each line with a double asterisk '**'.
+
+> TIP: Use [Fandoc Viewer]`pod:afFandocViewer` to edit fandoc files and specifications.
+
+Specifications can be written in any way you wish, but I find the following structure very useful.
+I've written it as fandoc comment so you may cut and paste it into your specifications.
+
+pre>
+** Heading
+** #######
+** Explain the problem at hand by starting each specification with:
+**
+** As a...
+** When I...
+** I want...
+**
+** Example
+** -------
+** Then write an example of the behaviour using the format:
+**
+** Given...
+** When...
+** Then...
+**
+** Only the example should contain commands.
+<pre
+
+
+
+Commands [commands]
+*******************
+
+set [#set]
+==========
+The 'set' command sets a field of the fixture to the value of the link text.
+The 'Str' is [coercered]`afBeanUtils::TypeCoercer` to the field's type.
+
+pre>
+syntax: fantom
+
+** The meaning of life is [42]`set:number`.
+@Fixture
+class ExampleFixture {
+  Int? number
+}
+<pre
+
+
+
+execute [#execute]
+==================
+The 'execute' command calls a method on the fixture.
+The cmd is compiled as Fantom code so may be *any* valid Fantom code.
+
+Any occurrences of the token '#TEXT' are replaced with the command / link text.
+
+pre>
+syntax: fantom
+
+** [The end has come.]`execute:initiateShutdownSequence(42, #TEXT, "/tmp/end.txt".toUri)`
+@Fixture
+class ExampleFixture {
+  Void initiateShutdownSequence(Int num, Str cmdText, Uri url) {
+    ...
+  }
+}
+<pre
+
+
+
+verify [#verify]
+================
+The 'verify' command executes a Test verify method against the link text.
+Available verify methods are:
+ - eq(...)
+ - notEq(...)
+ - type(...)
+ - true(...)
+ - false(...)
+ - null(...)
+ - notNull(...)
+
+Arguments to the verify methods are run against the fixture and may be any valid Fantom code.
+
+pre>
+syntax: fantom
+
+** The meaning of life is [42]`verify:eq(number)`.
+@Fixture
+class ExampleFixture {
+  Int? number
+}
+<pre
+
+Arguments for the 'eq()' and 'notEq()' methods are [type coerced]`afBeanUtils::TypeCoercer` to a 'Str'.
+Arguments for the 'true()' and 'false()' are [type coerced]`afBeanUtils::TypeCoercer` to a 'Bool'.
+
+
+
+run [#run]
+==========
+The 'run' command runs another Concordion fixture and prints an appropriate success / failure link to it.
+
+The command path must be the name of the Fixture type to run. The fixture type may be qualified.
+
+Use 'run' commands to create a specification containing a list of all acceptance tests for a feature, in a similar way you would use a test suite.
+
+You could even nest specifications to form a hierarchical index, with results aggregated to display a single green / red / grey result.
+
+pre>
+syntax: fantom
+
+** Questions:
+** - [Why is the sky blue?]`run:BlueSkyFixture`.
+@Fixture
+class ExampleFixture { }
+<pre
+
+
+
+link [#link]
+============
+The 'link' command renders a standard HTML <a> tag.
+It is added with the 'file', 'http', 'https' and 'mailto' schemes.
+
+pre>
+syntax: fantom
+
+** Be sure to check out [Fantom-Factory]`http://www.fantomfactory.org/`.
+@Fixture
+class ExampleFixture { }
+<pre
+
+
+
+
+Example Web Fixture Setup
+*************************
+... cut n paste from dexApp
+
 
 
 Release Notes [#releaseNotes]

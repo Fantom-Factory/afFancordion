@@ -1,4 +1,18 @@
 
+** The 'run' command runs another Concordion fixture and prints an appropriate success / failure link to it.
+** 
+** The command path must be the name of the Fixture type to run. The fixture type may be qualified.
+** 
+** Use 'run' commands to create a specification containing a list of all acceptance tests for a feature, in a similar way you would use a test suite.
+** 
+** You could even nest specifications to form a hierarchical index, with results aggregated to display a single green / red / gray result.     
+** 
+** pre>
+** ** Questions:
+** ** - [Why is the sky blue?]`run:BlueSkyFixture`.
+** @Fixture
+** class ExampleFixture { }
+** <pre
 internal class CmdRun : Command {
 	
 	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {

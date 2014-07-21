@@ -1,5 +1,16 @@
 using afBeanUtils
 
+** The 'set' command sets a field of the fixture to the value of the link text. 
+** The 'Str' is [coercered]`afBeanUtils::TypeCoercer` to the field's type.  
+** 
+** pre>
+** ** The meaning of life is [42]`set:number`.
+** @Fixture
+** class ExampleFixture {
+**   Int? number
+** }
+** <pre
+** 
 internal class CmdSet : Command {
 
 	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {

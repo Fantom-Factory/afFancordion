@@ -1,18 +1,12 @@
 
-
-echo command
-echoraw / html command???
+embed cmd
 html command?
 print command
+*ALWAYS* print as HTML, let the user X.toXml() escape it themselves.
 
 Add "failFast=true" attribute to @Fixture facet - TRUE by default
 
-[KickAss]`exe:verifyEq(greeting, #TEXT)`
-[KickAss]`execute:verifyEq(greeting, #TEXT)`
-
-
-[Check ticket is valid]`set+file:my/data/file.txt`
-
+logging / tooltip / popup cmd
 
 
 **   cmd: col[0]:split(#TEXT) 

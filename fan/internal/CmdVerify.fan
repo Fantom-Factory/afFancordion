@@ -1,5 +1,27 @@
 using afBeanUtils::TypeCoercer
 
+** The 'verify' command executes a Test verify method against the link text.
+** Available verify methods are:
+**  - eq(...)
+**  - notEq(...)
+**  - type(...)
+**  - true(...)
+**  - false(...)
+**  - null(...)
+**  - notNull(...)   
+** 
+** Arguments to the verify methods are run against the fixture and may be any valid Fantom code. 
+** 
+** pre>
+** ** The meaning of life is [42]`verify:eq(number)`.
+** @Fixture
+** class ExampleFixture {
+**   Int? number
+** }
+** <pre
+** 
+** Arguments for the 'eq()' and 'notEq()' methods are [type coerced]`afBeanUtils::TypeCoercer` to a 'Str'.
+** Arguments for the 'true()' and 'false()' are [type coerced]`afBeanUtils::TypeCoercer` to a 'Bool'.
 internal class CmdVerify : Command {
 	static const Str[] doubleArgCmds	:= "eq notEq type".split 
 	static const Str[] singleArgCmds	:= "true false null notNull".split
