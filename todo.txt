@@ -5,8 +5,6 @@ html command?
 print command
 *ALWAYS* print as HTML, let the user X.toXml() escape it themselves.
 
-Add "failFast=true" attribute to @Fixture facet - TRUE by default
-
 logging / tooltip / popup cmd
 
 
