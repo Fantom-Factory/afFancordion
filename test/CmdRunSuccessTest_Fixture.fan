@@ -1,6 +1,6 @@
 
 ** [anything]`verify:eq(anything)`
 @Fixture
-class CmdTestSuccessTest_Fixture {
+class CmdRunSuccessTest_Fixture {
 	Str anything	:= "anything"
 }
