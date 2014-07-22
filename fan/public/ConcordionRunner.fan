@@ -29,6 +29,7 @@ class ConcordionRunner {
 		commands["mailto"]	= CmdLink()
 		commands["file"]	= CmdLink()
 		commands["run"]		= CmdRun()
+		commands["embed"]	= CmdEmbed()
 		
 		specFinders.add(FindSpecFromFacetValue())
 		specFinders.add(FindSpecFromTypeFandoc())

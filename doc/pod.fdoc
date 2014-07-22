@@ -319,6 +319,25 @@ class ExampleFixture { }
 <pre
 
 
+embed [#embed]
+==============
+The 'embed' command executes the given function against the fixture and embeds the results as raw HTML.
+
+Use it to add extra markup to your fixtures.
+
+pre>
+** Kids, don't play with [FIRE!]`embed:danger(#TEXT)`.
+@Fixture
+class ExampleFixture {
+  Str danger(Str text) {
+    """<span class="danger">${text}</span>"""
+  }
+}
+<pre
+
+
+
+
 Write Your Own Commands [#writeYourOwn]
 ***************************************
 
