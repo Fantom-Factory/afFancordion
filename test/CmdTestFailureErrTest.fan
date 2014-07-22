@@ -3,13 +3,14 @@ using afBounce
 ** Command: Test
 ** ###############
 **
-** A Test Command links to another concordion fixture. If the fixture passes, it is displayed in green. 
+** A Test Command links to another concordion fixture. If the fixture fails, it is displayed in red. 
 ** 
 ** Example
 ** -------
 **  - Linking to [a Test in error]`run:CmdTestFailureErrTest_TestErr`
 **  - Linking to [a Fixture instance]`run:CmdTestFailureErrTest_FixtureFailure`
 ** 
+@Fixture
 class CmdTestFailureErrTest : ConTest {
 
 	override Void testFixture() {

@@ -18,12 +18,12 @@ internal class FindSpecFromFacetValue : SpecificationFinder {
 	
 	override SpecificationMeta? findSpecification(Type fixtureType) {
 		
-		comFacet := (Fixture) Type#.method("facet").callOn(fixtureType, [Fixture#])	// Stoopid F4
-		specFile := findFile(fixtureType, comFacet.specification)
+		fixFacet := (Fixture) Type#.method("facet").callOn(fixtureType, [Fixture#])	// Stoopid F4
+		specFile := findFile(fixtureType, fixFacet.specification)
 		return specFile == null ? null : SpecificationMeta() {
 			it.fixtureType		= fixtureType
 			it.specificationSrc	= specFile.readAllStr
-			it.specificationLoc	= comFacet.specification
+			it.specificationLoc	= fixFacet.specification
 		}
 	}
 	

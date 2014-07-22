@@ -14,7 +14,9 @@
 ** class ExampleFixture { }
 ** <pre
 internal class CmdRun : Command {
-	
+
+	override Bool canFailFast	:= false
+
 	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
 		typeName	:= cmdUrl.pathStr
 		

@@ -14,5 +14,11 @@ facet class Fixture {
 	** If the URI is a directory, then the file name is taken to be the name of the fixture Type plus a '.fandoc' extension.
 	const Uri? specification
 
-//	const Bool failFast	:= true
+	** If set to 'true' then should a command fail (throw an Err) then all following commands in the specification are ignored.
+	** This assumes that should one command fail, it is not worth while running any others. 
+	** 
+	** If set to 'false' then all commands are executed, regardless of previous commands failing.
+	** 
+	** Defaults to 'true'.
+	const Bool failFast	:= true
 }
