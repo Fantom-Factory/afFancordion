@@ -214,8 +214,8 @@ pre>
 
 
 
-Commands [commands]
-*******************
+Commands [#commands]
+********************
 
 set [#set]
 ==========
@@ -319,10 +319,11 @@ class ExampleFixture { }
 <pre
 
 
+Write Your Own Commands [#writeYourOwn]
+***************************************
 
-
-Example Web Fixture Setup
-*************************
+BedSheet Fixture Setup [#bedSheet]
+**********************************
 ... cut n paste from dexApp
 
 

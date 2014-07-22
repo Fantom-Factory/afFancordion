@@ -1,5 +1,6 @@
 
 embed cmd
+output?
 html command?
 print command
 *ALWAYS* print as HTML, let the user X.toXml() escape it themselves.

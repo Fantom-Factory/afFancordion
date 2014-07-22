@@ -66,16 +66,18 @@ p.success {
 	background-color:	#bbffbb;
 }
 .error, .error *,
-.failure, .failure * {
+.failure, .failure *,
+.ignored, .ignored * {
 	background-color:	#ffb0b0;
 	padding:			1px;
 }
 .error .expected,
 .failure .expected {
-	text-decoration: line-through;
+	text-decoration: 	line-through;
 	color:				#bb5050;
 }
 .ignored, .ignored * {
+	text-decoration: 	line-through;
 	background-color:	#f0f0f0 !important;	
 }
 

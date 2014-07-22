@@ -12,17 +12,21 @@ internal class Commands {
 	}
 	
 	Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+		fixFacet := (Fixture) Type#.method("facet").callOn(fixCtx.fixtureInstance.typeof, [Fixture#])	// Stoopid F4
 		try {
 			cmd := cmdUrl.scheme ?: "NULL"
 			command := commands[cmd] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmd, cmdUrl), commands.keys)
-			command.runCommand(fixCtx, cmdUrl, cmdText)
+			
+			if (!fixCtx.errs.isEmpty && fixFacet.failFast && command.canFailFast)
+				fixCtx.renderBuf.add(fixCtx.skin.cmdIgnored(cmdText))
+			else
+				command.runCommand(fixCtx, cmdUrl, cmdText)
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
 			fixCtx.renderBuf.add(fixCtx.skin.cmdErr(cmdUrl, cmdText, err))
 		}
 	}
-
 }
 
 @NoDoc

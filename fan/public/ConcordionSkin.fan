@@ -191,8 +191,13 @@ mixin ConcordionSkin {
 	// ---- Test Results --------------------------------------------------------------------------
 	
 	** Called to render a command success.
-	virtual Str cmdSuccess(Str expected, Bool escape := true) {
-		html := escape ? expected.toXml : expected
+	virtual Str cmdIgnored(Str text) {
+		"""<span class="ignored">${text.toXml}</span>"""
+	}
+
+	** Called to render a command success.
+	virtual Str cmdSuccess(Str text, Bool escape := true) {
+		html := escape ? text.toXml : text
 		return """<span class="success">${html}</span>"""
 	}
 
