@@ -45,6 +45,8 @@ internal class FixtureDocWriter : DocWriter {
 					append(fixCtx.skin.exampleEnd)
 				}
 				
+				// TODO: contribute section titles
+				// even better, contribute functions! so that titles can have custom content
 				if (head.title.equalsIgnoreCase("Example")) {
 					inExample = true
 					append(fixCtx.skin.example)

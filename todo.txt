@@ -1,12 +1,8 @@
 
-embed cmd
-output?
-html command?
-print command
-*ALWAYS* print as HTML, let the user X.toXml() escape it themselves.
-
+contribute section title funcs
 logging / tooltip / popup cmd
-
+Bootstrap skin
+tables:
 
 **   cmd: col[0]:split(#TEXT) 
 **   verify:rowEq(firstName) 
