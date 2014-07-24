@@ -1,8 +1,11 @@
 
 ** A Concordion Skin that mimics the style of the classic Java Concordion library.
 class ClassicSkin : ConcordionSkin {
+	@NoDoc
 	override Uri[]	cssUrls		:= [,]
+	@NoDoc
 	override Uri[]	scriptUrls	:= [,]
+
 	private	 Int	buttonId	:= 0
 
 	// ---- Setup / Tear Down -------------------
