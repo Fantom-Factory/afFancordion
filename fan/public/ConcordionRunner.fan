@@ -1,6 +1,7 @@
 using fandoc
 using afBeanUtils
 using afPlastic
+using concurrent
 
 ** Runs Concordion fixtures.
 class ConcordionRunner {
@@ -24,12 +25,13 @@ class ConcordionRunner {
 		commands["verify"]	= CmdVerify()
 		commands["set"]		= CmdSet()
 		commands["execute"]	= CmdExecute()
+		commands["fail"]	= CmdFail()
+		commands["run"]		= CmdRun()
+		commands["embed"]	= CmdEmbed()
 		commands["http"]	= CmdLink()
 		commands["https"]	= CmdLink()
 		commands["mailto"]	= CmdLink()
 		commands["file"]	= CmdLink()
-		commands["run"]		= CmdRun()
-		commands["embed"]	= CmdEmbed()
 		
 		specFinders.add(FindSpecFromFacetValue())
 		specFinders.add(FindSpecFromTypeFandoc())
@@ -73,9 +75,16 @@ class ConcordionRunner {
 		
 		
 		// don't run tests twice - e.g. from fant and from a `run:cmd`
-		if (locals.resultsCache.containsKey(fixtureInstance.typeof))
+		if (locals.resultsCache.containsKey(fixtureInstance.typeof)) {
+			log.info("Fixture '${fixtureInstance.typeof.qname}' has already been run - Skipping...")
 			return locals.resultsCache[fixtureInstance.typeof]
+		}
 
+
+		// a small hook so Test classes can notch up extra verify counts.
+		if (fixtureInstance is Test)
+			Actor.locals["afBounce.testInstance"] = fixtureInstance
+		
 		
 		startTime	:= DateTime.now(null)
 		specMeta	:= SpecificationFinders(specFinders).findSpecification(fixtureInstance.typeof)
@@ -141,6 +150,9 @@ class ConcordionRunner {
 			ThreadStack.pop("afConcordion.runner")
 			ThreadStack.pop("afConcordion.fixtureMeta")
 			ThreadStack.pop("afConcordion.fixtureCtx")
+			
+			// no too bother if this never gets cleaned up
+			Actor.locals.remove("afBounce.testInstance")
 		}
 	}
 	

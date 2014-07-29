@@ -36,7 +36,13 @@ mixin Command {
 		model.overrideMethod(FixtureExecutor#getFrom, "((${fixture.typeof.qname}) fixture).${code}")
 		help := (FixtureExecutor) compiler.compileModel(model).make
 		return help.getFrom(fixture)
-	}	
+	}
+	
+	** An alternative to 'Uri.pathStr()' that does not strip off the fragment, allowing you to use 
+	** '#TEXT' and similar in the URI.
+	Str pathStr(Uri uri) {
+		uri.toStr[uri.scheme.size+1..-1]
+	}
 }
 
 @NoDoc

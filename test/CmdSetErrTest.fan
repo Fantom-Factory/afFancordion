@@ -19,7 +19,7 @@ class CmdSetErrTest : ConTest {
 	override Void doTest() {
 		fail := Element("span.error").innerHtml
 		verifyEq(fail, "<del class='expected'>Michael Caine</del>")
-		Element("span.exceptionMessage").verifyTextEq("java.lang.ClassCastException: fan.sys.Method cannot be cast to fan.sys.Field")
+		Element("span.exceptionMessage").verifyTextEq("Can not *set* a value on method: afConcordion::CmdSetErrTest.name")
 		input := Element("#stackTraceButton1").html
 		verifyEq(input, "<input id='stackTraceButton1' type='button' class='stackTraceButton' onclick='javascript:toggleStackTrace(&#39;1&#39;)' value='View Stack'/>")
 		Element(".stackTraceEntry").verifyExists

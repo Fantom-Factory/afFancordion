@@ -182,7 +182,7 @@ It is written here as a fandoc comment so you may cut and paste it into your spe
 pre>
 ** Heading
 ** #######
-** Explain the problem at hand by starting each specification with:
+** Give some background information and explain the problem at hand.
 **
 ** As a...
 ** When I...
@@ -190,7 +190,7 @@ pre>
 **
 ** Example
 ** -------
-** Then write an example of the behaviour using the format:
+** Now describe an example scenario and the expected behaviour. This will be the test:
 **
 ** Given...
 ** When...
@@ -273,6 +273,20 @@ class ExampleFixture {
 
 Arguments for the 'eq()' and 'notEq()' methods are [type coerced]`afBeanUtils::TypeCoercer` to a 'Str'.
 Arguments for the 'true()' and 'false()' are [type coerced]`afBeanUtils::TypeCoercer` to a 'Bool'.
+
+
+
+fail [#fail]
+============
+This simple command fails the test with the given message.
+
+pre>
+syntax: fantom
+
+** The meaning of life is [42]`fail:TODO`.
+@Fixture
+class ExampleFixture { }
+<pre
 
 
 
