@@ -28,9 +28,9 @@ internal class CmdVerify : Command {
 	static const Str:Type coerceTo		:= ["eq":Str#, "notEq":Str#, "type":Obj#, "true":Bool#, "false":Bool#, "null":Obj?#, "notNull":Obj?#]
 
 	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
-		i 	:= cmdUrl.pathStr.index("(")?.minus(1) ?: -1
-		cmd := cmdUrl.pathStr[0..i]
-		arg	:= (i != -1) ? cmdUrl.pathStr[i+1..-1].trim : ""
+		i 	:= pathStr(cmdUrl).index("(")?.minus(1) ?: -1
+		cmd := pathStr(cmdUrl)[0..i]
+		arg	:= (i != -1) ? pathStr(cmdUrl)[i+1..-1].trim : ""
 
 		if (!singleArgCmds.contains(cmd) && !doubleArgCmds.contains(cmd))
 			throw CmdNotFoundErr(ErrMsgs.verifyCmdNotFound(cmd), singleArgCmds.addAll(doubleArgCmds))

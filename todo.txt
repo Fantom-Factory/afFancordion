@@ -1,4 +1,6 @@
 
+command - link to file?
+
 contribute section title funcs
 logging / tooltip / popup cmd
 Bootstrap skin

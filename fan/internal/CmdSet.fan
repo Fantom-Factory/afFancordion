@@ -16,12 +16,15 @@ internal class CmdSet : Command {
 	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
 		// we can't call 'setOnFixture()' because we need to know what the field type is so we can 
 		// coerce the value
-		
-		fieldName	:= cmdUrl.pathStr
-		field       := fixCtx.fixtureInstance.typeof.field(fieldName, true)
-		fieldValue  := TypeCoercer().coerce(cmdText, field.type)
-		field.set(fixCtx.fixtureInstance, fieldValue)
 
+		// can't set the field directly because that doesn't cater for nested properties, 
+		// e.g. subject.difficulty
+		
+		// don't like using BeanProperties because (currently) it's not proper Fantom code.
+		// e.g. setName(Steve) not setName("Steve") 
+		// TODO: use BeanPropertyFactory().parse(property).set(instance, value)
+		// and use own TypeCoercer that looks for fromCode().
+		BeanProperties.set(fixCtx.fixtureInstance, pathStr(cmdUrl), cmdText)		
 		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
 	}
 }
