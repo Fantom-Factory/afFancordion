@@ -5,12 +5,12 @@ class Build : BuildPod {
 	new make() {
 		podName = "afConcordion"
 		summary = "Transform your boring unit tests into beautiful specification documents"
-		version = Version("0.0.2")
+		version = Version("0.0.3")
 
 		meta = [
 			"proj.name"		: "Concordion",	
 			"tags"			: "testing",
-			"repo.private"	: "false"
+			"repo.private"	: "true"
 		]
 
 		depends = [
