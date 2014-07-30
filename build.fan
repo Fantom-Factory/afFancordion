@@ -4,12 +4,13 @@ class Build : BuildPod {
 
 	new make() {
 		podName = "afConcordion"
-		summary = "Transform boring unit tests into beautiful specification documents"
-		version = Version("0.0.1")
+		summary = "Transform your boring unit tests into beautiful specification documents"
+		version = Version("0.0.2")
 
 		meta = [
 			"proj.name"		: "Concordion",	
-			"repo.private"	: "true"
+			"tags"			: "testing",
+			"repo.private"	: "false"
 		]
 
 		depends = [
@@ -19,13 +20,13 @@ class Build : BuildPod {
 			"fandoc 1.0",
 			
 			// ---- Core ------------------------
-			"afBeanUtils 1.0.0+",
+			"afBeanUtils 1.0.2+",
 			"afConcurrent 1.0.6+",
-			"afPlastic 1.0.14+",
+			"afPlastic 1.0.16+",
 			
 			
 			// ---- Test ------------------------
-			"afBounce 1.0.4+",
+			"afBounce 1.0.10+",
 			"afSizzle 1.0.0+",
 			"build 1.0"
 		]

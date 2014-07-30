@@ -17,7 +17,7 @@ internal class Commands {
 			cmd := cmdUrl.scheme ?: "NULL"
 			command := commands[cmd] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmd, cmdUrl), commands.keys)
 			
-			if (!fixCtx.errs.isEmpty && fixFacet.failFast && command.canFailFast)
+			if (!fixCtx.errs.findAll { it isnot FailErr }.isEmpty && fixFacet.failFast && command.canFailFast)
 				fixCtx.renderBuf.add(fixCtx.skin.cmdIgnored(cmdText))
 			else
 				command.runCommand(fixCtx, cmdUrl, cmdText)
