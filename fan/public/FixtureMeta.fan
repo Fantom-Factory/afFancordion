@@ -1,5 +1,5 @@
 
-** Contains meta information about a Condordion fixture.
+** Contains meta information about a Concordion fixture.
 const class FixtureMeta {
 	
 	** The fixture title. Taken from either the first heading in the specification or the fixture type name.
@@ -26,7 +26,7 @@ const class FixtureMeta {
 	internal new make(|This|? in := null) { in?.call(this) }
 }
 
-** Contains contextual information about a Condordion fixture.
+** Contains contextual information about a Concordion fixture.
 class FixtureCtx {
 	
 	** The fixture being run.

@@ -180,7 +180,7 @@ class ConcordionRunner {
 	** By default does nothing. 
 	virtual Void suiteTearDown(Type:FixtureResult resultsCache) {
 		indexFile := outputDir + `index.html`
-		if (!indexFile.exists) {
+		if (!indexFile.exists && !resultsCache.isEmpty) {
 			url := resultsCache.vals.first.resultFile.uri.relTo(outputDir.uri)
 			indexFile.out.print("""<html><head><meta http-equiv="refresh" content="0; url=${url.encode.toXml}" /></head></html>""").close
 		}

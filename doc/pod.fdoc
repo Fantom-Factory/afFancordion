@@ -200,8 +200,8 @@ pre>
 **
 ** Further Details
 ** ===============
-**  - link to other fixtures here
-**  - that explain edge cases
+**  - [link to other fixtures here]`run:OtherTest`
+**  - [that explain edge cases]`run:MoreTests`
 <pre
 
 

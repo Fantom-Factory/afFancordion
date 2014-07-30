@@ -11,5 +11,12 @@ internal class CmdFail : Command {
 	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
 		msg := pathStr(cmdUrl).isEmpty ? "Fail" : pathStr(cmdUrl)
 		fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdText, msg))
+		
+		fixCtx.errs.add(FailErr(msg))
 	}	
+}
+
+@NoDoc
+const class FailErr : Err {
+	new make(Str msg, Err? cause := null) : super(msg, cause) { }
 }

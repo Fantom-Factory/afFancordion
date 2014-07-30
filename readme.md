@@ -154,7 +154,7 @@ Specifications can be written in any way you wish, but the following structure i
 ```
 ** Heading
 ** #######
-** Explain the problem at hand by starting each specification with:
+** Give some background information and explain the problem at hand.
 **
 ** As a...
 ** When I...
@@ -162,7 +162,7 @@ Specifications can be written in any way you wish, but the following structure i
 **
 ** Example
 ** -------
-** Then write an example of the behaviour using the format:
+** Now describe an example scenario and the expected behaviour. This will be the test:
 **
 ** Given...
 ** When...
@@ -172,8 +172,8 @@ Specifications can be written in any way you wish, but the following structure i
 **
 ** Further Details
 ** ===============
-**  - link to other fixtures here
-**  - that explain edge cases
+**  - [link to other fixtures here]`run:OtherTest`
+**  - [that explain edge cases]`run:MoreTests`
 ```
 
 ## Commands 
@@ -229,6 +229,16 @@ class ExampleFixture {
 ```
 
 Arguments for the `eq()` and `notEq()` methods are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Str`. Arguments for the `true()` and `false()` are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Bool`.
+
+### fail 
+
+This simple command fails the test with the given message.
+
+```
+** The meaning of life is [42]`fail:TODO`.
+@Fixture
+class ExampleFixture { }
+```
 
 ### run 
 
