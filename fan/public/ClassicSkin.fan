@@ -49,7 +49,7 @@ class ClassicSkin : ConcordionSkin {
 		"""<span class="error">
 		     <del class="expected">${cmdText.toXml}</del>
 		   </span>
-		   <span class="exceptionMessage">${err.msg.splitLines[0].toXml}</span>
+		   <span class="exceptionMessage">${firstLine2(err.msg).toXml}</span>
 		   <input id="stackTraceButton${buttonId}" type="button" class="stackTraceButton" onclick="javascript:toggleStackTrace('${buttonId}')" value="View Stack" />
 		   <span class="stackTrace" id="stackTrace${buttonId}">
 		     <span>While evaluating command: <code>${cmdUrl}</code></span>
@@ -57,5 +57,9 @@ class ClassicSkin : ConcordionSkin {
 		     ${stack}
 		   </span>
 		   """
+	}
+	
+	private Str firstLine2(Str? txt) {
+		txt?.splitLines?.exclude { it.trim.isEmpty }?.first ?: Str.defVal
 	}
 }
