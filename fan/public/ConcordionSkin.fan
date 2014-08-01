@@ -204,12 +204,12 @@ mixin ConcordionSkin {
 	** Called to render a command failure.
 	virtual Str cmdFailure(Str expected, Obj? actual, Bool escape := true) {
 		html := escape ? expected.toXml : expected
-		return """<span class="failure"><del class="expected">${html}</del> <span class="actual">${actual?.toStr?.toXml}</span></span>"""
+		return """<span class="failure"><del class="expected">${html}</del> <span class="actual">${firstLine(actual?.toStr).toXml}</span></span>"""
 	}
 
 	** Called to render a command error.
 	virtual Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
-		"""<span class="error"><del class="expected">${cmdText.toXml}</del> <span class="actual">${err.msg.toXml}</span></span>"""
+		"""<span class="error"><del class="expected">${cmdText.toXml}</del> <span class="actual">${firstLine(err.msg).toXml}</span></span>"""
 	}
 	
 	** Custom commands may use this method as a generic hook into the skin.
@@ -266,7 +266,12 @@ mixin ConcordionSkin {
 	
 	// ---- Private Helpers -----------------------------------------------------------------------
 	
+	private Str firstLine(Str? txt) {
+		txt?.splitLines?.exclude { it.trim.isEmpty }?.first ?: Str.defVal
+	}
+	
 	private StrBuf renderBuf() {
 		fixtureCtx.renderBuf
 	}
 }
+
