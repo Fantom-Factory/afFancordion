@@ -92,7 +92,10 @@ class ConcordionRunner {
 		docTitle	:= doc.findHeadings.first?.title ?: specMeta.fixtureType.name.fromDisplayName
 		podName		:= specMeta.fixtureType.pod?.name ?: "no-name"
 		
-		if (podName.contains("_"))	podName = "no-name"	// scripts are called `FileName_0`
+		if (specMeta.fixtureType.pod != null)
+			if (specMeta.fixtureType.pod.meta["pod.isScript"].toBool(false))
+				podName = "from-script"
+
 		outputDir.createDir(podName)
 		resultFile	:= this.outputDir.plus(podName.toUri, false) + `${fixtureInstance.typeof.name}.html` 
 		
@@ -222,6 +225,11 @@ class ConcordionRunner {
    </body>
    </html>
    """
+	}
+	
+	** Returns the current 'ConcordionRunner' in use, or 'null' if no tests are running. 
+	static ConcordionRunner? current() {
+		ThreadStack.peek("afConcordion.runner", false)
 	}
 	
 	private Str renderFixture(Doc doc, FixtureCtx fixCtx) {

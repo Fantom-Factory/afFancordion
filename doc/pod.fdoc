@@ -52,7 +52,7 @@ using afConcordion
 ** -------
 ** Concordion says, [Hello World!]`verify:eq(greeting)`
 **
-class HelloWorldFixture : Test, FixtureTest {
+class HelloWorldFixture : FixtureTest {
     Str greeting() {
         "Hello World!"
     }
@@ -133,7 +133,7 @@ runner.runFixture(fixture)
    To extend Concordion, simply add your own Command implementation to the map! (Super easy!)
 
 To help you bridge the gap between Concordion and standard Fantom tests, Concordion ships with `FixtureTest`.
-This handy mixin lets you run any Fixture as a Fantom Test. (Note your test classes still have to extend 'Test' as well.)
+This handy class lets you run any Fixture as a Fantom Test.
 
 To use a specific 'ConcordionRunner' in your tests, override 'concordionRunner()' to return desired instance.
 Even though all your tests will extend 'FixtureTest', the 'concordionRunner()' method will only be called once.
@@ -408,7 +408,7 @@ class WebTestModule {
 }
 
 // The super class for all Web Fixtures
-abstract class WebFixture : Test, FixtureTest {
+abstract class WebFixture : FixtureTest {
     BedClient? client
 
     virtual Void fixtureSetup() { }
@@ -428,6 +428,10 @@ abstract class WebFixture : Test, FixtureTest {
 
 Release Notes [#releaseNotes]
 *****************************
+v0.0.4 [#v0.0.4]
+----------------
+ - New: Added 'ConcordionRunner.current()' that returns the current 'ConcordionRunner' in use, or 'null' if none.
+ - Chg: 'FixtureTest' now extends 'Test'.
 
 v0.0.2 [#v0.0.2]
 ----------------
