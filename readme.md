@@ -1,49 +1,49 @@
 ## Overview 
 
-`Concordion` transforms your boring unit tests into beautiful specification documents! It is similar to [Cucumber](http://cukes.info/) but focuses on readability and presentation.
+`Fancordion` transforms your boring unit tests into beautiful specification documents! It is similar to [Cucumber](http://cukes.info/) but focuses on readability and presentation.
 
-`Concordion` embeds test results directly into your test documentation, giving it real *meaning*.
+`Fancordion` embeds test results directly into your test documentation, giving it real *meaning*.
 
 Features:
 
 - **Pretty** - creates beautiful HTML output.
-- **Simple** - run Concordion tests with [fant](http://fantom.org/doc/docTools/Fant.html), just like a unit test!
+- **Simple** - run Fancordion tests with [fant](http://fantom.org/doc/docTools/Fant.html), just like a unit test!
 - **Linkable** - create organised and hierarchical index pages with the `run` command.
 - **Extensible** - write your own commands with ease.
 - **Skinnable** - Customise your HTML reports as you see fit.
 
-For a live example of Concordion results, see the output from the [Java Concordion framework](http://concordion.org/dist/1.4.4/spec/concordion/Concordion.html).
+For a live example of Fancordion results, see the output from the [Java Fancordion framework](http://concordion.org/dist/1.4.4/spec/concordion/Fancordion.html).
 
 ## Install 
 
-Install `Concordion` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
+Install `Fancordion` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
-    C:\> fanr install -r http://repo.status302.com/fanr/ afConcordion
+    C:\> fanr install -r http://repo.status302.com/fanr/ afFancordion
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afConcordion 0.0+"]
+    depends = ["sys 1.0", ..., "afFancordion 0.0+"]
 
 ## Documentation 
 
-Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afConcordion/).
+Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afFancordion/).
 
 ## Quick Start 
 
 1). Create a text file called `HelloWorldFixture.fan`
 
 ```
-using afConcordion
+using afFancordion
 
 ** My First Fixture
 ** ################
 **
-** This is a simple Concordion fixture that verifies that the method
+** This is a simple Fancordion fixture that verifies that the method
 ** 'greeting()' returns 'Hello World!'.
 **
 ** Example
 ** -------
-** Concordion says, [Hello World!]`verify:eq(greeting)`
+** Fancordion says, [Hello World!]`verify:eq(greeting)`
 **
 class HelloWorldFixture : FixtureTest {
     Str greeting() {
@@ -57,10 +57,10 @@ class HelloWorldFixture : FixtureTest {
 ```
 C:\> fant HelloWorldFixture.fan
 
--- Run:  HelloWorldFixture_0::HelloWorldFixture.testConcordionFixture...
-   Pass: HelloWorldFixture_0::HelloWorldFixture.testConcordionFixture [0]
+-- Run:  HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture...
+   Pass: HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture [0]
 
-[info] [afConcordion] file:/C:/temp/concordion/HelloWorldFixture.html
+[info] [afFancordion] file:/C:/temp/fancordion/HelloWorldFixture.html
 
 Time: 691ms
 
@@ -71,7 +71,7 @@ Time: 691ms
 
 3). View the generated fixture result file:
 
-![Screenshot of Hello World Fixture Results](http://static.alienfactory.co.uk/fantom-docs/afConcordion.helloWorldFixture.png)
+![Screenshot of Hello World Fixture Results](http://static.alienfactory.co.uk/fantom-docs/afFancordion.helloWorldFixture.png)
 
 The green highlight means the test passed.
 
@@ -91,35 +91,35 @@ The **Fixture** is the code part of the *acceptance test* that does the actual w
 
 ## Usage 
 
-Any Fantom class annotated with the [@Fixture](http://repo.status302.com/doc/afConcordion/Fixture.html) facet can be run as a Concordion fixture. Just pass it into `ConcordionRunner.runFixture()`:
+Any Fantom class annotated with the [@Fixture](http://repo.status302.com/doc/afFancordion/Fixture.html) facet can be run as a Fancordion fixture. Just pass it into `FancordionRunner.runFixture()`:
 
 ```
-using afConcordion
+using afFancordion
 
-** My first Concordion fixture.
+** My first Fancordion fixture.
 @Fixture
 class MyFixture {
     ...
 }
 
 fixture := MyFixture()
-runner  := ConcordionRunner()
+runner  := FancordionRunner()
 runner.runFixture(fixture)
 ```
 
-[ConcordionRunner](http://repo.status302.com/doc/afConcordion/ConcordionRunner.html) is designed to be subclassed and has several methods, or hooks, that change it's behaviour:
+[FancordionRunner](http://repo.status302.com/doc/afFancordion/FancordionRunner.html) is designed to be subclassed and has several methods, or hooks, that change it's behaviour:
 
-- `suiteSetup()` is only ever called once no matter how many fixtures are run, or `ConcordionRunners` created.
+- `suiteSetup()` is only ever called once no matter how many fixtures are run, or `FancordionRunners` created.
 - `suiteTearDown()` again is only ever called the once (currently in an Env shutdown hook).
 - `fixtureSetup()` is called before every fixture.
 - `fixtureTearDown()` is called after every fixture.
-- `skinType` & `gimmeSomeSkin()` determine & create an instance of the `ConcordionSkin` class used to render the result HTML. You could, for instance, change this to use a Bootstrap skin.
+- `skinType` & `gimmeSomeSkin()` determine & create an instance of the `FancordionSkin` class used to render the result HTML. You could, for instance, change this to use a Bootstrap skin.
 - `outputDir` is where the result files are saved.
-- `commands` is a map of all the [Commands](http://repo.status302.com/doc/afConcordion/Commands.html) made available to the test. To extend Concordion, simply add your own Command implementation to the map! (Super easy!)
+- `commands` is a map of all the [Commands](http://repo.status302.com/doc/afFancordion/Commands.html) made available to the test. To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
 
-To help you bridge the gap between Concordion and standard Fantom tests, Concordion ships with [FixtureTest](http://repo.status302.com/doc/afConcordion/FixtureTest.html). This handy class lets you run any Fixture as a Fantom Test.
+To help you bridge the gap between Fancordion and standard Fantom tests, Fancordion ships with [FixtureTest](http://repo.status302.com/doc/afFancordion/FixtureTest.html). This handy class lets you run any Fixture as a Fantom Test.
 
-To use a specific `ConcordionRunner` in your tests, override `concordionRunner()` to return desired instance. Even though all your tests will extend `FixtureTest`, the `concordionRunner()` method will only be called once. This means you can run a single test with [fant](http://fantom.org/doc/docTools/Fant.html), or all of them, and they will still only use the same runner instance.
+To use a specific `FancordionRunner` in your tests, override `fancordionRunner()` to return desired instance. Even though all your tests will extend `FixtureTest`, the `fancordionRunner()` method will only be called once. This means you can run a single test with [fant](http://fantom.org/doc/docTools/Fant.html), or all of them, and they will still only use the same runner instance.
 
 ## Specifications 
 
@@ -242,7 +242,7 @@ class ExampleFixture { }
 
 ### run 
 
-The `run` command runs another Concordion fixture and prints an appropriate success / failure link to it.
+The `run` command runs another Fancordion fixture and prints an appropriate success / failure link to it.
 
 The command path must be the name of the Fixture type to run. The fixture type may be qualified.
 
@@ -285,23 +285,23 @@ class ExampleFixture {
 
 ## Test BedSheet Apps 
 
-Concordion can be used to test BedSheet applications.
+Fancordion can be used to test BedSheet applications.
 
 Typically I would start the web application under test (via [Bounce](http://www.fantomfactory.org/pods/afBounce)) in the runner's `suiteSetup()`. Since all web application state is (usually) stored in a database, there is little need to re-start the web app for every test. While this only saves you a couple of seconds, over the course of many tests it can add up to be quite a time saver!
 
 Web application shutdown would then occur in the runner's `suiteTearDown()` method.
 
-Below shows a typical ConcordionRunner setup together with an abstract WebFixture class.
+Below shows a typical FancordionRunner setup together with an abstract WebFixture class.
 
 ```
 using afBounce
-using afConcordion
+using afFancordion
 
-class MyConcordionRunner : ConcordionRunner {
+class MyFancordionRunner : FancordionRunner {
     private BedServer? server
 
     new make(|This|? f := null) : super(f) {
-        outputDir = `concordion-results/`.toFile
+        outputDir = `fancordion-results/`.toFile
 
         // other runner configuration...
     }
@@ -350,9 +350,9 @@ abstract class WebFixture : FixtureTest {
     virtual Void fixtureSetup() { }
     virtual Void fixtureTearDown() { }
 
-    // The important bit - this creates the ConcordionRunner to be used.
-    override ConcordionRunner concordionRunner() {
-        MyConcordionRunner()
+    // The important bit - this creates the FancordionRunner to be used.
+    override FancordionRunner fancordionRunner() {
+        MyFancordionRunner()
     }
 
     // Other common / reusable methods such as :

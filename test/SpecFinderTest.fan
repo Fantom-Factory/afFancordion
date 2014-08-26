@@ -1,7 +1,7 @@
 using afBounce
 
 ** Wotever
-@Fixture { specification=`fan://afConcordion/test/` }
+@Fixture { specification=`fan://afFancordion/test/` }
 class SpecFinderFromPodTest : ConTest {
 	
 	override Void doTest() {

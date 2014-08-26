@@ -6,7 +6,7 @@
 <stringAttribute key="mainScript" value=""/>
 <stringAttribute key="nature" value="com.xored.fanide.core.nature"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/Concordion"/>
+<listEntry value="/Fancordion"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
@@ -17,6 +17,6 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.dltk.testing.engineId" value="com.xored.fanide.testing.fantest.testingEngine"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.dltk.launching.scriptProcessFactory"/>
-<stringAttribute key="project" value="Concordion"/>
-<stringAttribute key="workingDir" value="${workspace_loc:Concordion}"/>
+<stringAttribute key="project" value="Fancordion"/>
+<stringAttribute key="workingDir" value="${workspace_loc:Fancordion}"/>
 </launchConfiguration>

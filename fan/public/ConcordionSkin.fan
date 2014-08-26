@@ -1,10 +1,10 @@
 using fandoc
 
 ** Implement to create a skin for specification output. 
-** Skins are used by Concordion and its command to generate the HTML result files.
+** Skins are used by Fancordion and its command to generate the HTML result files.
 ** 
 ** This mixin by default renders bare, but valid, HTML5 code. Override methods to alter the markup generated.
-mixin ConcordionSkin {
+mixin FancordionSkin {
 
 	abstract Uri[] cssUrls
 	abstract Uri[] scriptUrls
@@ -43,7 +43,7 @@ mixin ConcordionSkin {
 	
 	** Starts a <head> tag - this should also render a <title> tag.
 	virtual Str head() {
-		"<head>\n\t<title>${fixtureMeta.title.toXml} : Concordion</title>\n"
+		"<head>\n\t<title>${fixtureMeta.title.toXml} : Fancordion</title>\n"
 	}
 	virtual Str headEnd() { "</head>\n" }
 	
@@ -170,7 +170,7 @@ mixin ConcordionSkin {
 	** Returns an ordered map of URLs to fixture titles to use for the breadcrumbs.
 	virtual Uri:Str breadcrumbPaths() {
 		paths := Uri:Str[:] { ordered = true}
-		metas := (FixtureMeta[]) ThreadStack.elements("afConcordion.fixtureMeta")
+		metas := (FixtureMeta[]) ThreadStack.elements("afFancordion.fixtureMeta")
 		metas.each |meta| {			
 			url := meta.resultFile.normalize.uri.relTo(fixtureMeta.resultFile.parent.normalize.uri)
 			str := meta.title
@@ -181,9 +181,9 @@ mixin ConcordionSkin {
 	
 	** Renders a footer.
 	** This is (usually) called by 'bodyEnd()'. 
-	** By default it just renders a simple link to the Concordion website.
+	** By default it just renders a simple link to the Fancordion website.
 	virtual Str footer() {
-		"<footer>\n" + a(`http://www.fantomfactory.org/pods/afConcordion`, "Concordion v${Pod.of(this).version}") + "</footer>"
+		"<footer>\n" + a(`http://www.fantomfactory.org/pods/afFancordion`, "Fancordion v${Pod.of(this).version}") + "</footer>"
 	}
 
 
@@ -223,12 +223,12 @@ mixin ConcordionSkin {
 	
 	** Returns meta associated with the current fixture.
 	virtual FixtureMeta fixtureMeta() {
-		ThreadStack.peek("afConcordion.fixtureMeta")
+		ThreadStack.peek("afFancordion.fixtureMeta")
 	}
 
 	** Returns the context associated with the current fixture.
 	virtual FixtureCtx fixtureCtx() {
-		ThreadStack.peek("afConcordion.fixtureCtx")
+		ThreadStack.peek("afFancordion.fixtureCtx")
 	}
 
 	** Copies the given css file to the output dir and adds the resultant URL to 'cssUrls'.
@@ -247,15 +247,15 @@ mixin ConcordionSkin {
 	** Returns a URL to the destination file relative to the current fixture file. 
 	** Use this URL for embedding href's in the fixture HTML. Example:
 	** 
-	**   copyFile(`fan://afConcordion/res/concordion.css`.get, `etc/concordion.css`)
-	**   --> `../../etc/concordion.css`
+	**   copyFile(`fan://afFancordion/res/fancordion.css`.get, `etc/fancordion.css`)
+	**   --> `../../etc/fancordion.css`
 	virtual Uri copyFile(File srcFile, Uri destUrl) {
 		if (!destUrl.isPathOnly)
-			throw ArgErr(ErrMsgs.urlMustBePathOnly("Dest URL", destUrl, `etc/concordion.css`))
+			throw ArgErr(ErrMsgs.urlMustBePathOnly("Dest URL", destUrl, `etc/fancordion.css`))
 		if (destUrl.isPathAbs)
-			throw ArgErr(ErrMsgs.urlMustNotStartWithSlash("Dest URL", destUrl, `etc/concordion.css`))
+			throw ArgErr(ErrMsgs.urlMustNotStartWithSlash("Dest URL", destUrl, `etc/fancordion.css`))
 		if (destUrl.isDir)
-			throw ArgErr(ErrMsgs.urlMustNotEndWithSlash("Dest URL", destUrl, `etc/concordion.css`))
+			throw ArgErr(ErrMsgs.urlMustNotEndWithSlash("Dest URL", destUrl, `etc/fancordion.css`))
 
 		dstFile := fixtureMeta.baseOutputDir + destUrl
 		srcFile.copyTo(dstFile, ["overwrite": false])

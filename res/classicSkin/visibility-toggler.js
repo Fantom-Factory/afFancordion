@@ -10,7 +10,7 @@ function getElementById(id) {
   } else if (document.layers) { // nn4
     return document.layers[id];
   }
-  alert("Sorry, but your web browser is not supported by Concordion.");
+  alert("Sorry, but your web browser is not supported by Fancordion.");
 }
 
 function isVisible(element) {

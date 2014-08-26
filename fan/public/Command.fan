@@ -1,9 +1,9 @@
 using afPlastic
 
-** Implement to create your own Concordion commands. 
-** To use your own command in a specification, just add it to the 'ConcordionRunner':
+** Implement to create your own Fancordion commands. 
+** To use your own command in a specification, just add it to the 'FancordionRunner':
 ** 
-**   runner := ConcordionRunner()
+**   runner := FancordionRunner()
 **   myCmd  := MyCommand()
 **   runner.commands["mycmd"] = myCmd
 ** 

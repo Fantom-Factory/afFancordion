@@ -20,7 +20,7 @@ class ErrPageTest : ConTest {
 	}
 	
 	override Void testFixture() {
-		runner := concordionRunner { it.skinType = MySkin# }
+		runner := fancordionRunner { it.skinType = MySkin# }
 		result := runner.runFixture(this)
 
 		Actor.locals["afBounce.sizzleDoc"] = SizzleDoc.fromStr(result.resultHtml)

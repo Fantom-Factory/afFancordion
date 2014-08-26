@@ -3,19 +3,19 @@ using concurrent
 ** I want the individual objects stored in Actor.locals() so 3rd parties can use them if they wish. 
 internal class Locals {
 	
-	ConcordionRunner? originalRunner {
-		get { get("afConcordion.originalRunner") }
-		set { set("afConcordion.originalRunner", it) }		
+	FancordionRunner? originalRunner {
+		get { get("afFancordion.originalRunner") }
+		set { set("afFancordion.originalRunner", it) }		
 	}
 
 	|->|? shutdownHook {
-		get { get("afConcordion.shutdownHook") }
-		set { set("afConcordion.shutdownHook", it) }
+		get { get("afFancordion.shutdownHook") }
+		set { set("afFancordion.shutdownHook", it) }
 	}
 	
 	[Type:FixtureResult]? resultsCache {
-		get { getOrAdd("afConcordion.resultsCache", Type:FixtureResult[:] { ordered=true }) }
-		set { set("afConcordion.resultsCache", it) }		
+		get { getOrAdd("afFancordion.resultsCache", Type:FixtureResult[:] { ordered=true }) }
+		set { set("afFancordion.resultsCache", it) }		
 	}
 
 

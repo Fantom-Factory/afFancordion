@@ -1,9 +1,9 @@
 
-** Place on a class to mark it as a Concordion Fixture.
+** Place on a class to mark it as a Fancordion Fixture.
 @FacetMeta { inherited = true }
 facet class Fixture {
 
-	** By default Concordion uses the Fixture Type's doc comment as the specification.
+	** By default Fancordion uses the Fixture Type's doc comment as the specification.
 	** If you wish to use an external file then use this attribute to explicitly set the location of the Fandoc specification. 
 	**  
 	** The URI may take several forms:
