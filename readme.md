@@ -12,7 +12,7 @@ Features:
 - **Extensible** - write your own commands with ease.
 - **Skinnable** - Customise your HTML reports as you see fit.
 
-For a live example of Fancordion results, see the output from the [Java Fancordion framework](http://concordion.org/dist/1.4.4/spec/concordion/Fancordion.html).
+For an example of Fancordion results, see the output from the [Java Concordion framework](http://concordion.org/dist/1.4.4/spec/concordion/Fancordion.html).
 
 ## Install 
 
