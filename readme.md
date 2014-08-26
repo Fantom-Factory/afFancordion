@@ -45,7 +45,7 @@ using afConcordion
 ** -------
 ** Concordion says, [Hello World!]`verify:eq(greeting)`
 **
-class HelloWorldFixture : Test, FixtureTest {
+class HelloWorldFixture : FixtureTest {
     Str greeting() {
         "Hello World!"
     }
@@ -117,7 +117,7 @@ runner.runFixture(fixture)
 - `outputDir` is where the result files are saved.
 - `commands` is a map of all the [Commands](http://repo.status302.com/doc/afConcordion/Commands.html) made available to the test. To extend Concordion, simply add your own Command implementation to the map! (Super easy!)
 
-To help you bridge the gap between Concordion and standard Fantom tests, Concordion ships with [FixtureTest](http://repo.status302.com/doc/afConcordion/FixtureTest.html). This handy mixin lets you run any Fixture as a Fantom Test. (Note your test classes still have to extend `Test` as well.)
+To help you bridge the gap between Concordion and standard Fantom tests, Concordion ships with [FixtureTest](http://repo.status302.com/doc/afConcordion/FixtureTest.html). This handy class lets you run any Fixture as a Fantom Test.
 
 To use a specific `ConcordionRunner` in your tests, override `concordionRunner()` to return desired instance. Even though all your tests will extend `FixtureTest`, the `concordionRunner()` method will only be called once. This means you can run a single test with [fant](http://fantom.org/doc/docTools/Fant.html), or all of them, and they will still only use the same runner instance.
 
@@ -344,7 +344,7 @@ class WebTestModule {
 }
 
 // The super class for all Web Fixtures
-abstract class WebFixture : Test, FixtureTest {
+abstract class WebFixture : FixtureTest {
     BedClient? client
 
     virtual Void fixtureSetup() { }
