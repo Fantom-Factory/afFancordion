@@ -24,7 +24,8 @@ internal class CmdSet : Command {
 		// e.g. setName(Steve) not setName("Steve") 
 		// TODO: use BeanPropertyFactory().parse(property).set(instance, value)
 		// and use own TypeCoercer that looks for fromCode().
-		BeanProperties.set(fixCtx.fixtureInstance, pathStr(cmdUrl), cmdText)		
+		BeanProperties.set(fixCtx.fixtureInstance, pathStr(cmdUrl), cmdText)
+		
 		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
 	}
 }
