@@ -1,5 +1,5 @@
 
-** Contains meta information about a Concordion fixture.
+** Contains meta information about a Fancordion fixture.
 const class FixtureMeta {
 	
 	** The fixture title. Taken from either the first heading in the specification or the fixture type name.
@@ -26,14 +26,14 @@ const class FixtureMeta {
 	internal new make(|This|? in := null) { in?.call(this) }
 }
 
-** Contains contextual information about a Concordion fixture.
+** Contains contextual information about a Fancordion fixture.
 class FixtureCtx {
 	
 	** The fixture being run.
 	Obj				fixtureInstance
 
-	** The concordion skin being used to render the result HTML
-	ConcordionSkin	skin
+	** The fancordion skin being used to render the result HTML
+	FancordionSkin	skin
 	
 	** The 'StrBuf' that the result HTML is printed to.
 	StrBuf			renderBuf

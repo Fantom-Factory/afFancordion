@@ -1,5 +1,5 @@
 
-** The 'run' command runs another Concordion fixture and prints an appropriate success / failure link to it.
+** The 'run' command runs another Fancordion fixture and prints an appropriate success / failure link to it.
 ** 
 ** The command path must be the name of the Fixture type to run. The fixture type may be qualified.
 ** 
@@ -62,7 +62,7 @@ internal class CmdRun : Command {
 				newInstance := newType.make
 				
 				// use the current runner
-				runner := (ConcordionRunner) ThreadStack.peek("afConcordion.runner")
+				runner := (FancordionRunner) ThreadStack.peek("afFancordion.runner")
 				result := runner.runFixture(newInstance)
 				if (!result.errors.isEmpty)
 					throw result.errors.first

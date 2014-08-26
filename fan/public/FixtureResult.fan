@@ -1,5 +1,5 @@
 
-** Contains the result of a Concordion fixture run.
+** Contains the result of a Fancordion fixture run.
 const class FixtureResult {
 	
 	** Meta information about the fixture.

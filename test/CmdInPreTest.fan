@@ -7,7 +7,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** Concordion says:
+** Fancordion says:
 ** 
 **   verify:eq(greeting)
 **   Kick Ass!

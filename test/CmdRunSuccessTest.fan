@@ -3,7 +3,7 @@ using afBounce
 ** Command: Run
 ** ############
 **
-** A Test Command links to another concordion fixture. If the fixture passes, it is displayed in green. 
+** A Test Command links to another fancordion fixture. If the fixture passes, it is displayed in green. 
 ** 
 ** Example
 ** -------

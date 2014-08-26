@@ -7,7 +7,7 @@ abstract class ConTest : Test {
 	FixtureResult? result
 	
 	virtual Void testFixture() {
-		runner := ((ConcordionRunner?) ThreadStack.peek("afConcordion.runner", false)) ?: concordionRunner
+		runner := ((FancordionRunner?) ThreadStack.peek("afFancordion.runner", false)) ?: fancordionRunner
 		result = runner.runFixture(this)
 
 		Actor.locals["afBounce.sizzleDoc"] = SizzleDoc.fromStr(result.resultHtml)
@@ -17,9 +17,9 @@ abstract class ConTest : Test {
 	
 	abstract Void doTest()
 	
-	virtual ConcordionRunner concordionRunner() {
-		ConcordionRunner() {
-			it.outputDir	= `build/concordion/`.toFile
+	virtual FancordionRunner fancordionRunner() {
+		FancordionRunner() {
+			it.outputDir	= `build/fancordion/`.toFile
 		}
 	}
 }

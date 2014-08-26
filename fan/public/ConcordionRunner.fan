@@ -3,24 +3,24 @@ using afBeanUtils
 using afPlastic
 using concurrent
 
-** Runs Concordion fixtures.
-class ConcordionRunner {
-	private static const Log log		:= Utils.getLog(ConcordionRunner#)
+** Runs Fancordion fixtures.
+class FancordionRunner {
+	private static const Log log		:= Utils.getLog(FancordionRunner#)
 	
 	** Where the generated HTML result files are saved.
-	File		outputDir				:= Env.cur.tempDir + `concordion/`
+	File		outputDir				:= Env.cur.tempDir + `fancordion/`
 	
 	** The skin applied to generated HTML result files.
 	Type		skinType				:= ClassicSkin#
 	
-	** The commands made available to Concordion tests. 
+	** The commands made available to Fancordion tests. 
 	Str:Command	commands				:= Str:Command[:] { caseInsensitive = true }
 
 	** A command chain of 'SpecificationFinders'.
 	@NoDoc
 	SpecificationFinder[] specFinders	:= SpecificationFinder[,]
 		
-	** Creates a 'ConcordionRunner'.
+	** Creates a 'FancordionRunner'.
 	new make(|This|? f := null) {
 		commands["verify"]	= CmdVerify()
 		commands["set"]		= CmdSet()
@@ -41,7 +41,7 @@ class ConcordionRunner {
 		f?.call(this)
 	}
 
-	** Runs the given Concordion fixture.
+	** Runs the given Fancordion fixture.
 	FixtureResult runFixture(Obj fixtureInstance) {
 		// we need the fixture *instance* so it can have any state, 
 		// and if a Test instance, verify cmd uses it to notch up the verify count
@@ -63,7 +63,7 @@ class ConcordionRunner {
 			safeRunner 	 := Unsafe(locals.originalRunner)
 			safeResults	 := Unsafe(locals.resultsCache)
 			shutdownHook := |->| { 
-				((ConcordionRunner) safeRunner.val).suiteTearDown(safeResults.val)
+				((FancordionRunner) safeRunner.val).suiteTearDown(safeResults.val)
 				Locals.instance.shutdownHook = null
 				Locals.instance.resultsCache = null
 			}
@@ -117,9 +117,9 @@ class ConcordionRunner {
 		}
 		
 		try {
-			ThreadStack.push("afConcordion.runner", this)
-			ThreadStack.push("afConcordion.fixtureMeta", fixMeta)
-			ThreadStack.push("afConcordion.fixtureCtx", fixCtx)
+			ThreadStack.push("afFancordion.runner", this)
+			ThreadStack.push("afFancordion.fixtureMeta", fixMeta)
+			ThreadStack.push("afFancordion.fixtureCtx", fixCtx)
 					
 			fixtureSetup(fixtureInstance)
 			
@@ -150,9 +150,9 @@ class ConcordionRunner {
 			return result
 			
 		} finally {
-			ThreadStack.pop("afConcordion.runner")
-			ThreadStack.pop("afConcordion.fixtureMeta")
-			ThreadStack.pop("afConcordion.fixtureCtx")
+			ThreadStack.pop("afFancordion.runner")
+			ThreadStack.pop("afFancordion.fixtureMeta")
+			ThreadStack.pop("afFancordion.fixtureCtx")
 			
 			// no too bother if this never gets cleaned up
 			Actor.locals.remove("afBounce.testInstance")
@@ -202,10 +202,10 @@ class ConcordionRunner {
 		log.info(result.resultFile.normalize.osPath)		
 	}
 	
-	** A hook that creates an 'ConcordionSkin' instance.
+	** A hook that creates an 'FancordionSkin' instance.
 	** 
 	** Simply returns 'skinType.make()' by default.
-	virtual ConcordionSkin gimmeSomeSkin() {
+	virtual FancordionSkin gimmeSomeSkin() {
 		skinType.make
 	}
 	
@@ -216,7 +216,7 @@ class ConcordionRunner {
 """<!DOCTYPE html>
    <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
-   	<title>${fixMeta.title.toXml} : Concordion</title>
+   	<title>${fixMeta.title.toXml} : Fancordion</title>
    </head>
    <body>
    <pre>
@@ -227,9 +227,9 @@ class ConcordionRunner {
    """
 	}
 	
-	** Returns the current 'ConcordionRunner' in use, or 'null' if no tests are running. 
-	static ConcordionRunner? current() {
-		ThreadStack.peek("afConcordion.runner", false)
+	** Returns the current 'FancordionRunner' in use, or 'null' if no tests are running. 
+	static FancordionRunner? current() {
+		ThreadStack.peek("afFancordion.runner", false)
 	}
 	
 	private Str renderFixture(Doc doc, FixtureCtx fixCtx) {

@@ -3,12 +3,12 @@ using build
 class Build : BuildPod {
 
 	new make() {
-		podName = "afConcordion"
-		summary = "Transform your boring unit tests into beautiful specification documents"
-		version = Version("0.0.3")
+		podName = "afFancordion"
+		summary = "Transform your boring unit tests into beautiful specification documents!"
+		version = Version("0.0.4")
 
 		meta = [
-			"proj.name"		: "Concordion",	
+			"proj.name"		: "Fancordion",	
 			"tags"			: "testing",
 			"repo.private"	: "true"
 		]

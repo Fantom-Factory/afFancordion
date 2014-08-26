@@ -9,7 +9,7 @@ using afBounce
 ** -------
 ** Check out my Alien!
 ** 
-** ![Alien-Head]`fan://afConcordion/test/alienFactory.png`
+** ![Alien-Head]`fan://afFancordion/test/alienFactory.png`
 ** 
 class ImgTest : ConTest {
 	
