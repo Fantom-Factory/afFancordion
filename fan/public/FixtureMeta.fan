@@ -29,6 +29,9 @@ const class FixtureMeta {
 ** Contains contextual information about a Fancordion fixture.
 class FixtureCtx {
 	
+	** The current runner.
+	FancordionRunner	fancordionRunner
+
 	** The fixture being run.
 	Obj				fixtureInstance
 

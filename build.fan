@@ -22,11 +22,10 @@ class Build : BuildPod {
 			// ---- Core ------------------------
 			"afBeanUtils 1.0.2+",
 			"afConcurrent 1.0.6+",
-			"afPlastic 1.0.16+",
-			
-			
+			"afPlastic 1.0.16+",			
+
 			// ---- Test ------------------------
-			"afBounce 1.0.10+",
+			"afBounce 1.0.16+",
 			"afSizzle 1.0.0+",
 			"build 1.0"
 		]

@@ -27,6 +27,7 @@ class FancordionRunner {
 		commands["execute"]	= CmdExecute()
 		commands["fail"]	= CmdFail()
 		commands["run"]		= CmdRun()
+		commands["table"]	= CmdTable()
 		commands["embed"]	= CmdEmbed()
 		commands["http"]	= CmdLink()
 		commands["https"]	= CmdLink()
@@ -110,6 +111,7 @@ class FancordionRunner {
 		}
 		
 		fixCtx		:= FixtureCtx() {
+			it.fancordionRunner	= this
 			it.fixtureInstance	= fixtureInstance
 			it.skin				= gimmeSomeSkin
 			it.renderBuf		= StrBuf(specMeta.specificationSrc.size * 2)

@@ -1,22 +1,13 @@
 
+RENAME 
+ConcordionRunner -> FancordionRunner
+ConcordoinSkin   -> FancordionSkin
+
 command - link to file?
 
 contribute section title funcs
 logging / tooltip / popup cmd
 Bootstrap skin
-tables:
-
-**   cmd: col[0]:split(#TEXT) 
-**   verify:rowEq(firstName) 
-**   verify:rows(data)
-**   table:
-** 
-**   Full Name    First Name  Last Name
-**   -----------  ----------- ----------
-**   John Smith   John        Smith
-**   Steve Eynon  Steve       Eynon
-**   Fred Bloggs  Fred        Bloggs
-**
 
 
 For 1.0.0
