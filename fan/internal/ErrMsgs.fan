@@ -41,6 +41,14 @@ internal const class ErrMsgs {
 		"Could not find Fixture '${fixtureType}'"
 	}
 
+	static Str cmdTable_tableNotFound(Str text) {
+		"Could not find table syntax in:\n${text}"
+	}
+
+//	static Str cmdTable_colNotFound(Str cmd) {
+//		"Command '${cmd}' does not specify a column. e.g. col[0]+execute:XXXX"
+//	}
+	
 	private static Str stripSys(Str str) {
 		str.replace("sys::", "")
 	}

@@ -1,9 +1,10 @@
 using fandoc
+using concurrent
 
 ** Implement to create a skin for specification output. 
 ** Skins are used by Fancordion and its command to generate the HTML result files.
 ** 
-** This mixin by default renders bare, but valid, HTML5 code. Override methods to alter the markup generated.
+** This mixin by default renders bare, but valid, HTML5 markup. Override methods to alter the markup generated.
 mixin FancordionSkin {
 
 	abstract Uri[] cssUrls
@@ -123,14 +124,14 @@ mixin FancordionSkin {
 	** Ends an '</emphasis>' tag.
 	virtual Str emphasisEnd()	{ "</emphasis>" }
 	
-	** Starts an '<strong>' tag.
+	** Starts a '<strong>' tag.
 	virtual Str strong()		{ "<strong>" }
-	** Ends an '</strong>' tag.
+	** Ends a '</strong>' tag.
 	virtual Str strongEnd()		{ "</strong>" }
 	
-	** Starts an '<code>' tag.
+	** Starts a '<code>' tag.
 	virtual Str code()			{ "<code>" }
-	** Ends an '</code>' tag.
+	** Ends a '</code>' tag.
 	virtual Str codeEnd()		{ "</code>" }
 	
 	
@@ -162,7 +163,7 @@ mixin FancordionSkin {
 		return """<img src="${srcUrl.encode.toXml}" alt="${alt.toXml}" />"""
 	}
 
-	** Renders the breadcrumbs.
+	** Renders the breadcrumbs. Makes a call to 'breadcrumbPaths()'
 	virtual Str breadcrumbs() {
 		"""<span class="breadcrumbs">""" + breadcrumbPaths.join(" > ") |text, href| { a(href, text) } + "</span>"
 	}
@@ -188,28 +189,49 @@ mixin FancordionSkin {
 
 
 	
+	// ---- Table Methods -------------------------------------------------------------------------
+
+	** Starts a '<table>' tag.
+	virtual Str table() {		setInTable(true); return "<table>\n"		}
+	** Ends a '</table>' tag.
+	virtual Str tableEnd() {	setInTable(false); return "</table>"	}
+	** Starts a '<tr>' tag.
+	virtual Str tr() {			"<tr>"		}
+	** Ends a '</tr>' tag.
+	virtual Str trEnd() {		"</tr>\n"		}
+	** Returns a '<th>' tag.
+	virtual Str th(Str heading) {
+		"<th>${heading}</th>"
+	}
+	** Returns a '<td>' tag.
+	virtual Str td(Str heading) {
+		"<td>${heading}</td>"
+	}
+	
+	
+	
 	// ---- Test Results --------------------------------------------------------------------------
 	
-	** Called to render a command success.
+	** Called to render an ignored command.
 	virtual Str cmdIgnored(Str text) {
-		"""<span class="ignored">${text.toXml}</span>"""
+		"""<${cmdElem} class="ignored">${text.toXml}</${cmdElem}>"""
 	}
 
 	** Called to render a command success.
 	virtual Str cmdSuccess(Str text, Bool escape := true) {
 		html := escape ? text.toXml : text
-		return """<span class="success">${html}</span>"""
+		return """<${cmdElem} class="success">${html}</${cmdElem}>"""
 	}
 
 	** Called to render a command failure.
 	virtual Str cmdFailure(Str expected, Obj? actual, Bool escape := true) {
 		html := escape ? expected.toXml : expected
-		return """<span class="failure"><del class="expected">${html}</del> <span class="actual">${firstLine(actual?.toStr).toXml}</span></span>"""
+		return """<${cmdElem} class="failure"><del class="expected">${html}</del> <span class="actual">${firstLine(actual?.toStr).toXml}</span></${cmdElem}>"""
 	}
 
 	** Called to render a command error.
 	virtual Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
-		"""<span class="error"><del class="expected">${cmdText.toXml}</del> <span class="actual">${firstLine(err.msg).toXml}</span></span>"""
+		"""<${cmdElem} class="error"><del class="expected">${cmdText.toXml}</del> <span class="actual">${firstLine(err.msg).toXml}</span></${cmdElem}>"""
 	}
 	
 	** Custom commands may use this method as a generic hook into the skin.
@@ -272,6 +294,17 @@ mixin FancordionSkin {
 	
 	private StrBuf renderBuf() {
 		fixtureCtx.renderBuf
+	}
+	
+	private Str cmdElem() {
+		Actor.locals.containsKey("afFancordion.inTable") ? "td" : "span"
+	}
+	
+	private Void setInTable(Bool in) {
+		if (in)
+			Actor.locals["afFancordion.inTable"] = true
+		else
+			Actor.locals.remove("afFancordion.inTable")
 	}
 }
 

@@ -1,3 +1,4 @@
+using concurrent
 
 ** A Fancordion Skin that mimics the style of the classic Java Concordion library.
 class ClassicSkin : FancordionSkin {
@@ -7,6 +8,7 @@ class ClassicSkin : FancordionSkin {
 	override Uri[]	scriptUrls	:= [,]
 
 	private	 Int	buttonId	:= 0
+	private	 Str	cmdElement	:= "span"
 
 	// ---- Setup / Tear Down -------------------
 
@@ -45,7 +47,7 @@ class ClassicSkin : FancordionSkin {
 		buttonId++
 
 		stack := err.traceToStr.splitLines.join("") { "<span class=\"stackTraceEntry\">${it.toXml}</span>\n" }
-		return
+		html :=
 		"""<span class="error">
 		     <del class="expected">${cmdText.toXml}</del>
 		   </span>
@@ -57,9 +59,16 @@ class ClassicSkin : FancordionSkin {
 		     ${stack}
 		   </span>
 		   """
+		if (inTable)
+			html = "<td>${html}</td>"
+		return html
 	}
 	
 	private Str firstLine2(Str? txt) {
 		txt?.splitLines?.exclude { it.trim.isEmpty }?.first ?: Str.defVal
+	}
+	
+	private Bool inTable() {
+		Actor.locals.containsKey("afFancordion.inTable")
 	}
 }

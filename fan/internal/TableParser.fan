@@ -2,8 +2,7 @@
 const class TableParser {
 	
 	Str[][] parseTable(Str[] lines) {
-		
-		ctrl := (Str) (lines.find { it.trim.startsWith("-") } ?: throw ParseErr("Table not found"))
+		ctrl := (Str) (lines.find { it.trim.startsWith("-") } ?: throw ParseErr(ErrMsgs.cmdTable_tableNotFound(lines.join("\n"))))
 		
 		colRanges := Range[,]
 		last := 0
