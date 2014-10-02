@@ -30,7 +30,7 @@ class Build : BuildPod {
 			"build 1.0"
 		]
 
-		srcDirs = [`test/`, `fan/`, `fan/public/`, `fan/internal/`]
+		srcDirs = [`test/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/commands/`]
 		resDirs = [`test/`, `res/classicSkin/`]
 	}
 	
