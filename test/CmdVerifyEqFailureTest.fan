@@ -7,7 +7,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** Fancordion says [Kick Ass!]`verify:eq(greeting)`
+** Fancordion says [Kick Ass!]`verifyEq:greeting`
 ** 
 class CmdVerifyEqFailureTest : ConTest {
 	Str greeting	:= "Ooops!"

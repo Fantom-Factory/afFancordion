@@ -7,7 +7,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** If I set 'name' equal to " [Bob]`set:name` " then I expect 'name' to equal " [Bob]`verify:eq(name)` "!
+** If I set 'name' equal to " [Bob]`set:name` " then I expect 'name' to equal " [Bob]`verifyEq:name` "!
 ** 
 class CmdSetSuccessTest : ConTest {
 	Str? name := "Wotever"

@@ -7,11 +7,11 @@ using afBounce
 ** 
 ** Example
 ** -------
-** This statement is [true]`verify:true(isTrue)`
+** This statement is [true]`verify:isTrue`
 ** 
-** And this statement is [false]`verify:false(isFalse)`
+** And this statement is [false]`verifyFalse:isFalse`
 ** 
-** And this one is [true]`verify:true(isTrue)` again
+** And this one is [true]`verifyTrue:isTrue` again
 class CmdVerifyX2Test : ConTest {
 	Bool isTrue		:= true
 	Bool isFalse	:= false

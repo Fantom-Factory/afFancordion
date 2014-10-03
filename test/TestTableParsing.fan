@@ -19,12 +19,14 @@ class TestTableParsing : Test {
 		
 		table2 :=
 """
-       Dual
-     Full Name   | First Name | Last Name
-     ------------+------------|----------
-     John Smith  | John       | Smith
-     Steve Eynon | Steve      | Eynon
-     Fred Bloggs | Fred       | Bloggs"""
+     +-------------+-------+--------+
+     | Dual        | First | Last   |
+     | Full Name   | Name  | Name   |
+      -------------+-------+--------+
+     | John Smith  | John  | Smith  |
+     | Steve Eynon | Steve | Eynon  |
+     | Fred Bloggs | Fred  | Bloggs |
+     +-------------+-------+--------+"""
 
 		data2 := TableParser().parseTable(table2.splitLines)
 		verifyTable(data2)
@@ -46,6 +48,8 @@ class TestTableParsing : Test {
 		verifyEq(data[3][0], "Fred Bloggs")
 		verifyEq(data[3][1], "Fred")
 		verifyEq(data[3][2], "Bloggs")
+
+		verifyEq(data.size, 4)
 	}
 	
 }

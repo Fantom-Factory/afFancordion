@@ -11,14 +11,14 @@ using afBounce
 ** 
 **   table:
 **   col[0]+execute:split(#TEXT)
-**   col[1]+verify:eq(names[0])
-**   col[2]+verify:eq(names[1])
+**   col[1]+verifyEq:names[0]
+**   col[2]+verifyEq:names[1]
 ** 
 **   Full Name    First Name  Last Name
 **   -----------  ----------- ----------
 **   John Smith   John        Smith
-**   Steve Eynon  Steve       Eynon
 **   Fred Bloggs  Freddy      Bloggs
+**   Steve Eynon  Steve       Eynon
 ** 
 @Fixture { failFast=false }
 class CmdTableTest : ConTest {
@@ -39,12 +39,12 @@ class CmdTableTest : ConTest {
 		Element("td.success")[1].verifyTextEq("John")
 		Element("td.success")[2].verifyTextEq("Smith")
 
-		Element("td.error")[0].verifyTextEq("Steve Eynon")
-		Element("td.failure")[0].verifyTextEq("Steve")
-		Element("td.failure")[1].verifyTextEq("Eynon")
+		Element("td.success")[3].verifyTextEq("Fred Bloggs")
+		Element("td.failure")[0].verifyTextEq("FreddyFred")
+		Element("td.success")[4].verifyTextEq("Bloggs")
 
-		Element("span.success")[6].verifyTextEq("Fred Bloggs")
-		Element("span.success")[7].verifyTextEq("Fred")
-		Element("span.success")[8].verifyTextEq("Bloggs")
+		Element("td.error")[0].verifyTextContains("Steve EynonArgh!")
+		Element("td.failure")[1].verifyTextEq("SteveFred")
+		Element("td.failure")[2].verifyTextEq("EynonBloggs")
 	}
 }

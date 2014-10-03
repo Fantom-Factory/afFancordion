@@ -8,7 +8,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** [Verify Command]`verify:eq(verCmd)`
+** [Verify Command]`verifyEq:verCmd`
 ** 
 class FixtureInstanceTest : ConTest {
 	Str? verCmd

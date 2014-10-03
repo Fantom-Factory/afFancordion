@@ -7,7 +7,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** This is a [ Str ]`verify:type(str)` and this is an [ Int# ]`verify:type(int)`
+** This is a [ Str ]`verifyType:str` and this is an [ Int# ]`verifyType:int`
 ** 
 class CmdVerifyTypeSuccessTest : ConTest {
 	Str  str	:= "Kick Ass!"

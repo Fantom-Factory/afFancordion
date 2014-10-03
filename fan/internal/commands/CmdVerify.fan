@@ -23,28 +23,23 @@ using afBeanUtils::TypeCoercer
 ** Arguments for the 'eq()' and 'notEq()' methods are [type coerced]`afBeanUtils::TypeCoercer` to a 'Str'.
 ** Arguments for the 'true()' and 'false()' are [type coerced]`afBeanUtils::TypeCoercer` to a 'Bool'.
 internal class CmdVerify : Command {
-	static const Str[] doubleArgCmds	:= "eq notEq type".split 
-	static const Str[] singleArgCmds	:= "true false null notNull".split
-	static const Str:Type coerceTo		:= ["eq":Str#, "notEq":Str#, "type":Obj#, "true":Bool#, "false":Bool#, "null":Obj?#, "notNull":Obj?#]
+	static const Str:Str cmdCaps		:= ["verifyeq":"verifyEq", "verifynoteq":"verifyNotEq", "verifytype":"verifyType", "verify":"verify", "verifytrue":"verify", "verifyfalse":"verifyFalse", "verifynull":"verifyNull", "verifynotNull":"verifyNotNull"]
+	static const Str[] doubleArgCmds	:= "verifyEq verifyNotEq verifyType".split 
+	static const Str[] singleArgCmds	:= "verify verifyFalse verifyNull verifyNotNull".split
+	static const Str:Type coerceTo		:= ["verifyEq":Str#, "verifyNotEq":Str#, "verifyType":Obj#, "verify":Bool#, "verifyFalse":Bool#, "verifyNull":Obj?#, "verifyNotNull":Obj?#]
 
 	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
-		i 	:= pathStr(cmdUrl).index("(")?.minus(1) ?: -1
-		cmd := pathStr(cmdUrl)[0..i]
-		arg	:= (i != -1) ? pathStr(cmdUrl)[i+1..-1].trim : ""
+		cmd := cmdCaps[cmdUrl.scheme]	// stoopid scheme is lowercased!
+		arg	:= pathStr(cmdUrl)
 
 		if (!singleArgCmds.contains(cmd) && !doubleArgCmds.contains(cmd))
 			throw CmdNotFoundErr(ErrMsgs.verifyCmdNotFound(cmd), singleArgCmds.addAll(doubleArgCmds))
 		
-		if (arg.startsWith("("))
-			arg = arg[1..-1]
-		if (arg.endsWith(")"))
-			arg = arg[0..-2]
-		
 		fromFixture	:= getFromFixture(fixCtx.fixtureInstance, arg)
 		actual		:= TypeCoercer().coerce(fromFixture, coerceTo[cmd])
-		expected	:= (cmd == "type") ? findType(cmdText) : cmdText
+		expected	:= (cmd == "verifyType") ? findType(cmdText) : cmdText
 		
-		if (cmd == "type") {
+		if (cmd == "verifyType") {
 			temp    := actual
 			actual   = expected
 			expected = temp
@@ -54,15 +49,11 @@ internal class CmdVerify : Command {
 			// try to use the real fixture if we can so it notches up the verify count
 			test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
 			
-			if (singleArgCmds.contains(cmd)) {
-				vName := "verify" + (cmd.equalsIgnoreCase("true") ? "" : cmd).capitalize
-				test.typeof.method(vName).callOn(test, [actual])
-			}
+			if (singleArgCmds.contains(cmd))
+				test.typeof.method(cmd).callOn(test, [actual])
 	
-			if (doubleArgCmds.contains(cmd)) {
-				vName := "verify${cmd.capitalize}"
-				test.typeof.method(vName).callOn(test, [expected, actual])
-			}
+			if (doubleArgCmds.contains(cmd))
+				test.typeof.method(cmd).callOn(test, [expected, actual])
 			
 			fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
 
