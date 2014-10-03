@@ -65,9 +65,8 @@ p.success {
 .success pre {
 	background-color:	#bbffbb;
 }
-.error, .error *,
-.failure, .failure *,
-.ignored, .ignored * {
+.error,
+.failure{
 	background-color:	#ffb0b0;
 	padding:			1px;
 }
@@ -76,9 +75,9 @@ p.success {
 	text-decoration: 	line-through;
 	color:				#bb5050;
 }
-.ignored, .ignored * {
+.ignored {
 	text-decoration: 	line-through;
-	background-color:	#f0f0f0 !important;	
+	background-color:	#f0f0f0;	
 }
 
 ins {

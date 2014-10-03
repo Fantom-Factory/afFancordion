@@ -7,7 +7,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** Fancordion says [Kick Ass!]`verify:true(isKickAss)`
+** Fancordion says [Kick Ass!]`verifyTrue:isKickAss`
 ** 
 class CmdVerifyTrueSuccessTest : ConTest {
 	Bool isKickAss	:= true

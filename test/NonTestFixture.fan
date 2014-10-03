@@ -6,7 +6,7 @@
 ** 
 ** Example
 ** -------
-** Fancordion is [Awesome!]`verify:eq(awesome)`
+** Fancordion is [Awesome!]`verifyEq:awesome`
 ** 
 @Fixture @NoDoc
 class NonTestFixture {

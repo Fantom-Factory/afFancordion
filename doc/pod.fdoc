@@ -1,5 +1,7 @@
 Overview [#overview]
 ********************
+Inspired by [Concordion]`http://concordion.org/`, 'Fancordion' is a tool for creating automated acceptance tests.
+
 'Fancordion' transforms your boring unit tests into beautiful specification documents!
 It is similar to [Cucumber]`http://cukes.info/` but focuses on readability and presentation.
 
@@ -50,7 +52,7 @@ using afFancordion
 **
 ** Example
 ** -------
-** Fancordion says, [Hello World!]`verify:eq(greeting)`
+** Fancordion says, [Hello World!]`verifyEq:greeting()`
 **
 class HelloWorldFixture : FixtureTest {
     Str greeting() {
@@ -97,12 +99,16 @@ The **Fixture** is the code part of the *acceptance test* that does the actual w
 
 **Commands** are special links in the *specification* that drive the test, specifying input and verifying output.
 
+See [What is TDD, BDD & ATDD?]`http://assertselenium.com/2012/11/05/difference-between-tdd-bdd-atdd/` for the differences between *Test Driven* Development, *Behaviour Driven* Development & *Acceptance Test Driven* Development.
+
 
 
 Usage [#usage]
 **************
+Run as Fantom Class
+===================
 Any Fantom class annotated with the [@Fixture]`Fixture` facet can be run as a Fancordion fixture.
-Just pass it into 'FancordionRunner.runFixture()':
+To run it, just pass it into 'FancordionRunner.runFixture()':
 
 pre>
 syntax: fantom
@@ -123,7 +129,7 @@ runner.runFixture(fixture)
 `FancordionRunner` is designed to be subclassed and has several methods, or hooks, that change it's behaviour:
 
  - 'suiteSetup()' is only ever called once no matter how many fixtures are run, or 'FancordionRunners' created.
- - 'suiteTearDown()' again is only ever called the once (currently in an Env shutdown hook).
+ - 'suiteTearDown()' is only ever called the once (currently in an Env shutdown hook).
  - 'fixtureSetup()' is called before every fixture.
  - 'fixtureTearDown()' is called after every fixture.
  - 'skinType' & 'gimmeSomeSkin()' determine & create an instance of the 'FancordionSkin' class used to render the result HTML.
@@ -132,10 +138,27 @@ runner.runFixture(fixture)
  - 'commands' is a map of all the [Commands]`Commands` made available to the test.
    To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
 
-To help you bridge the gap between Fancordion and standard Fantom tests, Fancordion ships with `FixtureTest`.
-This handy class lets you run any Fixture as a Fantom Test.
 
-To use a specific 'FancordionRunner' in your tests, override 'fancordionRunner()' to return desired instance.
+
+Run as Test [#runAsTest]
+========================
+Fancordion fixtures can also be run as standard Fantom tests.
+
+To help you bridge the gap between Fancordion and Fantom tests, Fancordion ships with a handy `FixtureTest` class.
+Extending 'FixtureTest' lets you run any Fixture as a Fantom Test.
+
+pre>
+syntax: fantom
+
+using afFancordion
+
+** My first Fancordion fixture.
+class TestStuff : FixtureTest{
+    ...
+}
+<pre
+
+To use a specific 'FancordionRunner' in your tests, override 'FixtureTest.fancordionRunner()' to return the desired instance.
 Even though all your tests will extend 'FixtureTest', the 'fancordionRunner()' method will only be called once.
 This means you can run a single test with [fant]`docTools::Fant`, or all of them, and they will still only use the same runner instance.
 
@@ -162,7 +185,8 @@ class MyFixture { }
 <pre
 
 By doing so, every line in the doc comment must start with a double asterisk '**'.
-The specification may exist in its own file, just give a URL to its location in the '@Fixture' facet:
+
+The specification may also exist in its own file, just give a URL to its location in the '@Fixture' facet:
 
 pre>
 syntax: fantom
@@ -249,22 +273,22 @@ class ExampleFixture {
 
 verify [#verify]
 ================
-The 'verify' command executes a Test verify method against the link text.
-Available verify methods are:
- - eq(...)
- - notEq(...)
- - type(...)
- - true(...)
- - false(...)
- - null(...)
- - notNull(...)
+The 'verify' suite of commands execute a Test verify method against the link text.
+Available verify commands are:
+ - 'verifyEq:'
+ - 'verifyNotEq:'
+ - 'verifyType:'
+ - 'verifyTrue:'
+ - 'verifyFalse:'
+ - 'verifyNull:'
+ - 'verifyNotNull:'
 
 Arguments to the verify methods are run against the fixture and may be any valid Fantom code.
 
 pre>
 syntax: fantom
 
-** The meaning of life is [42]`verify:eq(number)`.
+** The meaning of life is [42]`verifyEq:number`.
 @Fixture
 class ExampleFixture {
   Int? number := 43
@@ -332,6 +356,8 @@ The 'embed' command executes the given function against the fixture and embeds t
 Use it to add extra markup to your fixtures.
 
 pre>
+syntax: fantom
+
 ** Kids, don't play with [FIRE!]`embed:danger(#TEXT)`.
 @Fixture
 class ExampleFixture {
@@ -340,6 +366,109 @@ class ExampleFixture {
   }
 }
 <pre
+
+
+
+Pre-Formatted Text
+******************
+Pre-formatted text may be used as the input for commands by writing the command URL as the first line of the text:
+
+pre>
+** pre>
+**   verifyEq:errMsg
+**   This is the Err Msg.
+** <pre
+<pre
+
+
+
+Tables [#tables]
+****************
+Markup [#tableMarkup]
+=====================
+Fancordion also has support for tables. To render a HTML table, use preformatted text with 'table:' as the first line:
+
+pre>
+syntax: fantom
+
+** pre>
+** table:
+**
+** Full Name    First Name  Last Name
+** -----------  ----------  ----------
+** John Smith   John        Smith
+** Fred Bloggs  Fred        Bloggs
+** Steve Eynon  Steve       Eynon
+** <pre
+<pre
+
+Table parsing is simple, but expressive. The first line to start with a '-' character defines where the column boundaries are.
+All lines before are table headers, all lines after are table data.  Any data consisting entirely of '-' characters are ignored.
+
+That means the above table could also we written as:
+
+pre>
+syntax: fantom
+
+** pre>
+** table:
+**
+** +-------------+-------+--------+
+** |             | First | Last   |
+** | Full Name   | Name  | Name   |
+**  -------------+-------+--------+
+** | John Smith  | John  | Smith  |
+** | Steve Eynon | Steve | Eynon  |
+** | Fred Bloggs | Fred  | Bloggs |
+** +-------------+-------+--------+
+** <pre
+<pre
+
+
+
+Commands [#tableCommands]
+=========================
+You can also specify commands for each column, to be run on each row.
+After the 'table:' declaration, write commands on seperate lines prefixing them with 'col[n]+' to specify on which column they should operate.
+
+The following example tests that each name can be split up into a first name and last name:
+
+pre>
+syntax: fantom
+
+** Name Splitting
+** ##############
+** For personalalised mailshots, the system should be able
+** to split a full name up into it's constituent parts.
+**
+** Example:
+**
+**   table:
+**   col[0]+execute:split(#TEXT)
+**   col[1]+verifyEq:firstName
+**   col[2]+verifyEq:lastName
+**
+**   Full Name    First Name  Last Name
+**   -----------  ----------  ----------
+**   John Smith   John        Smith
+**   Fred Bloggs  Fred        Bloggs
+**   Steve Eynon  Steve       Eynon
+**
+class TestSplittingNames : FixtureTest {
+  Str? firstName
+  Str? lastName
+
+  Void split(Str name) {
+    firstName = name.split[0]
+    lastName  = name.split[1]
+  }
+}
+<pre
+
+
+
+Verify Rows [#tableRows]
+========================
 
 
 
@@ -428,6 +557,11 @@ abstract class WebFixture : FixtureTest {
 
 Release Notes [#releaseNotes]
 *****************************
+v0.0.6 [#v0.0.6]
+----------------
+ - New: Added Table commands.
+ - Chg: Simplified verify command syntax: 'verify:Eq(xxx)' -> 'verifyEq:xxx'.
+
 v0.0.4 [#v0.0.4]
 ----------------
  - New: Project renamed to 'Fancordion' - see [Concordion for Fantom]`https://groups.google.com/forum/#!msg/concordion-dev/Hk9bGZQ4Hb4/08KLAKbXFsYJ`.

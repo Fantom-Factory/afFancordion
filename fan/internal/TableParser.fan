@@ -6,7 +6,7 @@ const class TableParser {
 		
 		colRanges := Range[,]
 		last := 0
-		while (last < ctrl.size) {
+		while (last < ctrl.size && ctrl.index("-", last) != null) {
 			start := ctrl.index("-", last)
 			end := start
 			while (end < ctrl.size && ctrl[end] == '-') end++
@@ -29,36 +29,35 @@ const class TableParser {
 					return
 				}
 				colRanges.each |col, i| {
-					header := getTableData(line, col).trim
-					if (i < headers.size)
-						headers[i] = "${headers[i]} ${header}".trim
-					else
-						headers.add(header)
+					header := getTableData(line, col)
+					if (header != null)
+						if (i < headers.size)
+							headers[i] = "${headers[i]} ${header}".trim
+						else
+							headers.add(header)
 				}
 			} else {
 				row := Str[,]
 				colRanges.each |col| {
-					row.add(getTableData(line, col).trim)
+					data := getTableData(line, col)
+					if (data != null)
+						row.add(data)
 				}
-				rows.add(row)
+				if (!row.isEmpty)
+					rows.add(row)
 			}
 		}
-		
-		
-		Env.cur.err.printLine(headers)
-		rows.each { 
-			Env.cur.err.printLine(it)
-		}
+
 		return rows.insert(0, headers)
 	}
 
-	private Str getTableData(Str line, Range col) {
+	private Str? getTableData(Str line, Range col) {
+		data := (Str?) Str.defVal
 		if (col.start < line.size)
 			if (col.end < line.size)
-				return line.getRange(col)
+				data = line.getRange(col).trim
 			else
-				return line.getRange(col.start..-1)
-		else
-			return Str.defVal
+				data = line.getRange(col.start..-1).trim
+		return data.chars.all { it == '-' } ? null : data
 	}
 }

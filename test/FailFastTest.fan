@@ -7,9 +7,9 @@ using afBounce
 ** 
 ** Example
 ** -------
-** [This command fails]`verify:eq(oops)`
+** [This command fails]`verifyEq:oops`
 ** 
-** [This command is ignored]`verify:eq(oops)`
+** [This command is ignored]`verifyEq:oops`
 ** 
 ** Links like [this one]`http://www.fantomfactory.org/` still work.
 ** 

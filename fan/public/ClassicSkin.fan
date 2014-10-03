@@ -47,11 +47,9 @@ class ClassicSkin : FancordionSkin {
 		buttonId++
 
 		stack := err.traceToStr.splitLines.join("") { "<span class=\"stackTraceEntry\">${it.toXml}</span>\n" }
+		exp := """<del class="expected">${cmdText.toXml}</del>"""
 		html :=
-		"""<span class="error">
-		     <del class="expected">${cmdText.toXml}</del>
-		   </span>
-		   <span class="exceptionMessage">${firstLine2(err.msg).toXml}</span>
+		"""<span class="exceptionMessage">${firstLine2(err.msg).toXml}</span>
 		   <input id="stackTraceButton${buttonId}" type="button" class="stackTraceButton" onclick="javascript:toggleStackTrace('${buttonId}')" value="View Stack" />
 		   <span class="stackTrace" id="stackTrace${buttonId}">
 		     <span>While evaluating command: <code>${cmdUrl}</code></span>
@@ -60,7 +58,9 @@ class ClassicSkin : FancordionSkin {
 		   </span>
 		   """
 		if (inTable)
-			html = "<td>${html}</td>"
+			html = """<td class="error">${exp}\n${html}</td>"""
+		else
+			html = """<span class="error">${exp}</span>\n${html}"""
 		return html
 	}
 	

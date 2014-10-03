@@ -9,7 +9,7 @@ using afBounce
 ** -------
 ** Fancordion says:
 ** 
-**   verify:eq(greeting)
+**   verifyEq:greeting
 **   Kick Ass!
 ** 
 class CmdInPreTest : ConTest {
