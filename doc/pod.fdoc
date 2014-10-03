@@ -241,9 +241,10 @@ The 'Str' is [coercered]`afBeanUtils::TypeCoercer` to the field's type.
 pre>
 syntax: fantom
 
+using afFancordion
+
 ** The meaning of life is [42]`set:number`.
-@Fixture
-class ExampleFixture {
+class ExampleFixture : FixtureTest {
   Int? number
 }
 <pre
@@ -260,9 +261,10 @@ Any occurrences of the token '#TEXT' are replaced with the command / link text.
 pre>
 syntax: fantom
 
+using afFancordion
+
 ** [The end has come.]`execute:initiateShutdownSequence(42, #TEXT, "/tmp/end.txt".toUri)`
-@Fixture
-class ExampleFixture {
+class ExampleFixture : FixtureTest {
   Void initiateShutdownSequence(Int num, Str cmdText, Uri url) {
     ...
   }
@@ -288,9 +290,10 @@ Arguments to the verify methods are run against the fixture and may be any valid
 pre>
 syntax: fantom
 
+using afFancordion
+
 ** The meaning of life is [42]`verifyEq:number`.
-@Fixture
-class ExampleFixture {
+class ExampleFixture : FixtureTest {
   Int? number := 43
 }
 <pre
@@ -307,9 +310,10 @@ This simple command fails the test with the given message.
 pre>
 syntax: fantom
 
+using afFancordion
+
 ** The meaning of life is [42]`fail:TODO`.
-@Fixture
-class ExampleFixture { }
+class ExampleFixture : FixtureTest { }
 <pre
 
 
@@ -327,10 +331,11 @@ You could even nest specifications to form a hierarchical index, with results ag
 pre>
 syntax: fantom
 
+using afFancordion
+
 ** Questions:
 ** - [Why is the sky blue?]`run:BlueSkyFixture`.
-@Fixture
-class ExampleFixture { }
+class ExampleFixture : FixtureTest { }
 <pre
 
 
@@ -343,9 +348,10 @@ It is added with the 'file', 'http', 'https' and 'mailto' schemes.
 pre>
 syntax: fantom
 
+using afFancordion
+
 ** Be sure to check out [Fantom-Factory]`http://www.fantomfactory.org/`.
-@Fixture
-class ExampleFixture { }
+class ExampleFixture : FixtureTest { }
 <pre
 
 
@@ -358,9 +364,10 @@ Use it to add extra markup to your fixtures.
 pre>
 syntax: fantom
 
+using afFancordion
+
 ** Kids, don't play with [FIRE!]`embed:danger(#TEXT)`.
-@Fixture
-class ExampleFixture {
+class ExampleFixture : FixtureTest {
   Str danger(Str text) {
     """<span class="danger">${text}</span>"""
   }
@@ -375,9 +382,16 @@ Pre-formatted text may be used as the input for commands by writing the command 
 
 pre>
 ** pre>
+** verifyEq:errMsg
+** This is the Err Msg.
+** <pre
+<pre
+
+Note that pre-formatted text may also be any line indended by 2 or more spaces. Meaning the above may be re-written as:
+
+pre>
 **   verifyEq:errMsg
 **   This is the Err Msg.
-** <pre
 <pre
 
 
@@ -410,18 +424,16 @@ That means the above table could also we written as:
 pre>
 syntax: fantom
 
-** pre>
-** table:
+**   table:
 **
-** +-------------+-------+--------+
-** |             | First | Last   |
-** | Full Name   | Name  | Name   |
-**  -------------+-------+--------+
-** | John Smith  | John  | Smith  |
-** | Steve Eynon | Steve | Eynon  |
-** | Fred Bloggs | Fred  | Bloggs |
-** +-------------+-------+--------+
-** <pre
+**   +-------------+-------+--------+
+**   |             | First | Last   |
+**   | Full Name   | Name  | Name   |
+**    -------------+-------+--------+
+**   | John Smith  | John  | Smith  |
+**   | Steve Eynon | Steve | Eynon  |
+**   | Fred Bloggs | Fred  | Bloggs |
+**   +-------------+-------+--------+
 <pre
 
 
@@ -435,6 +447,8 @@ The following example tests that each name can be split up into a first name and
 
 pre>
 syntax: fantom
+
+using afFancordion
 
 ** Name Splitting
 ** ##############
@@ -469,6 +483,32 @@ class TestSplittingNames : FixtureTest {
 
 Verify Rows [#tableRows]
 ========================
+'verifyRows' is a special table command that verifies that rows in the table are identical to a given list.
+
+pre>
+syntax: fantom
+
+using afFancordion
+
+**   table:
+**   verifyRows:results()
+**
+**   Names
+**   ------
+**   john
+**   ringo
+**   george
+**   paul
+**
+class VerifyRowsFixture : FixtureTest {
+  Str[] results() {
+    ["john", "ringo", "george", "paul"]
+  }
+}
+<pre
+
+The fixture is marked as a failure should any item in the list not equal it's matching table row.
+Should the list contain too few or too many item, they are rendered as failures in the rendered HTML table.
 
 
 
@@ -559,7 +599,9 @@ Release Notes [#releaseNotes]
 *****************************
 v0.0.6 [#v0.0.6]
 ----------------
- - New: Added Table commands.
+ - New: Added Table syntax in pre-formatted text.
+ - New: Added Table column commands.
+ - New: Added Table 'verifyRows' command.
  - Chg: Simplified verify command syntax: 'verify:Eq(xxx)' -> 'verifyEq:xxx'.
 
 v0.0.4 [#v0.0.4]

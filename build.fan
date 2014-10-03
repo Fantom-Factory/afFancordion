@@ -4,7 +4,7 @@ class Build : BuildPod {
 
 	new make() {
 		podName = "afFancordion"
-		summary = "Transform your boring unit tests into beautiful specification documents!"
+		summary = "A tool for creating automated acceptance tests"
 		version = Version("0.0.5")
 
 		meta = [
@@ -26,8 +26,7 @@ class Build : BuildPod {
 
 			// ---- Test ------------------------
 			"afBounce 1.0.16+",
-			"afSizzle 1.0.0+",
-			"build 1.0"
+			"afSizzle 1.0.0+"
 		]
 
 		srcDirs = [`test/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/commands/`]
@@ -36,7 +35,7 @@ class Build : BuildPod {
 	
 	override Void compile() {
 		// remove test pods from final build
-		testPods := "afBounce afSizzle build".split
+		testPods := "afBounce afSizzle".split
 		depends = depends.exclude { testPods.contains(it.split.first) }
 		super.compile
 	}
