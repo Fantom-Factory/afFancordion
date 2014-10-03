@@ -1,8 +1,5 @@
 
-RENAME 
-ConcordionRunner -> FancordionRunner
-ConcordoinSkin   -> FancordionSkin
-
+linkCommand: allow in-file #frag links
 command - link to file?
 
 contribute section title funcs

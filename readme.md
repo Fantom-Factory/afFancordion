@@ -1,5 +1,7 @@
 ## Overview 
 
+Inspired by [Concordion](http://concordion.org/), `Fancordion` is a tool for creating automated acceptance tests.
+
 `Fancordion` transforms your boring unit tests into beautiful specification documents! It is similar to [Cucumber](http://cukes.info/) but focuses on readability and presentation.
 
 `Fancordion` embeds test results directly into your test documentation, giving it real *meaning*.
@@ -43,7 +45,7 @@ using afFancordion
 **
 ** Example
 ** -------
-** Fancordion says, [Hello World!]`verify:eq(greeting)`
+** Fancordion says, [Hello World!]`verifyEq:greeting()`
 **
 class HelloWorldFixture : FixtureTest {
     Str greeting() {
@@ -89,9 +91,13 @@ The **Fixture** is the code part of the *acceptance test* that does the actual w
 
 **Commands** are special links in the *specification* that drive the test, specifying input and verifying output.
 
+See [What is TDD, BDD & ATDD?](http://assertselenium.com/2012/11/05/difference-between-tdd-bdd-atdd/) for the differences between *Test Driven* Development, *Behaviour Driven* Development & *Acceptance Test Driven* Development.
+
 ## Usage 
 
-Any Fantom class annotated with the [@Fixture](http://repo.status302.com/doc/afFancordion/Fixture.html) facet can be run as a Fancordion fixture. Just pass it into `FancordionRunner.runFixture()`:
+### Run as Fantom Class
+
+Any Fantom class annotated with the [@Fixture](http://repo.status302.com/doc/afFancordion/Fixture.html) facet can be run as a Fancordion fixture. To run it, just pass it into `FancordionRunner.runFixture()`:
 
 ```
 using afFancordion
@@ -110,16 +116,29 @@ runner.runFixture(fixture)
 [FancordionRunner](http://repo.status302.com/doc/afFancordion/FancordionRunner.html) is designed to be subclassed and has several methods, or hooks, that change it's behaviour:
 
 - `suiteSetup()` is only ever called once no matter how many fixtures are run, or `FancordionRunners` created.
-- `suiteTearDown()` again is only ever called the once (currently in an Env shutdown hook).
+- `suiteTearDown()` is only ever called the once (currently in an Env shutdown hook).
 - `fixtureSetup()` is called before every fixture.
 - `fixtureTearDown()` is called after every fixture.
 - `skinType` & `gimmeSomeSkin()` determine & create an instance of the `FancordionSkin` class used to render the result HTML. You could, for instance, change this to use a Bootstrap skin.
 - `outputDir` is where the result files are saved.
 - `commands` is a map of all the [Commands](http://repo.status302.com/doc/afFancordion/Commands.html) made available to the test. To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
 
-To help you bridge the gap between Fancordion and standard Fantom tests, Fancordion ships with [FixtureTest](http://repo.status302.com/doc/afFancordion/FixtureTest.html). This handy class lets you run any Fixture as a Fantom Test.
+### Run as Test 
 
-To use a specific `FancordionRunner` in your tests, override `fancordionRunner()` to return desired instance. Even though all your tests will extend `FixtureTest`, the `fancordionRunner()` method will only be called once. This means you can run a single test with [fant](http://fantom.org/doc/docTools/Fant.html), or all of them, and they will still only use the same runner instance.
+Fancordion fixtures can also be run as standard Fantom tests.
+
+To help you bridge the gap between Fancordion and Fantom tests, Fancordion ships with a handy [FixtureTest](http://repo.status302.com/doc/afFancordion/FixtureTest.html) class. Extending `FixtureTest` lets you run any Fixture as a Fantom Test.
+
+```
+using afFancordion
+
+** My first Fancordion fixture.
+class TestStuff : FixtureTest{
+    ...
+}
+```
+
+To use a specific `FancordionRunner` in your tests, override `FixtureTest.fancordionRunner()` to return the desired instance. Even though all your tests will extend `FixtureTest`, the `fancordionRunner()` method will only be called once. This means you can run a single test with [fant](http://fantom.org/doc/docTools/Fant.html), or all of them, and they will still only use the same runner instance.
 
 ## Specifications 
 
@@ -137,7 +156,9 @@ By default the specification is assumed to be the doc comment on the fixture:
 class MyFixture { }
 ```
 
-By doing so, every line in the doc comment must start with a double asterisk `**`. The specification may exist in its own file, just give a URL to its location in the `@Fixture` facet:
+By doing so, every line in the doc comment must start with a double asterisk `**`.
+
+The specification may also exist in its own file, just give a URL to its location in the `@Fixture` facet:
 
 ```
 ** This comment is the specification.
@@ -183,9 +204,10 @@ Specifications can be written in any way you wish, but the following structure i
 The `set` command sets a field of the fixture to the value of the link text. The `Str` is [coercered](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to the field's type.
 
 ```
+using afFancordion
+
 ** The meaning of life is [42]`set:number`.
-@Fixture
-class ExampleFixture {
+class ExampleFixture : FixtureTest {
   Int? number
 }
 ```
@@ -197,9 +219,10 @@ The `execute` command calls a method on the fixture. The cmd is compiled as Fant
 Any occurrences of the token `#TEXT` are replaced with the command / link text.
 
 ```
+using afFancordion
+
 ** [The end has come.]`execute:initiateShutdownSequence(42, #TEXT, "/tmp/end.txt".toUri)`
-@Fixture
-class ExampleFixture {
+class ExampleFixture : FixtureTest {
   Void initiateShutdownSequence(Int num, Str cmdText, Uri url) {
     ...
   }
@@ -208,22 +231,23 @@ class ExampleFixture {
 
 ### verify 
 
-The `verify` command executes a Test verify method against the link text. Available verify methods are:
+The `verify` suite of commands execute a Test verify method against the link text. Available verify commands are:
 
-- eq(...)
-- notEq(...)
-- type(...)
-- true(...)
-- false(...)
-- null(...)
-- notNull(...)
+- `verifyEq:`
+- `verifyNotEq:`
+- `verifyType:`
+- `verifyTrue:`
+- `verifyFalse:`
+- `verifyNull:`
+- `verifyNotNull:`
 
 Arguments to the verify methods are run against the fixture and may be any valid Fantom code.
 
 ```
-** The meaning of life is [42]`verify:eq(number)`.
-@Fixture
-class ExampleFixture {
+using afFancordion
+
+** The meaning of life is [42]`verifyEq:number`.
+class ExampleFixture : FixtureTest {
   Int? number := 43
 }
 ```
@@ -235,9 +259,10 @@ Arguments for the `eq()` and `notEq()` methods are [type coerced](http://repo.st
 This simple command fails the test with the given message.
 
 ```
+using afFancordion
+
 ** The meaning of life is [42]`fail:TODO`.
-@Fixture
-class ExampleFixture { }
+class ExampleFixture : FixtureTest { }
 ```
 
 ### run 
@@ -251,10 +276,11 @@ Use `run` commands to create a specification containing a list of all acceptance
 You could even nest specifications to form a hierarchical index, with results aggregated to display a single green / red / grey result.
 
 ```
+using afFancordion
+
 ** Questions:
 ** - [Why is the sky blue?]`run:BlueSkyFixture`.
-@Fixture
-class ExampleFixture { }
+class ExampleFixture : FixtureTest { }
 ```
 
 ### link 
@@ -262,9 +288,10 @@ class ExampleFixture { }
 The `link` command renders a standard HTML <a> tag. It is added with the `file`, `http`, `https` and `mailto` schemes.
 
 ```
+using afFancordion
+
 ** Be sure to check out [Fantom-Factory]`http://www.fantomfactory.org/`.
-@Fixture
-class ExampleFixture { }
+class ExampleFixture : FixtureTest { }
 ```
 
 ### embed 
@@ -274,14 +301,132 @@ The `embed` command executes the given function against the fixture and embeds t
 Use it to add extra markup to your fixtures.
 
 ```
+using afFancordion
+
 ** Kids, don't play with [FIRE!]`embed:danger(#TEXT)`.
-@Fixture
-class ExampleFixture {
+class ExampleFixture : FixtureTest {
   Str danger(Str text) {
     """<span class="danger">${text}</span>"""
   }
 }
 ```
+
+## Pre-Formatted Text
+
+Pre-formatted text may be used as the input for commands by writing the command URL as the first line of the text:
+
+```
+** pre>
+** verifyEq:errMsg
+** This is the Err Msg.
+** <pre
+```
+
+Note that pre-formatted text may also be any line indended by 2 or more spaces. Meaning the above may be re-written as:
+
+```
+**   verifyEq:errMsg
+**   This is the Err Msg.
+```
+
+## Tables 
+
+### Markup 
+
+Fancordion also has support for tables. To render a HTML table, use preformatted text with `table:` as the first line:
+
+```
+** pre>
+** table:
+**
+** Full Name    First Name  Last Name
+** -----------  ----------  ----------
+** John Smith   John        Smith
+** Fred Bloggs  Fred        Bloggs
+** Steve Eynon  Steve       Eynon
+** <pre
+```
+
+Table parsing is simple, but expressive. The first line to start with a `-` character defines where the column boundaries are. All lines before are table headers, all lines after are table data.  Any data consisting entirely of `-` characters are ignored.
+
+That means the above table could also we written as:
+
+```
+**   table:
+**
+**   +-------------+-------+--------+
+**   |             | First | Last   |
+**   | Full Name   | Name  | Name   |
+**    -------------+-------+--------+
+**   | John Smith  | John  | Smith  |
+**   | Steve Eynon | Steve | Eynon  |
+**   | Fred Bloggs | Fred  | Bloggs |
+**   +-------------+-------+--------+
+```
+
+### Commands 
+
+You can also specify commands for each column, to be run on each row. After the `table:` declaration, write commands on seperate lines prefixing them with `col[n]+` to specify on which column they should operate.
+
+The following example tests that each name can be split up into a first name and last name:
+
+```
+using afFancordion
+
+** Name Splitting
+** ##############
+** For personalalised mailshots, the system should be able
+** to split a full name up into it's constituent parts.
+**
+** Example:
+**
+**   table:
+**   col[0]+execute:split(#TEXT)
+**   col[1]+verifyEq:firstName
+**   col[2]+verifyEq:lastName
+**
+**   Full Name    First Name  Last Name
+**   -----------  ----------  ----------
+**   John Smith   John        Smith
+**   Fred Bloggs  Fred        Bloggs
+**   Steve Eynon  Steve       Eynon
+**
+class TestSplittingNames : FixtureTest {
+  Str? firstName
+  Str? lastName
+
+  Void split(Str name) {
+    firstName = name.split[0]
+    lastName  = name.split[1]
+  }
+}
+```
+
+### Verify Rows 
+
+`verifyRows` is a special table command that verifies that rows in the table are identical to a given list.
+
+```
+using afFancordion
+
+**   table:
+**   verifyRows:results()
+**
+**   Names
+**   ------
+**   john
+**   ringo
+**   george
+**   paul
+**
+class VerifyRowsFixture : FixtureTest {
+  Str[] results() {
+    ["john", "ringo", "george", "paul"]
+  }
+}
+```
+
+The fixture is marked as a failure should any item in the list not equal it's matching table row. Should the list contain too few or too many item, they are rendered as failures in the rendered HTML table.
 
 ## Test BedSheet Apps 
 
