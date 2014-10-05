@@ -6,6 +6,8 @@ contribute section title funcs
 logging / tooltip / popup cmd
 Bootstrap skin
 
+Fix bug where first run test isn't the redirect
+
 
 For 1.0.0
 =========
