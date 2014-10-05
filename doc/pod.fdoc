@@ -527,6 +527,8 @@ Below shows a typical FancordionRunner setup together with an abstract WebFixtur
 pre>
 syntax: fantom
 
+using afIoc
+using afIocEnv
 using afBounce
 using afFancordion
 
@@ -568,15 +570,15 @@ class MyFancordionRunner : FancordionRunner {
 
 class WebTestModule {
 
-    @Contribute { serviceType=ServiceOverrides# }
-    static Void contributeServiceOverride(MappedConfig config) {
-        config["IocEnv"] = IocEnv.fromStr("Testing")
+    @Override
+    static IocEnv overrideIocEnv() {
+        IocEnv.fromStr("Testing")
     }
 
     // other test specific services and overrides...
 }
 
-// The super class for all Web Fixtures
+** The super class for all Web Fixtures
 abstract class WebFixture : FixtureTest {
     BedClient? client
 
