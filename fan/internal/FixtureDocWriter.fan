@@ -1,7 +1,7 @@
 using fandoc
 
 internal class FixtureDocWriter : DocWriter {
-	
+	private static const Str[] examples	:= "Example Example: Examples Examples:".lower.split
 	private Bool 	inLink
 	private Bool 	inPre
 	private StrBuf?	linkText
@@ -47,7 +47,7 @@ internal class FixtureDocWriter : DocWriter {
 				
 				// TODO: contribute section titles
 				// even better, contribute functions! so that titles can have custom content
-				if (head.title.equalsIgnoreCase("Example")) {
+				if (examples.contains(head.title.trim.lower)) {
 					inExample = true
 					append(fixCtx.skin.example)
 				}
@@ -106,7 +106,7 @@ internal class FixtureDocWriter : DocWriter {
 		switch (elem.id) {
 			case DocNodeId.link:
 				inLink = false
-				cmds.doCmd(fixCtx, ((Link) elem).uri.toUri, linkText.toStr)
+				cmds.doCmd(fixCtx, ((Link) elem).uri.toUri, linkText.toStr, null)
 				linkText = null
 				
 			case DocNodeId.pre:
@@ -116,11 +116,17 @@ internal class FixtureDocWriter : DocWriter {
 				preLines := preText.splitLines
 				cmdUrl	 := Uri(preLines.first.trim, false)
 				if (!preLines.isEmpty && cmds.isCmd(cmdUrl?.scheme)) {
-					append(fixCtx.skin.pre)
 					preLines.removeAt(0)
 					preText = preLines.join("\n")
-					cmds.doCmd(fixCtx, cmdUrl, preText.trim)
-					append(fixCtx.skin.preEnd)
+					
+					// TODO: fix this dirty hack that prevents tables from being rendered in a <pre> tag
+					if (cmdUrl.scheme == "table")
+						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null)
+					else {
+						append(fixCtx.skin.pre)
+						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null)
+						append(fixCtx.skin.preEnd)
+					}
 					
 				} else {
 					append(fixCtx.skin.pre)

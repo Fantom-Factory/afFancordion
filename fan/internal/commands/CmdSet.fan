@@ -11,9 +11,13 @@ using afBeanUtils
 ** }
 ** <pre
 ** 
+** Fields may also be set on nested objects using standard dot notation: 
+** 
+**   ** My name is [Forrest]`set:user.name`
+** 
 internal class CmdSet : Command {
 
-	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
 		// we can't call 'setOnFixture()' because we need to know what the field type is so we can 
 		// coerce the value
 

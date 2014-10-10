@@ -27,13 +27,13 @@ table {
 	border-collapse:	collapse;
 	empty-cells:		show;
 	margin:				8px 0 8px 0;
+	background-color:	white;
 }
 th, td {
 	border:				1px solid black;
 	padding:			3px;
 }
 td {
-	background-color:	white;
 	vertical-align:		top;
 }
 th {
@@ -124,17 +124,23 @@ ins {
 	font-family:		Arial;
 }
 
-.special {
-	font-style:			italic;
+
+tr.success {
+	background-color:	#afa;
 }
-.missing, .missing * {
-	background-color:	#ff9999;
+tr.ignored {
+	background-color:	#f0f0f0;
+}
+tr.failure {
+	background-color:	#ffb0b0;
 	color:				#bb5050;
-	text-decoration:	line-through;
 }
-.surplus, .surplus * {
-	background-color:	#ff9999;
+tr.error {
+	background-color:	#ffb0b0;
+	color:				#bb5050;
 }
+
+
 footer {
 	text-align:			right;
 	margin-top:			40px;
@@ -151,23 +157,3 @@ footer .testTime {
 	padding-top:		2px;
 }
 
-.idea {
-	font-size:			9pt;
-	color:				#888;
-	font-style:			italic;	
-}
-.tight li {
-	margin-top:			1px;
-	margin-bottom:		1px; 
-}
-.commentary {
-	float:				right;
-	width:				200px;
-	background-color:	#ffffd0;
-	padding:			8px;
-	border:				3px solid #eeeeb0;	 
-	margin:				10px 0 10px 10px;	 
-}
-.commentary, .commentary * {
-	font-size:			8pt;
-}

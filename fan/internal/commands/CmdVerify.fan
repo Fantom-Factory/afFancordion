@@ -28,7 +28,7 @@ internal class CmdVerify : Command {
 	static const Str[] singleArgCmds	:= "verify verifyFalse verifyNull verifyNotNull".split
 	static const Str:Type coerceTo		:= ["verifyEq":Str#, "verifyNotEq":Str#, "verifyType":Obj#, "verify":Bool#, "verifyFalse":Bool#, "verifyNull":Obj?#, "verifyNotNull":Obj?#]
 
-	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
 		cmd := cmdCaps[cmdUrl.scheme]	// stoopid scheme is lowercased!
 		arg	:= pathStr(cmdUrl)
 

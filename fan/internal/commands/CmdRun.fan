@@ -17,7 +17,7 @@ internal class CmdRun : Command {
 
 	override Bool canFailFast	:= false
 
-	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
 		typeName	:= cmdUrl.pathStr
 		
 		newType 

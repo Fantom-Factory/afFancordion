@@ -8,8 +8,8 @@ using afBeanUtils::TypeCoercer
 ** class ExampleFixture { }
 ** <pre
 internal class CmdFail : Command {
-	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
-		msg := pathStr(cmdUrl).isEmpty ? "Fail" : pathStr(cmdUrl)
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
+		msg := pathStr(cmdUrl).isEmpty ? "Fail" : cmdCtx.applyVariables(pathStr(cmdUrl))
 		fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdText, msg))
 		
 		fixCtx.errs.add(FailErr(msg))

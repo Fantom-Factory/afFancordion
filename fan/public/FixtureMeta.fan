@@ -23,7 +23,8 @@ const class FixtureMeta {
 	** When the fixture run was started
 	const DateTime StartTime
 
-	internal new make(|This|? in := null) { in?.call(this) }
+	@NoDoc
+	new make(|This|? in := null) { in?.call(this) }
 }
 
 ** Contains contextual information about a Fancordion fixture.
@@ -44,5 +45,6 @@ class FixtureCtx {
 	** A list of Errs encountered.
 	Err[]			errs
 	
-	internal new make(|This|? in := null) { in?.call(this) }
+	@NoDoc
+	new make(|This|? in := null) { in?.call(this) }
 }
