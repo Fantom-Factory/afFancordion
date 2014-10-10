@@ -1,6 +1,6 @@
 
 ** [anything]`verifyEq:anything`
-@Fixture
+@Fixture @NoDoc
 class CmdRunFailureErrTest_FixtureFailure {
 	Str anything	:= "whoopsie"
 }

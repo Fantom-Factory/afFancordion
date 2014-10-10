@@ -2,15 +2,22 @@ using afBeanUtils
 
 internal class CmdTable : Command {
 	private static const Regex 			regexCol	:= "col\\[([0-9]+)\\]".toRegex
+	private static const Regex 			regexRow	:= "row\\[([0-9]+)\\]".toRegex
 	private static const TableParser	tableParser	:= TableParser()
 
-	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
-		verifyRowsCmd := (Str?) null
-		cols  := Int:Str[][:]
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
+		verifyRowsCmd	:= (Str?) null
+		colCmds 		:= Int:Str[][:]
+		rowCmds 		:= Str[,]
 		lines := cmdText.splitLines.exclude |line->Bool| {
 			i := line.index(":")
 			if (i != null) {
-				scheme := line[0..<i].trim
+				scheme := line[0..<i].trim	// real URI schemes cannot contain [] chars
+
+				if (scheme.lower.startsWith("row+")) {
+					rowCmds.add(line[4..-1])
+					return true
+				}
 
 				if (scheme.lower.startsWith("verifyrows")) {
 					verifyRowsCmd = line
@@ -22,7 +29,7 @@ internal class CmdTable : Command {
 				if (matcher.find) {
 					idx := matcher.group(1).toInt
 					cmd := "\\+?col\\[${idx}\\]\\+?".toRegex.matcher(line).replaceFirst("").trim
-					cols.getOrAdd(idx) { Str[,] }.add(cmd)
+					colCmds.getOrAdd(idx) { Str[,] }.add(cmd)
 					return true
 				}
 			}
@@ -49,10 +56,12 @@ internal class CmdTable : Command {
 		// The skin will probably need to be updated to reflect the new code
 		table.eachRange(1..-1) |row, ri| {
 			buff.add(skin.tr)
+			trIdx := buff.size-1
+			
 			row.each |col, i| {
-				if (cols.containsKey(i)) {
-					cols[i].each |cmd| {
-						commands.doCmd(fixCtx, cmd.toUri, col)
+				if (colCmds.containsKey(i)) {
+					colCmds[i].each |cmd| {
+						commands.doCmd(fixCtx, cmd.toUri, col, null)
 					}
 				} else if (rows != null) {
 					// TODO: verifyRows should work on 2D tables
@@ -70,6 +79,38 @@ internal class CmdTable : Command {
 				} else
 					buff.add(skin.td(col))
 			}
+			
+			// ---- do row commands ----
+			if (!rowCmds.isEmpty) {
+				// create a fake skin so successful cmds aren't rendered
+				tableSkin := TableSkinWrapper()
+				rowFixCtx := FixtureCtx {
+					it.fancordionRunner	= fixCtx.fancordionRunner
+					it.fixtureInstance	= fixCtx.fixtureInstance
+					it.skin				= tableSkin
+					it.renderBuf		= fixCtx.renderBuf
+					it.errs				= fixCtx.errs
+				}
+				
+				// run the commands
+				rowCmds.each |rowCmd| {
+					commands.doCmd(rowFixCtx, rowCmd.toUri, row.toStr, row)
+				}
+				
+				// highlight the row with the appropriate class
+				if (tableSkin.error)
+					buff.insert(trIdx, " class=\"error\"")
+				else if (tableSkin.failure)
+					buff.insert(trIdx, " class=\"failure\"")
+				else if (tableSkin.ignored)
+					buff.insert(trIdx, " class=\"ignored\"")
+				else
+					buff.insert(trIdx, " class=\"success\"")
+
+				// render the errors and failures
+				tableSkin.funcs.each { fixCtx.renderBuf.add(it.call(fixCtx.skin)) }
+			}
+			
 			buff.add(skin.trEnd)
 		}
 		
@@ -83,5 +124,36 @@ internal class CmdTable : Command {
 		}
 
 		buff.add(skin.tableEnd)
+	}
+}
+
+internal class TableSkinWrapper : FancordionSkin {
+	override Uri[]	cssUrls		:= [,]
+	override Uri[]	scriptUrls	:= [,]
+	
+	|FancordionSkin->Str|[] funcs	:= [,]
+	Bool 			ignored		:= false
+	Bool 			failure		:= false
+	Bool 			error		:= false
+	
+	override Str cmdIgnored(Str text) {
+		ignored = true
+		return Str.defVal
+	}
+
+	override Str cmdSuccess(Str text, Bool escape := true) {
+		Str.defVal
+	}
+
+	override Str cmdFailure(Str expected, Obj? actual, Bool escape := true) {
+		failure = true
+		funcs.add(|FancordionSkin skin->Str| { skin.cmdFailure(expected, actual, escape) })
+		return Str.defVal
+	}
+
+	override Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
+		error = true
+		funcs.add(|FancordionSkin skin->Str| { skin.cmdErr(cmdUrl, cmdText, err) })
+		return Str.defVal
 	}
 }

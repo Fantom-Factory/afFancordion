@@ -192,13 +192,13 @@ mixin FancordionSkin {
 	// ---- Table Methods -------------------------------------------------------------------------
 
 	** Starts a '<table>' tag.
-	virtual Str table() {		setInTable(true); return "<table>\n"		}
+	virtual Str table() {		setInTable(true); return "<table>\n"	}
 	** Ends a '</table>' tag.
 	virtual Str tableEnd() {	setInTable(false); return "</table>"	}
 	** Starts a '<tr>' tag.
 	virtual Str tr() {			"<tr>"		}
 	** Ends a '</tr>' tag.
-	virtual Str trEnd() {		"</tr>\n"		}
+	virtual Str trEnd() {		"</tr>\n"	}
 	** Returns a '<th>' tag.
 	virtual Str th(Str heading) {
 		"<th>${heading}</th>"

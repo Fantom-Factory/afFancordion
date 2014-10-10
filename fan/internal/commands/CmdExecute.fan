@@ -15,8 +15,8 @@
 ** <pre
 internal class CmdExecute : Command {
 
-	override Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText) {
-		fcode := pathStr(cmdUrl).replace("#TEXT", cmdText.toCode)
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
+		fcode := cmdCtx.applyVariables(pathStr(cmdUrl))
 		
 		// run the command!
 		executeOnFixture(fixCtx.fixtureInstance, fcode)

@@ -153,7 +153,7 @@ syntax: fantom
 using afFancordion
 
 ** My first Fancordion fixture.
-class TestStuff : FixtureTest{
+class TestStuff : FixtureTest {
     ...
 }
 <pre
@@ -409,7 +409,7 @@ syntax: fantom
 ** table:
 **
 ** Full Name    First Name  Last Name
-** -----------  ----------  ----------
+** -----------  ----------  ---------
 ** John Smith   John        Smith
 ** Fred Bloggs  Fred        Bloggs
 ** Steve Eynon  Steve       Eynon
@@ -419,7 +419,7 @@ syntax: fantom
 Table parsing is simple, but expressive. The first line to start with a '-' character defines where the column boundaries are.
 All lines before are table headers, all lines after are table data.  Any data consisting entirely of '-' characters are ignored.
 
-That means the above table could also we written as:
+That means the above table could also be written as:
 
 pre>
 syntax: fantom
@@ -440,7 +440,7 @@ syntax: fantom
 
 Commands [#tableCommands]
 =========================
-You can also specify commands for each column, to be run on each row.
+You can specify commands for each column, to be run for each row.
 After the 'table:' declaration, write commands on seperate lines prefixing them with 'col[n]+' to specify on which column they should operate.
 
 The following example tests that each name can be split up into a first name and last name:

@@ -10,24 +10,23 @@ using afBounce
 ** Stuff to do with splitting a full name into first and last names:
 ** 
 **   table:
-**   col[0]+execute:split(#TEXT)
-**   col[1]+verifyEq:names[0]
-**   col[2]+verifyEq:names[1]
+**   row+execute:split(#COL[0], #COL[1], #COL[2], #COLS)
 ** 
 **   Full Name    First Name  Last Name
-**   -----------  ----------- ----------
+**   -----------  ----------  ---------
 **   John Smith   John        Smith
 **   Fred Bloggs  Freddy      Bloggs
 **   Steve Eynon  Steve       Eynon
 ** 
 @Fixture { failFast=false }
-class CmdTableTest : ConTest {
-	Str[]? names
+class CmdTableRowTest : ConTest {
 
-	Void split(Str name) {
-		if (name.startsWith("Steve"))
+	Void split(Str full, Str first, Str last, Str[] cols) {
+		verifyEq([full, first, last], cols)
+		if (first == "Steve")
 			throw Err("Argh!")
-		names = name.split
+		verifyEq(full.split[0], first)
+		verifyEq(full.split[1], last)
 	}
 
 	override Void testFixture() {
@@ -43,7 +42,7 @@ class CmdTableTest : ConTest {
 		Element("td.failure")[0].verifyTextEq("FreddyFred")
 		Element("td.success")[4].verifyTextEq("Bloggs")
 
-		Element("td.error")[0].verifyTextContains("Steve EynonArgh!")
+		Element("td.error"  )[0].verifyTextContains("Steve EynonArgh!")
 		Element("td.failure")[1].verifyTextEq("SteveFred")
 		Element("td.failure")[2].verifyTextEq("EynonBloggs")
 	}

@@ -16,7 +16,7 @@ mixin Command {
 	virtual Bool canFailFast() { true }
 
 	** Runs the command with the given URI and text. 
-	abstract Void runCommand(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText)
+	abstract Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText)
 	
 	** Helper method that executes the given code against the fixture instance. Example:
 	** 

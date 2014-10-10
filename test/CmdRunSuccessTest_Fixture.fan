@@ -1,6 +1,6 @@
 
 ** [anything]`verifyEq:anything`
-@Fixture
+@Fixture @NoDoc
 class CmdRunSuccessTest_Fixture {
 	Str anything	:= "anything"
 }
