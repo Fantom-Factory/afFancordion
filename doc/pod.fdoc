@@ -277,11 +277,12 @@ verify [#verify]
 ================
 The 'verify' suite of commands execute a Test verify method against the link text.
 Available verify commands are:
+ - 'verify:'
+ - 'verifyTrue:'
+ - 'verifyFalse:'
  - 'verifyEq:'
  - 'verifyNotEq:'
  - 'verifyType:'
- - 'verifyTrue:'
- - 'verifyFalse:'
  - 'verifyNull:'
  - 'verifyNotNull:'
 
@@ -298,21 +299,22 @@ class ExampleFixture : FixtureTest {
 }
 <pre
 
-Arguments for the 'eq()' and 'notEq()' methods are [type coerced]`afBeanUtils::TypeCoercer` to a 'Str'.
-Arguments for the 'true()' and 'false()' are [type coerced]`afBeanUtils::TypeCoercer` to a 'Bool'.
+Arguments for the 'verifyEq' and 'verifyNotEq' methods are [type coerced]`afBeanUtils::TypeCoercer` to a 'Str' and trimmed.
+Arguments for the 'verify', 'verifyTrue' and 'verifyFalse' are [type coerced]`afBeanUtils::TypeCoercer` to a 'Bool'.
 
 
 
 fail [#fail]
 ============
 This simple command fails the test with the given message.
+Example:
 
 pre>
 syntax: fantom
 
 using afFancordion
 
-** The meaning of life is [42]`fail:TODO`.
+** The meaning of life is [42]`fail:TODO - Not Implemented`.
 class ExampleFixture : FixtureTest { }
 <pre
 
@@ -438,8 +440,8 @@ syntax: fantom
 
 
 
-Commands [#tableCommands]
-=========================
+Column Commands [#tableColumnCommands]
+======================================
 You can specify commands for each column, to be run for each row.
 After the 'table:' declaration, write commands on seperate lines prefixing them with 'col[n]+' to specify on which column they should operate.
 
@@ -463,7 +465,7 @@ using afFancordion
 **   col[2]+verifyEq:lastName
 **
 **   Full Name    First Name  Last Name
-**   -----------  ----------  ----------
+**   -----------  ----------  ---------
 **   John Smith   John        Smith
 **   Fred Bloggs  Fred        Bloggs
 **   Steve Eynon  Steve       Eynon
@@ -478,6 +480,47 @@ class TestSplittingNames : FixtureTest {
   }
 }
 <pre
+
+
+
+Row Commands [#tableRowCommands]
+================================
+Similar to column commands, you can specify commands to be run on each row. Use the prefix 'row+' when declaring a command.
+
+Use the Fancordion variables '#COL[0]', '#COL[1]' and '#COL[n]' to reference the text in each column.
+You may also use '#COLS' to inject a 'Str[]' of all row text in all the columns.
+
+pre>
+syntax: fantom
+
+using afFancordion
+
+** Name Splitting
+** ##############
+** For personalalised mailshots, the system should be able
+** to split a full name up into it's constituent parts.
+**
+** Example:
+**
+**   table:
+**   row+execute:splitAndVerify(#COL[0], #COL[1], #COL[2])
+**
+**   Full Name    First Name  Last Name
+**   -----------  ----------  ---------
+**   John Smith   John        Smith
+**   Fred Bloggs  Fred        Bloggs
+**   Steve Eynon  Steve       Eynon
+**
+class TestSplittingNames : FixtureTest {
+
+  Void splitAndVerify(Str full, Str first, Str last) {
+    verifyEq(full.split[0], first)
+    verifyEq(full.split[1],  last)
+  }
+}
+<pre
+
+If a table contains both column *and* row commands, then the row commands are executed after the column commands.
 
 
 
@@ -599,6 +642,13 @@ abstract class WebFixture : FixtureTest {
 
 Release Notes [#releaseNotes]
 *****************************
+v0.0.8 [#v0.0.8]
+----------------
+ - New: Added Table 'row+' command to execute commands on row by row basis.
+ - New: 'CommandCtx' wraps some common command methods.
+ - Chg: Arguments for 'verifyEq' commands are trimmed.
+ - Bug: Tables are no longer rendered in a 'pre' tag.
+
 v0.0.6 [#v0.0.6]
 ----------------
  - New: Added Table syntax in pre-formatted text.
