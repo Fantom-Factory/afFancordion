@@ -26,7 +26,9 @@ using afBeanUtils::TypeCoercer
 ** String arguments for the 'verifyEq' and 'verifyNotEq' commands are trimmed by default.
 @NoDoc
 class CmdVerify : Command {
-	static const Str:Str cmdCaps		:= ["verifyeq":"verifyEq", "verifynoteq":"verifyNotEq", "verifytype":"verifyType", "verify":"verify", "verifytrue":"verify", "verifyfalse":"verifyFalse", "verifynull":"verifyNull", "verifynotNull":"verifyNotNull"]
+	static const Str:Str cmdCaps		:= ["verifyeq":"verifyEq", "verifynoteq":"verifyNotEq", "verifytype":"verifyType", "verify":"verify", "verifytrue":"verify", "verifyfalse":"verifyFalse", "verifynull":"verifyNull", "verifynotNull":"verifyNotNull",
+											// add verify aliases
+											"eq":"verifyEq", "noteq":"verifyNotEq", "type":"verifyType", "true":"verify", "false":"verifyFalse", "null":"verifyNull", "notNull":"verifyNotNull"]
 	static const Str[] doubleArgCmds	:= "verifyEq verifyNotEq verifyType".split 
 	static const Str[] singleArgCmds	:= "verify verifyFalse verifyNull verifyNotNull".split
 	static const Str:Type coerceTo		:= ["verifyEq":Str#, "verifyNotEq":Str#, "verifyType":Obj#, "verify":Bool#, "verifyFalse":Bool#, "verifyNull":Obj?#, "verifyNotNull":Obj?#]
@@ -37,7 +39,7 @@ class CmdVerify : Command {
 	
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
 		cmd := cmdCaps[cmdUrl.scheme]	// stoopid scheme is lowercased!
-		arg	:= pathStr(cmdUrl)
+		arg	:= cmdCtx.applyVariables(pathStr(cmdUrl))
 
 		if (!singleArgCmds.contains(cmd) && !doubleArgCmds.contains(cmd))
 			throw CmdNotFoundErr(ErrMsgs.verifyCmdNotFound(cmd), singleArgCmds.addAll(doubleArgCmds))

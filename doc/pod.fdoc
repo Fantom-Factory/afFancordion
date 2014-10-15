@@ -651,6 +651,7 @@ v0.0.8 [#v0.0.8]
  - New: 'CommandCtx' wraps some common command methods.
  - Chg: Arguments for 'verifyEq' commands are trimmed.
  - Bug: Tables are no longer rendered in a 'pre' tag.
+ - Bug: Fixture variables were not applied to verify commands.
 
 v0.0.6 [#v0.0.6]
 ----------------
