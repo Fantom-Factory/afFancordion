@@ -324,7 +324,7 @@ run [#run]
 ==========
 The 'run' command runs another Fancordion fixture and prints an appropriate success / failure link to it.
 
-The command path must be the name of the Fixture type to run. The fixture type may be qualified.
+The command path must be the name of the Fixture type to run.
 
 Use 'run' commands to create a specification containing a list of all acceptance tests for a feature, in a similar way you would use a test suite.
 
@@ -336,9 +336,12 @@ syntax: fantom
 using afFancordion
 
 ** Questions:
-** - [Why is the sky blue?]`run:BlueSkyFixture`.
+** - [Why is the sky blue?]`run:BlueSkyFixture#`.
 class ExampleFixture : FixtureTest { }
 <pre
+
+As seen above, the command path may take an optional '#' character as a suffix. This is the same syntax that Fantom has to specify Types.
+Using the '#' suffix can help you remember what the text represents! The fixture type may also be qualified.
 
 
 
