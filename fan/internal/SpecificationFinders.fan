@@ -94,15 +94,15 @@ internal class FindSpecFromSrcFile : SpecificationFinder {
 		srcStr	:= srcFile?.readAllStr(true)
 		return (srcStr == null) ? null : SpecificationMeta {
 			it.fixtureType		= fixtureType
-			it.specificationSrc	= fandocFromTypeSrc(srcStr)
+			it.specificationSrc	= fandocFromTypeSrc(srcStr) ?: ""
 			it.specificationLoc	= srcFile.normalize.uri
 		}
 	}
 
-	private Str fandocFromTypeSrc(Str srcStr) {
+	private Str? fandocFromTypeSrc(Str srcStr) {
 		tokens	:= Tokenizer(Compiler(CompilerInput()), Loc("wotever"), srcStr, true).tokenize
 		docCom	:= tokens.find { it.kind == Token.docComment }		
-		fandoc	:= ((Str[]) docCom.val).join("\n")
+		fandoc	:= ((Str[]?) docCom?.val)?.join("\n")
 		return fandoc
 	}
 }

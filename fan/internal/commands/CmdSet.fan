@@ -29,6 +29,8 @@ internal class CmdSet : Command {
 		// TODO: use BeanPropertyFactory().parse(property).set(instance, value)
 		// and use own TypeCoercer that looks for fromCode().
 		BeanProperties.set(fixCtx.fixtureInstance, pathStr(cmdUrl), cmdText)
+
+		// FIXME: only use beanprops for simple props
 		
 		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
 	}

@@ -76,8 +76,8 @@ internal class CmdRun : Command {
 		} catch (Err err) {
 			fixCtx.errs.add(err)
 			last := Locals.instance.resultsCache[newType]
-			link := fixCtx.skin.a(last.resultFile.name.toUri, cmdText)
-			fail := fixCtx.skin.cmdFailure(link, err.msg, false)
+			link := last != null ? fixCtx.skin.a(last.resultFile.name.toUri, cmdText) : null
+			fail := fixCtx.skin.cmdFailure(link ?: cmdText, err.msg, false)
 			fixCtx.renderBuf.add(fail)
 		}
 	}

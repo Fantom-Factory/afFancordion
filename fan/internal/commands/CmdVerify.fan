@@ -28,7 +28,7 @@ using afBeanUtils::TypeCoercer
 class CmdVerify : Command {
 	static const Str:Str cmdCaps		:= ["verifyeq":"verifyEq", "verifynoteq":"verifyNotEq", "verifytype":"verifyType", "verify":"verify", "verifytrue":"verify", "verifyfalse":"verifyFalse", "verifynull":"verifyNull", "verifynotNull":"verifyNotNull",
 											// add verify aliases
-											"eq":"verifyEq", "noteq":"verifyNotEq", "type":"verifyType", "true":"verify", "false":"verifyFalse", "null":"verifyNull", "notNull":"verifyNotNull"]
+											"eq":"verifyEq", "noteq":"verifyNotEq", "type":"verifyType", "true":"verify", "false":"verifyFalse", "null":"verifyNull", "notnull":"verifyNotNull"]
 	static const Str[] doubleArgCmds	:= "verifyEq verifyNotEq verifyType".split 
 	static const Str[] singleArgCmds	:= "verify verifyFalse verifyNull verifyNotNull".split
 	static const Str:Type coerceTo		:= ["verifyEq":Str#, "verifyNotEq":Str#, "verifyType":Obj#, "verify":Bool#, "verifyFalse":Bool#, "verifyNull":Obj?#, "verifyNotNull":Obj?#]
@@ -38,7 +38,7 @@ class CmdVerify : Command {
 	Bool trimStrings := true
 	
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
-		cmd := cmdCaps[cmdUrl.scheme]	// stoopid scheme is lowercased!
+		cmd := cmdCaps[cmdUrl.scheme] ?: cmdUrl.scheme	// stoopid scheme is lowercased! (Elvis so we don't get NullErr, but a CmdNotFoundErr)
 		arg	:= cmdCtx.applyVariables(pathStr(cmdUrl))
 
 		if (!singleArgCmds.contains(cmd) && !doubleArgCmds.contains(cmd))
