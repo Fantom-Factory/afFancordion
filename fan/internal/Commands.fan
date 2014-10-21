@@ -14,7 +14,10 @@ internal class Commands {
 	Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText, Str[]? tableCols) {
 		fixFacet := (Fixture) Type#.method("facet").callOn(fixCtx.fixtureInstance.typeof, [Fixture#])	// Stoopid F4
 		try {
-			cmd := cmdUrl.scheme ?: "NULL"
+			if (cmdUrl.scheme == null)
+				throw CmdNotFoundErr(ErrMsgs.cmdHasNullScheme(cmdUrl), commands.keys)
+
+			cmd := cmdUrl.scheme
 			command := commands[cmd] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmd, cmdUrl), commands.keys)
 			
 			if (!fixCtx.errs.findAll { it isnot FailErr }.isEmpty && fixFacet.failFast && command.canFailFast)
@@ -55,11 +58,12 @@ const class CommandCtx {
 	** Applies Fancordion variables to the given str. 
 	** Specifically it replaces portions of the string with:
 	** 
-	**  - '#TEXT   -> cmdText.toCode'
-	**  - '#COLS   -> tableCols.toCode'
-	**  - '#COL[0] -> tableCols[0].toCode'
-	**  - '#COL[1] -> tableCols[1].toCode'
-	**  - '#COL[n] -> tableCols[n].toCode'
+	**  - '#TEXT    -> cmdText.toCode'
+	**  - '#COLS    -> tableCols.toCode'
+	**  - '#COL[0]  -> tableCols[0].toCode'
+	**  - '#COL[1]  -> tableCols[1].toCode'
+	**  - '#COL[n]  -> tableCols[n].toCode'
+	**  - '#FIXTURE -> "fixture"'
 	Str applyVariables(Str text) {
 		text = text.replace("#TEXT", cmdText.toCode)
 		tableCols?.each |col, i| {
@@ -67,6 +71,7 @@ const class CommandCtx {
 		}
 		if (tableCols != null)
 			text = text.replace("#COLS", tableCols.toCode)
+		text = text.replace("#FIXTURE", "fixture")
 		return text
 	}
 }

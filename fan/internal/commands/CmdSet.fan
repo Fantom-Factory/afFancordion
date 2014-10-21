@@ -28,9 +28,17 @@ internal class CmdSet : Command {
 		// e.g. setName(Steve) not setName("Steve") 
 		// TODO: use BeanPropertyFactory().parse(property).set(instance, value)
 		// and use own TypeCoercer that looks for fromCode().
-		BeanProperties.set(fixCtx.fixtureInstance, pathStr(cmdUrl), cmdText)
 
 		// FIXME: only use beanprops for simple props
+		
+		// FIXME: fandoc
+		if (pathStr(cmdUrl).all { it.isAlphaNum || it == '.' })
+			BeanProperties.set(fixCtx.fixtureInstance, pathStr(cmdUrl), cmdText)
+		else {
+			fixCode := cmdCtx.applyVariables(pathStr(cmdUrl))
+			fanCode := "${fixCode} = ${cmdText.toCode}"
+			executeOnFixture(fixCtx.fixtureInstance, fanCode)
+		}
 		
 		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
 	}

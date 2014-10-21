@@ -23,7 +23,7 @@ mixin Command {
 	**   executeOnFixture(fixture, "toStr()") --> fixture.toStr()
 	Void executeOnFixture(Obj fixture, Str code) {
 		model := PlasticClassModel("FixtureExecutor", false).extend(FixtureExecutor#)
-		model.overrideMethod(FixtureExecutor#executeOn, "((${fixture.typeof.qname}) fixture).${code}")
+		model.overrideMethod(FixtureExecutor#executeOn, "fixture := (${fixture.typeof.qname}) obj;\nfixture.${code}")
 		help := (FixtureExecutor) compiler.compileModel(model).make
 		help.executeOn(fixture)
 	}	
@@ -33,7 +33,7 @@ mixin Command {
 	**   getFromFixture(fixture, "toStr()")  --> fixture.toStr()
 	Obj? getFromFixture(Obj fixture, Str code) {
 		model := PlasticClassModel("FixtureExecutor", false).extend(FixtureExecutor#)
-		model.overrideMethod(FixtureExecutor#getFrom, "((${fixture.typeof.qname}) fixture).${code}")
+		model.overrideMethod(FixtureExecutor#getFrom, "fixture := (${fixture.typeof.qname}) obj;\nreturn fixture.${code}")
 		help := (FixtureExecutor) compiler.compileModel(model).make
 		return help.getFrom(fixture)
 	}
@@ -41,12 +41,12 @@ mixin Command {
 	** An alternative to 'Uri.pathStr()' that does not strip off the fragment, allowing you to use 
 	** '#TEXT' and similar in the URI.
 	Str pathStr(Uri uri) {
-		uri.toStr[uri.scheme.size+1..-1]
+		uri.scheme == null ? uri.toStr : uri.toStr[uri.scheme.size+1..-1]
 	}
 }
 
 @NoDoc
 abstract class FixtureExecutor {
-	virtual Void executeOn(Obj fixture) { }
-	virtual Obj? getFrom  (Obj fixture) { null }
+	virtual Void executeOn(Obj obj) { }
+	virtual Obj? getFrom  (Obj obj) { null }
 }
