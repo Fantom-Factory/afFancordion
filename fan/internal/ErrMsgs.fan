@@ -21,6 +21,10 @@ internal const class ErrMsgs {
 		"Could not find Command '${cmd}': ${cmdUrl}"
 	}
 
+	static Str cmdHasNullScheme(Uri cmdUrl) {
+		"Command URL does not specify a scheme: ${cmdUrl}"
+	}
+
 	static Str verifyCmdNotFound(Str cmd) {
 		"Could not find Verify command '${cmd}'"
 	}
