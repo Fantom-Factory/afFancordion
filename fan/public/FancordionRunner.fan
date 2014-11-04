@@ -22,14 +22,14 @@ class FancordionRunner {
 		
 	** Creates a 'FancordionRunner'.
 	new make(|This|? f := null) {
-		commands["verifyEq"]		= CmdVerify()
-		commands["verifyNotEq"]		= CmdVerify()
-		commands["verifyType"]		= CmdVerify()
-		commands["verify"]			= CmdVerify()
-		commands["verifyTrue"]		= CmdVerify()
-		commands["verifyFalse"]		= CmdVerify()
-		commands["verifyNull"]		= CmdVerify()
-		commands["verifyNotNull"]	= CmdVerify()
+		commands["verifyEq"]		= CmdVerify("verifyEq")
+		commands["verifyNotEq"]		= CmdVerify("verifyNotEq")
+		commands["verifyType"]		= CmdVerify("verifyType")
+		commands["verify"]			= CmdVerify("verify")
+		commands["verifyTrue"]		= CmdVerify("verify")
+		commands["verifyFalse"]		= CmdVerify("verifyFalse")
+		commands["verifyNull"]		= CmdVerify("verifyNull")
+		commands["verifyNotNull"]	= CmdVerify("verifyNotNull")
 		commands["set"]				= CmdSet()
 		commands["execute"]			= CmdExecute()
 		commands["fail"]			= CmdFail()
@@ -40,7 +40,17 @@ class FancordionRunner {
 		commands["https"]			= CmdLink()
 		commands["mailto"]			= CmdLink()
 		commands["file"]			= CmdLink()
-		
+
+		// add shortcut aliases
+		commands["eq"]		= commands["verifyEq"]
+		commands["notEq"]	= commands["verifyNotEq"]
+		commands["type"]	= commands["verifyType"]
+		commands["true"]	= commands["verifyTrue"]
+		commands["false"]	= commands["verifyFalse"]
+		commands["null"]	= commands["verifyNull"]
+		commands["notNull"]	= commands["verifyNotNull"]
+		commands["exe"]		= commands["execute"]
+
 		specFinders.add(FindSpecFromFacetValue())
 		specFinders.add(FindSpecFromTypeFandoc())
 		specFinders.add(FindSpecFromSrcFile())

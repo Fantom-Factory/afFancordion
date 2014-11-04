@@ -26,26 +26,25 @@ using afBeanUtils::TypeCoercer
 ** String arguments for the 'verifyEq' and 'verifyNotEq' commands are trimmed by default.
 @NoDoc
 class CmdVerify : Command {
-//	static const Str:Str cmdCaps		:= ["verifyeq":"verifyEq", "verifynoteq":"verifyNotEq", "verifytype":"verifyType", "verify":"verify", "verifytrue":"verify", "verifyfalse":"verifyFalse", "verifynull":"verifyNull", "verifynotNull":"verifyNotNull",
-//											// add verify aliases
-//											"eq":"verifyEq", "noteq":"verifyNotEq", "type":"verifyType", "true":"verify", "false":"verifyFalse", "null":"verifyNull", "notnull":"verifyNotNull"]
-	static const Str[] doubleArgCmds	:= "verifyEq verifyNotEq verifyType".split 
 	static const Str[] singleArgCmds	:= "verify verifyFalse verifyNull verifyNotNull".split
+	static const Str[] doubleArgCmds	:= "verifyEq verifyNotEq verifyType".split 
 	static const Str:Type coerceTo		:= ["verifyEq":Str#, "verifyNotEq":Str#, "verifyType":Obj#, "verify":Bool#, "verifyFalse":Bool#, "verifyNull":Obj?#, "verifyNotNull":Obj?#]
 
 	** Should the 'expected' and 'actual' arguments be strings during the 'verifyEq' or 
 	** 'verifyNotEq' commands, then they are trimmed as per this setting.
 	Bool trimStrings := true
 	
-	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
-//		cmd := cmdCaps[cmdUrl.scheme] ?: cmdUrl.scheme	// stoopid scheme is lowercased! (Elvis so we don't get NullErr, but a CmdNotFoundErr)
-		cmd := cmdCtx.cmdScheme
-		
-		arg	:= cmdCtx.applyVariables
+	** The verify cmd - should equate to the name of a verify method on 'Test'.
+	const Str cmd
 
+	new make(Str cmd) {
 		if (!singleArgCmds.contains(cmd) && !doubleArgCmds.contains(cmd))
 			throw CmdNotFoundErr(ErrMsgs.verifyCmdNotFound(cmd), singleArgCmds.addAll(doubleArgCmds))
-		
+		this.cmd = cmd
+	}
+	
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
+		arg			:= cmdCtx.applyVariables
 		fromFixture	:= getFromFixture(fixCtx.fixtureInstance, arg)
 		actual		:= TypeCoercer().coerce(fromFixture, coerceTo[cmd])
 		expected	:= (cmd == "verifyType") ? findType(cmdCtx.cmdText) : cmdCtx.cmdText
