@@ -26,14 +26,14 @@ class CmdLinkTest : ConTest {
 	override Void doTest() {
 		link := Link(".example a")[0] 
 		link.verifyTextEq("Fantom-Factory")
-		verifyEq(link.href, "http://www.fantomfactory.org/")
+		verifyEq(link.href, `http://www.fantomfactory.org/`)
 
 		link = Link(".example a")[1] 
 		link.verifyTextEq("Google")
-		verifyEq(link.href, "https://www.google.com/")
+		verifyEq(link.href, `https://www.google.com/`)
 
 		link = Link(".example a")[2] 
 		link.verifyTextEq("me")
-		verifyEq(link.href, "file:CmdLinkTest.fan")
+		verifyEq(link.href, `file:CmdLinkTest.fan`)
 	}
 }
