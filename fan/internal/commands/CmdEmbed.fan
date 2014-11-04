@@ -14,9 +14,9 @@
 ** <pre
 internal class CmdEmbed : Command {
 	
-	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
 		// can't use Uri.pathStr as it strips off the fragment #TEXT!!!
-		fcode := cmdCtx.applyVariables(pathStr(cmdUrl))
+		fcode := cmdCtx.applyVariables
 
 		// run the command!
 		html := getFromFixture(fixCtx.fixtureInstance, fcode)

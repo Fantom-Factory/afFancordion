@@ -17,7 +17,7 @@ using afBeanUtils
 ** 
 internal class CmdSet : Command {
 
-	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
 		// we can't call 'setOnFixture()' because we need to know what the field type is so we can 
 		// coerce the value
 
@@ -32,14 +32,14 @@ internal class CmdSet : Command {
 		// FIXME: only use beanprops for simple props
 		
 		// FIXME: fandoc
-		if (pathStr(cmdUrl).all { it.isAlphaNum || it == '.' })
-			BeanProperties.set(fixCtx.fixtureInstance, pathStr(cmdUrl), cmdText)
+		if (cmdCtx.cmdPath.all { it.isAlphaNum || it == '.' })
+			BeanProperties.set(fixCtx.fixtureInstance, cmdCtx.cmdPath, cmdCtx.cmdText)
 		else {
-			fixCode := cmdCtx.applyVariables(pathStr(cmdUrl))
-			fanCode := "${fixCode} = ${cmdText.toCode}"
+			fixCode := cmdCtx.applyVariables
+			fanCode := "${fixCode} = ${cmdCtx.cmdText.toCode}"
 			executeOnFixture(fixCtx.fixtureInstance, fanCode)
 		}
 		
-		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
+		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdCtx.cmdText))
 	}
 }

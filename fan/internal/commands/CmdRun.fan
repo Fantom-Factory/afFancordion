@@ -9,7 +9,7 @@
 ** 
 ** pre>
 ** ** Questions:
-** ** - [Why is the sky blue?]`run:BlueSkyFixture`.
+** ** - [Why is the sky blue?]`run:BlueSkyFixture#`.
 ** @Fixture
 ** class ExampleFixture { }
 ** <pre
@@ -17,8 +17,8 @@ internal class CmdRun : Command {
 
 	override Bool canFailFast	:= false
 
-	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
-		typeName	:= cmdUrl.pathStr
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
+		typeName := cmdCtx.cmdPath.endsWith("#") ? cmdCtx.cmdPath[0..<-1] : cmdCtx.cmdPath 
 		
 		newType 
 			:= (typeName.contains("::")) 
@@ -69,15 +69,15 @@ internal class CmdRun : Command {
 			}
 			
 			last := Locals.instance.resultsCache[newType]
-			link := fixCtx.skin.a(last.resultFile.name.toUri, cmdText)
+			link := fixCtx.skin.a(last.resultFile.name.toUri, cmdCtx.cmdText)
 			succ := fixCtx.skin.cmdSuccess(link, false)
 			fixCtx.renderBuf.add(succ)
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
 			last := Locals.instance.resultsCache[newType]
-			link := last != null ? fixCtx.skin.a(last.resultFile.name.toUri, cmdText) : null
-			fail := fixCtx.skin.cmdFailure(link ?: cmdText, err.msg, false)
+			link := last != null ? fixCtx.skin.a(last.resultFile.name.toUri, cmdCtx.cmdText) : null
+			fail := fixCtx.skin.cmdFailure(link ?: cmdCtx.cmdText, err.msg, false)
 			fixCtx.renderBuf.add(fail)
 		}
 	}

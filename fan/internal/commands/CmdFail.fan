@@ -8,9 +8,9 @@ using afBeanUtils::TypeCoercer
 ** class ExampleFixture { }
 ** <pre
 internal class CmdFail : Command {
-	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
-		msg := pathStr(cmdUrl).isEmpty ? "Fail" : cmdCtx.applyVariables(pathStr(cmdUrl))
-		fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdText, msg))
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
+		msg := cmdCtx.cmdPath.isEmpty ? "Fail" : cmdCtx.applyVariables
+		fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdCtx.cmdText, msg))
 		
 		fixCtx.errs.add(FailErr(msg))
 	}	
