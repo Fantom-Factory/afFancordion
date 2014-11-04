@@ -41,7 +41,7 @@ class ClassicSkin : FancordionSkin {
 	}
 
 	@NoDoc
-	override Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
+	override Str cmdErr(Str cmdUrl, Str cmdText, Err err) {
 		addScript(`fan://afFancordion/res/classicSkin/visibility-toggler.js`.get)
 
 		buttonId++

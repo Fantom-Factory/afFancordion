@@ -230,7 +230,7 @@ mixin FancordionSkin {
 	}
 
 	** Called to render a command error.
-	virtual Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
+	virtual Str cmdErr(Str cmdUrl, Str cmdText, Err err) {
 		"""<${cmdElem} class="error"><del class="expected">${cmdText.toXml}</del> <span class="actual">${firstLine(err.msg).toXml}</span></${cmdElem}>"""
 	}
 	

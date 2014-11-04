@@ -11,19 +11,20 @@ internal class Commands {
 		(maybe == null) ? false : commands.containsKey(maybe)
 	}
 	
-	Void doCmd(FixtureCtx fixCtx, Uri cmdUrl, Str cmdText, Str[]? tableCols) {
+	** We use a Str for cmdUrl so we get the *exact* text and not some URI standard form approximation of. 
+	Void doCmd(FixtureCtx fixCtx, Str cmdUrl, Str cmdText, Str[]? tableCols) {
 		fixFacet := (Fixture) Type#.method("facet").callOn(fixCtx.fixtureInstance.typeof, [Fixture#])	// Stoopid F4
 		try {
-			if (cmdUrl.scheme == null)
+			if (cmdUrl.toUri.scheme == null)
 				throw CmdNotFoundErr(ErrMsgs.cmdHasNullScheme(cmdUrl), commands.keys)
 
-			cmd := cmdUrl.scheme
+			cmd := cmdUrl.toUri.scheme
 			command := commands[cmd] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmd, cmdUrl), commands.keys)
 			
 			if (!fixCtx.errs.findAll { it isnot FailErr }.isEmpty && fixFacet.failFast && command.canFailFast)
 				fixCtx.renderBuf.add(fixCtx.skin.cmdIgnored(cmdText))
 			else
-				command.runCommand(fixCtx, CommandCtx(cmdUrl, cmdText, tableCols), cmdUrl, cmdText)
+				command.runCommand(fixCtx, CommandCtx(cmdUrl.toUri, cmdText, tableCols), cmdUrl.toUri, cmdText)
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
