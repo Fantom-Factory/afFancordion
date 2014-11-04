@@ -174,8 +174,10 @@ class FancordionRunner {
 	virtual Void suiteSetup() {
 		// wipe the slate clean to begin with
 		try {
-			outputDir.delete
 			outputDir.create
+			// it's better to delete the contents than the actual folder
+			// some programs count on the folder always existing
+			outputDir.list.each { it.delete }
 
 		} catch (Err err) {
 			msg := "\n"
