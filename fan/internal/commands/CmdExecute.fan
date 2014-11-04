@@ -15,12 +15,12 @@
 ** <pre
 internal class CmdExecute : Command {
 
-	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
-		fcode := cmdCtx.applyVariables(pathStr(cmdUrl))
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
+		fcode := cmdCtx.applyVariables
 		
 		// run the command!
 		executeOnFixture(fixCtx.fixtureInstance, fcode)
 		
-		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
+		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdCtx.cmdText))
 	}
 }

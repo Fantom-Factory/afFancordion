@@ -26,9 +26,9 @@ using afBeanUtils::TypeCoercer
 ** String arguments for the 'verifyEq' and 'verifyNotEq' commands are trimmed by default.
 @NoDoc
 class CmdVerify : Command {
-	static const Str:Str cmdCaps		:= ["verifyeq":"verifyEq", "verifynoteq":"verifyNotEq", "verifytype":"verifyType", "verify":"verify", "verifytrue":"verify", "verifyfalse":"verifyFalse", "verifynull":"verifyNull", "verifynotNull":"verifyNotNull",
-											// add verify aliases
-											"eq":"verifyEq", "noteq":"verifyNotEq", "type":"verifyType", "true":"verify", "false":"verifyFalse", "null":"verifyNull", "notnull":"verifyNotNull"]
+//	static const Str:Str cmdCaps		:= ["verifyeq":"verifyEq", "verifynoteq":"verifyNotEq", "verifytype":"verifyType", "verify":"verify", "verifytrue":"verify", "verifyfalse":"verifyFalse", "verifynull":"verifyNull", "verifynotNull":"verifyNotNull",
+//											// add verify aliases
+//											"eq":"verifyEq", "noteq":"verifyNotEq", "type":"verifyType", "true":"verify", "false":"verifyFalse", "null":"verifyNull", "notnull":"verifyNotNull"]
 	static const Str[] doubleArgCmds	:= "verifyEq verifyNotEq verifyType".split 
 	static const Str[] singleArgCmds	:= "verify verifyFalse verifyNull verifyNotNull".split
 	static const Str:Type coerceTo		:= ["verifyEq":Str#, "verifyNotEq":Str#, "verifyType":Obj#, "verify":Bool#, "verifyFalse":Bool#, "verifyNull":Obj?#, "verifyNotNull":Obj?#]
@@ -37,16 +37,18 @@ class CmdVerify : Command {
 	** 'verifyNotEq' commands, then they are trimmed as per this setting.
 	Bool trimStrings := true
 	
-	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
-		cmd := cmdCaps[cmdUrl.scheme] ?: cmdUrl.scheme	// stoopid scheme is lowercased! (Elvis so we don't get NullErr, but a CmdNotFoundErr)
-		arg	:= cmdCtx.applyVariables(pathStr(cmdUrl))
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
+//		cmd := cmdCaps[cmdUrl.scheme] ?: cmdUrl.scheme	// stoopid scheme is lowercased! (Elvis so we don't get NullErr, but a CmdNotFoundErr)
+		cmd := cmdCtx.cmdScheme
+		
+		arg	:= cmdCtx.applyVariables
 
 		if (!singleArgCmds.contains(cmd) && !doubleArgCmds.contains(cmd))
 			throw CmdNotFoundErr(ErrMsgs.verifyCmdNotFound(cmd), singleArgCmds.addAll(doubleArgCmds))
 		
 		fromFixture	:= getFromFixture(fixCtx.fixtureInstance, arg)
 		actual		:= TypeCoercer().coerce(fromFixture, coerceTo[cmd])
-		expected	:= (cmd == "verifyType") ? findType(cmdText) : cmdText
+		expected	:= (cmd == "verifyType") ? findType(cmdCtx.cmdText) : cmdCtx.cmdText
 		
 		if (cmd == "verifyType") {
 			temp    := actual
@@ -69,11 +71,11 @@ class CmdVerify : Command {
 			if (doubleArgCmds.contains(cmd))
 				test.typeof.method(cmd).callOn(test, [expected, actual])
 			
-			fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdText))
+			fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdCtx.cmdText))
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
-			fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdText, actual))
+			fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdCtx.cmdText, actual))
 		}
 	}
 	

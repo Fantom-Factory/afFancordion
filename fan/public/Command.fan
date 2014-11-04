@@ -16,7 +16,7 @@ mixin Command {
 	virtual Bool canFailFast() { true }
 
 	** Runs the command with the given URI and text. 
-	abstract Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText)
+	abstract Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx)
 	
 	** Helper method that executes the given code against the fixture instance. Example:
 	** 
@@ -36,13 +36,7 @@ mixin Command {
 		model.overrideMethod(FixtureExecutor#getFrom, "fixture := (${fixture.typeof.qname}) obj;\nreturn fixture.${code}")
 		help := (FixtureExecutor) compiler.compileModel(model).make
 		return help.getFrom(fixture)
-	}
-	
-	** An alternative to 'Uri.pathStr()' that does not strip off the fragment, allowing you to use 
-	** '#TEXT' and similar in the URI.
-	Str pathStr(Uri uri) {
-		uri.scheme == null ? uri.toStr : uri.toStr[uri.scheme.size+1..-1]
-	}
+	}	
 }
 
 @NoDoc

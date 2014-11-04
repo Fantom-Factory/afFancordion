@@ -5,11 +5,11 @@ internal class CmdTable : Command {
 	private static const Regex 			regexRow	:= "row\\[([0-9]+)\\]".toRegex
 	private static const TableParser	tableParser	:= TableParser()
 
-	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx, Uri cmdUrl, Str cmdText) {
+	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
 		verifyRowsCmd	:= (Str?) null
 		colCmds 		:= Int:Str[][:]
 		rowCmds 		:= Str[,]
-		lines := cmdText.splitLines.exclude |line->Bool| {
+		lines := cmdCtx.cmdText.splitLines.exclude |line->Bool| {
 			i := line.index(":")
 			if (i != null) {
 				scheme := line[0..<i].trim	// real URI schemes cannot contain [] chars
@@ -39,8 +39,11 @@ internal class CmdTable : Command {
 		
 		
 		rows := (Obj[]?) null
-		if (verifyRowsCmd != null)
-			rows = (Obj[]) getFromFixture(fixCtx.fixtureInstance, pathStr(verifyRowsCmd.toUri))
+		if (verifyRowsCmd != null) {
+			vrcScheme := verifyRowsCmd.split(':')[0]
+			vrcPath	  := verifyRowsCmd[vrcScheme.size+1..-1]
+			rows = (Obj[]) getFromFixture(fixCtx.fixtureInstance, vrcPath)
+		}
 
 		
 		commands := Commands(fixCtx.fancordionRunner.commands)

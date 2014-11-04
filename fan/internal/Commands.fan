@@ -15,16 +15,18 @@ internal class Commands {
 	Void doCmd(FixtureCtx fixCtx, Str cmdUrl, Str cmdText, Str[]? tableCols) {
 		fixFacet := (Fixture) Type#.method("facet").callOn(fixCtx.fixtureInstance.typeof, [Fixture#])	// Stoopid F4
 		try {
-			if (cmdUrl.toUri.scheme == null)
+			cmdScheme := cmdUrl.split(':')[0]
+			if (!cmdUrl.contains(":") || cmdScheme.isEmpty)
 				throw CmdNotFoundErr(ErrMsgs.cmdHasNullScheme(cmdUrl), commands.keys)
 
-			cmd := cmdUrl.toUri.scheme
-			command := commands[cmd] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmd, cmdUrl), commands.keys)
+			command := commands[cmdScheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmdScheme, cmdUrl), commands.keys)
 			
 			if (!fixCtx.errs.findAll { it isnot FailErr }.isEmpty && fixFacet.failFast && command.canFailFast)
 				fixCtx.renderBuf.add(fixCtx.skin.cmdIgnored(cmdText))
-			else
-				command.runCommand(fixCtx, CommandCtx(cmdUrl.toUri, cmdText, tableCols), cmdUrl.toUri, cmdText)
+			else {
+				cmdPath := cmdUrl[cmdScheme.size+1..-1]
+				command.runCommand(fixCtx, CommandCtx(cmdScheme, cmdPath, cmdText, tableCols))
+			}
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
@@ -35,14 +37,20 @@ internal class Commands {
 
 ** Contains contextual information about a Fancordion command.
 const class CommandCtx {
-	** The URI portion of the command:
+
+	** The *scheme* portion of the command URI:
 	** 
-	**   [text]`uri`
-	const Uri		cmdUrl
+	**   [text]`scheme:path`
+	const Str		cmdScheme
+
+	** The *path* portion of the command URI (minus the scheme):
+	** 
+	**   [text]`scheme:path`
+	const Str		cmdPath
 	
-	** The text portion of the command:
+	** The *text* portion of the command:
 	** 
-	**   [text]`uri`
+	**   [text]`scheme:path`
 	** 
 	** For table column commands this is the column text.
 	const Str		cmdText
@@ -50,8 +58,9 @@ const class CommandCtx {
 	** The columns that make up a table row. Only available in table row commands.
 	const Str[]?	tableCols
 
-	internal new make(Uri cmdUrl, Str cmdText, Str[]? tableCols) {
-		this.cmdUrl		= cmdUrl
+	internal new make(Str cmdScheme, Str cmdPath, Str cmdText, Str[]? tableCols) {
+		this.cmdScheme	= cmdScheme
+		this.cmdPath	= cmdPath
 		this.cmdText	= cmdText
 		this.tableCols	= tableCols
 	}
@@ -65,7 +74,7 @@ const class CommandCtx {
 	**  - '#COL[1]  -> tableCols[1].toCode'
 	**  - '#COL[n]  -> tableCols[n].toCode'
 	**  - '#FIXTURE -> "fixture"'
-	Str applyVariables(Str text) {
+	Str applyVariables(Str text := cmdPath) {
 		text = text.replace("#TEXT", cmdText.toCode)
 		tableCols?.each |col, i| {
 			text = text.replace("#COL[${i}]", tableCols[i].toCode)
