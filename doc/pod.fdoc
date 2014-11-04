@@ -10,8 +10,8 @@ It is similar to [Cucumber]`http://cukes.info/` but focuses on readability and p
 Features:
  - **Pretty** - creates beautiful HTML output.
  - **Simple** - run Fancordion tests with [fant]`docTools::Fant`, just like a unit test!
- - **Linkable** - create organised and hierarchical index pages with the 'run' command.
- - **Extensible** - write your own commands with ease.
+ - **Linkable** - create organised and hierarchical result pages.
+ - **Extensible** - write your own custom commands with ease.
  - **Skinnable** - Customise your HTML reports as you see fit.
 
 For an example of Fancordion results, see the output from the [Java Concordion framework]`http://concordion.org/dist/1.4.4/spec/concordion/Fancordion.html`.
@@ -230,24 +230,79 @@ pre>
 
 
 
+Command Syntax [#commandSyntax]
+*******************************
+All hyperlinks in a Fancordion specification are interpreted as commands. A standard fandoc hyperlink would look like:
+
+  Remember, [Google]`http://www.google.com` is your friend
+  
+Fancordion hijacks this syntax and uses them as commands. Commands are generally broken down as:
+
+  [text]`scheme:path`
+  
+The 'text' is generally shown in the resulting HTML, the 'scheme' is always the name of the command, and the 'path' is contextual information passed to the command itself.
+
+The exact nature or syntax of the 'path' depends on / is different for each command, but often it is either a snippet of Fantom code or a plain string.
+
+
+
+Code [#code]
+============
+Commands such as 'set', 'verify' and 'execute' treat the 'path' as a fantom expression that is run against the Fixture. So the command 
+
+  [wotever]`execute:echo("Hello!")`
+  
+would call the 'echo()' method on your fixture. 
+
+Sometimes you don't want to run the expression against the fixture, sometimes the expression is a statement in its own right. 
+That's fine, if the first part of the expression doesn't match against the slots on your fixture, it is taken to be a statement.
+Examples:
+
+  [Stuff]`verifyEq:StrBuf().add("Stuff")`
+
+  [value]`verifyEq:afBounce::Element("#id .class").text` 
+
+As shown above, when referencing classes not in 'sys' or the same pod as the fixture, they need to be fully qualified.
+
+
+
+Variables [#variables] 
+======================
+Fancordion lets you use some pre-defined variable, or constants, in your Fantom expressions. The most common one is '#TEXT' which refers to the 'text' part of the command.
+Guess what this command does: (!)
+
+  [Mum!]`execute:echo("Hello " + #TEXT)`
+
+The other common variable is '#FIXTURE' which lets you reference your fixture. So if your fixture had a field called 'name', you could print it with:
+
+  [wotever]`execute:echo("Hello " + #FIXTURE.name)`
+
+See the [table section]`#tables` for other table specific variables.
+
+
 Commands [#commands]
 ********************
 
 set [#set]
 ==========
-The 'set' command sets a field of the fixture to the value of the link text.
-The 'Str' is [coercered]`afBeanUtils::TypeCoercer` to the field's type.
+The 'set' command sets a field in the fixture to the value of the link text. 
+Example, this fixture command sets the 'age' field to '42': 
 
 pre>
 syntax: fantom
 
 using afFancordion
 
-** The meaning of life is [42]`set:number`.
+** The meaning of life is [42]`set:age`.
 class ExampleFixture : FixtureTest {
-  Int? number
+  Int? age
 }
 <pre
+
+The property expression may be any valid Fantom expression, no matter how complex, as long as it references a field.
+
+Note how in the above example the Str '42' is automatically [coercered]`afBeanUtils::TypeCoercer` to an 'Int'. 
+This is a useful feature, but is only available for simple, dot separated, expressions. 
 
 
 
@@ -672,10 +727,14 @@ abstract class WebFixture : FixtureTest {
 
 Release Notes [#releaseNotes]
 *****************************
-v0.0.8 [#v0.0.8]
+v1.0.0 [#v1.0.0]
 ----------------
  - New: Added Table 'row+' command to execute commands on row by row basis.
  - New: 'CommandCtx' wraps some common command methods.
+ - New: Added cmd shortcut aliases, e.g. use 'eq:' in place of 'verifyEq:'.
+ - New: Added '#FIXTURE' command variable.
+ - Chg: Command expressions need not be run against the fixure - [stuff]`eq:afBounce::Element("div").text`
+ - Chg: Set command only uses 'BeanProperties' for simple expressions.
  - Chg: Arguments for 'verifyEq' commands are trimmed.
  - Bug: Tables are no longer rendered in a 'pre' tag.
  - Bug: Fixture variables were not applied to verify commands.

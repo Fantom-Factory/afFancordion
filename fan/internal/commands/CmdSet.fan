@@ -18,21 +18,25 @@ using afBeanUtils
 internal class CmdSet : Command {
 
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
-		// we can't call 'setOnFixture()' because we need to know what the field type is so we can 
+		// We can't call 'setOnFixture()' because we need to know what the field type is so we can 
 		// coerce the value
 
-		// can't set the field directly because that doesn't cater for nested properties, 
+		// We can't set the field directly because that doesn't cater for nested properties, 
 		// e.g. subject.difficulty
 		
-		// don't like using BeanProperties because (currently) it's not proper Fantom code.
-		// e.g. setName(Steve) not setName("Steve") 
-		// TODO: use BeanPropertyFactory().parse(property).set(instance, value)
-		// and use own TypeCoercer that looks for fromCode().
-
-		// FIXME: only use beanprops for simple props
+		// can't use BeanProperties for everything because it's not proper Fantom code.
+		// e.g. setName(Steve) not setName("Steve")
 		
-		// FIXME: fandoc
-		if (cmdCtx.cmdPath.all { it.isAlphaNum || it == '.' })
+		// So...
+		// Use BeanProperties for simple dot separated expressions for the implicit casting, and 
+		// fantom code for everything else
+		
+		simpleExpression := cmdCtx.cmdPath.all |char, i| {
+			// allow dude() but not dude(something)
+			char.isAlphaNum || char == '.' || (char == '(' && cmdCtx.cmdPath.getSafe(i+1) == ')')
+		}
+
+		if (simpleExpression)
 			BeanProperties.set(fixCtx.fixtureInstance, cmdCtx.cmdPath, cmdCtx.cmdText)
 		else {
 			fixCode := cmdCtx.applyVariables

@@ -9,7 +9,7 @@ using afBounce
 ** 
 ** Example
 ** -------
-** If I set 'name' equal to " [Bob]`execute:name = StrBuf().add(#TEXT)` " then I expect 'name' to equal " [Bob]`verifyEq:name.toStr` "!
+** If I set 'name' equal to " [Bob]`execute:name = StrBuf().add(#TEXT)` " then I expect 'name' to equal " [Bob]`verifyEq:sys::StrBuf().add(#TEXT)` "!
 ** 
 class CmdSetCodeExpTest : ConTest {
 	StrBuf? name
