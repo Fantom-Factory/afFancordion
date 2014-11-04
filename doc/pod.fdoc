@@ -360,6 +360,7 @@ class ExampleFixture : FixtureTest { }
 <pre
 
 
+
 embed [#embed]
 ==============
 The 'embed' command executes the given function against the fixture and embeds the results as raw HTML.
@@ -376,6 +377,32 @@ class ExampleFixture : FixtureTest {
   Str danger(Str text) {
     """<span class="danger">${text}</span>"""
   }
+}
+<pre
+
+
+
+Aliases [#aliases]
+==================
+Several command shortcut aliases are added by default.
+
+  eq      --> verifyEq
+  notEq   --> verifyNotEq
+  type    --> verifyType
+  true    --> verifyTrue
+  false   --> verifyFalse
+  null    --> verifyNull
+  notNull --> verifyNotNull
+  exe     --> execute
+
+The aliases may be used anywhere where the full command would be used. Example:
+
+pre>
+syntax: fantom
+
+** The meaning of life is [42]`eq:number`.
+class ExampleFixture : FixtureTest {
+  Int? number := 43
 }
 <pre
 
