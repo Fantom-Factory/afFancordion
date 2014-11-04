@@ -23,7 +23,12 @@ mixin Command {
 	**   executeOnFixture(fixture, "toStr()") --> fixture.toStr()
 	Void executeOnFixture(Obj fixture, Str code) {
 		model := PlasticClassModel("FixtureExecutor", false).extend(FixtureExecutor#)
-		model.overrideMethod(FixtureExecutor#executeOn, "fixture := (${fixture.typeof.qname}) obj;\nfixture.${code}")
+		body  := isSlotty(fixture, code)
+				? "fixture := (${fixture.typeof.qname}) obj;\nfixture.${code}"
+				: "fixture := (${fixture.typeof.qname}) obj;\n${code}"
+		model.overrideMethod(FixtureExecutor#executeOn, body)
+		if (fixture.typeof.pod != null)
+			model.usingPod(fixture.typeof.pod)
 		help := (FixtureExecutor) compiler.compileModel(model).make
 		help.executeOn(fixture)
 	}	
@@ -33,10 +38,29 @@ mixin Command {
 	**   getFromFixture(fixture, "toStr()")  --> fixture.toStr()
 	Obj? getFromFixture(Obj fixture, Str code) {
 		model := PlasticClassModel("FixtureExecutor", false).extend(FixtureExecutor#)
-		model.overrideMethod(FixtureExecutor#getFrom, "fixture := (${fixture.typeof.qname}) obj;\nreturn fixture.${code}")
+		body  := isSlotty(fixture, code)
+				? "fixture := (${fixture.typeof.qname}) obj;\nreturn fixture.${code}"
+				: "fixture := (${fixture.typeof.qname}) obj;\nreturn ${code}"
+		model.overrideMethod(FixtureExecutor#getFrom, body)
+		if (fixture.typeof.pod != null)
+			model.usingPod(fixture.typeof.pod)
 		help := (FixtureExecutor) compiler.compileModel(model).make
 		return help.getFrom(fixture)
-	}	
+	}
+	
+	internal static Bool isSlotty(Obj fixture, Str code) {
+		slotName := ""
+		code.chars.eachWhile |char->Bool?| {
+			if (char.isAlphaNum || char == ':') {
+				slotName += char.toChar
+				return null
+			}
+			return true
+		}
+		if (slotName.contains("::"))
+			return false
+		return fixture.typeof.slot(slotName, false) != null
+	}
 }
 
 @NoDoc

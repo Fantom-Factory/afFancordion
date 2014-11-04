@@ -26,9 +26,12 @@ using afBeanUtils::TypeCoercer
 ** String arguments for the 'verifyEq' and 'verifyNotEq' commands are trimmed by default.
 @NoDoc
 class CmdVerify : Command {
-	static const Str[] singleArgCmds	:= "verify verifyFalse verifyNull verifyNotNull".split
-	static const Str[] doubleArgCmds	:= "verifyEq verifyNotEq verifyType".split 
-	static const Str:Type coerceTo		:= ["verifyEq":Str#, "verifyNotEq":Str#, "verifyType":Obj#, "verify":Bool#, "verifyFalse":Bool#, "verifyNull":Obj?#, "verifyNotNull":Obj?#]
+	private static const Str[] singleArgCmds	:= "verify verifyFalse verifyNull verifyNotNull".split
+	private static const Str[] doubleArgCmds	:= "verifyEq verifyNotEq verifyType".split 
+	private static const Str:Type coerceTo		:= ["verifyEq":Str#, "verifyNotEq":Str#, "verifyType":Obj#, "verify":Bool#, "verifyFalse":Bool#, "verifyNull":Obj?#, "verifyNotNull":Obj?#]
+
+	@NoDoc
+	TypeCoercer typeCoercer	:= TypeCoercer()
 
 	** Should the 'expected' and 'actual' arguments be strings during the 'verifyEq' or 
 	** 'verifyNotEq' commands, then they are trimmed as per this setting.
@@ -46,7 +49,7 @@ class CmdVerify : Command {
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
 		arg			:= cmdCtx.applyVariables
 		fromFixture	:= getFromFixture(fixCtx.fixtureInstance, arg)
-		actual		:= TypeCoercer().coerce(fromFixture, coerceTo[cmd])
+		actual		:= fromFixture == null ? null : TypeCoercer().coerce(fromFixture, coerceTo[cmd])
 		expected	:= (cmd == "verifyType") ? findType(cmdCtx.cmdText) : cmdCtx.cmdText
 		
 		if (cmd == "verifyType") {
