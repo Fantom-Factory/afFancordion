@@ -61,7 +61,7 @@ internal class CmdTable : Command {
 			row.each |col, i| {
 				if (colCmds.containsKey(i)) {
 					colCmds[i].each |cmd| {
-						commands.doCmd(fixCtx, cmd.toUri, col, null)
+						commands.doCmd(fixCtx, cmd, col, null)
 					}
 				} else if (rows != null) {
 					// TODO: verifyRows should work on 2D tables
@@ -94,7 +94,7 @@ internal class CmdTable : Command {
 				
 				// run the commands
 				rowCmds.each |rowCmd| {
-					commands.doCmd(rowFixCtx, rowCmd.toUri, row.toStr, row)
+					commands.doCmd(rowFixCtx, rowCmd, row.toStr, row)
 				}
 				
 				// highlight the row with the appropriate class
@@ -151,7 +151,7 @@ internal class TableSkinWrapper : FancordionSkin {
 		return Str.defVal
 	}
 
-	override Str cmdErr(Uri cmdUrl, Str cmdText, Err err) {
+	override Str cmdErr(Str cmdUrl, Str cmdText, Err err) {
 		error = true
 		funcs.add(|FancordionSkin skin->Str| { skin.cmdErr(cmdUrl, cmdText, err) })
 		return Str.defVal

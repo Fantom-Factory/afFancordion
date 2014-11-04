@@ -17,11 +17,11 @@ internal const class ErrMsgs {
 		stripSys("Could not find facet '@Fixture' on instance '${fixtureType.qname}'")
 	}
 
-	static Str cmdNotFound(Str cmd, Uri cmdUrl) {
+	static Str cmdNotFound(Str cmd, Str cmdUrl) {
 		"Could not find Command '${cmd}': ${cmdUrl}"
 	}
 
-	static Str cmdHasNullScheme(Uri cmdUrl) {
+	static Str cmdHasNullScheme(Str cmdUrl) {
 		"Command URL does not specify a scheme: ${cmdUrl}"
 	}
 
