@@ -23,8 +23,8 @@ class CmdTableRowTest : ConTest {
 
 	Void split(Str full, Str first, Str last, Str[] cols) {
 		verifyEq([full, first, last], cols)
-		if (first == "Steve")
-			throw Err("Argh!")
+//		if (first == "Steve")
+//			throw Err("Argh!")
 		verifyEq(full.split[0], first)
 		verifyEq(full.split[1], last)
 	}
