@@ -3,7 +3,7 @@ using afBounce
 ** Command: Table
 ** ##############
 **
-** Table commands are special form of 'pre' markup.
+** Testing the 'row' command.
 ** 
 ** Example
 ** -------
@@ -34,16 +34,13 @@ class CmdTableRowTest : ConTest {
 	}
 
 	override Void doTest() {
-		Element("td.success")[0].verifyTextEq("John Smith")
-		Element("td.success")[1].verifyTextEq("John")
-		Element("td.success")[2].verifyTextEq("Smith")
+		Element("tr.success td")[0].verifyTextEq("John Smith")
+		Element("tr.success td")[1].verifyTextEq("John")
+		Element("tr.success td")[2].verifyTextEq("Smith")
 
-		Element("td.success")[3].verifyTextEq("Fred Bloggs")
-		Element("td.failure")[0].verifyTextEq("FreddyFred")
-		Element("td.success")[4].verifyTextEq("Bloggs")
-
-		Element("td.error"  )[0].verifyTextContains("Steve EynonArgh!")
-		Element("td.failure")[1].verifyTextEq("SteveFred")
-		Element("td.failure")[2].verifyTextEq("EynonBloggs")
+		Element("tr.error td")[0].verifyTextEq("Fred Bloggs")
+		Element("tr.error td")[1].verifyTextEq("Freddy")
+		Element("tr.error td")[2].verifyTextEq("Bloggs")
+		Element("tr.error td .expected").verifyTextEq("[Fred Bloggs, Freddy, Bloggs]")
 	}
 }

@@ -1,18 +1,18 @@
 Overview [#overview]
 ********************
-Inspired by [Concordion]`http://concordion.org/`, 'Fancordion' is a tool for creating automated acceptance tests.
-
-'Fancordion' transforms your boring unit tests into beautiful specification documents!
+'Fancordion' is a tool for creating automated acceptance tests, transforming your boring unit tests into beautiful specification documents!
 It is similar to [Cucumber]`http://cukes.info/` but focuses on readability and presentation.
 
 'Fancordion' embeds test results directly into your test documentation, giving it real *meaning*.
 
 Features:
- - **Pretty** - creates beautiful HTML output.
- - **Simple** - run Fancordion tests with [fant]`docTools::Fant`, just like a unit test!
- - **Linkable** - create organised and hierarchical result pages.
+ - **Pretty**     - creates beautiful HTML output.
+ - **Simple**     - run Fancordion tests with [fant]`docTools::Fant`, just like a unit test!
+ - **Linkable**   - create organised and hierarchical result pages.
  - **Extensible** - write your own custom commands with ease.
- - **Skinnable** - Customise your HTML reports as you see fit.
+ - **Skinnable**  - customise your HTML reports as you see fit.
+
+'Fancordion' was inspired by Java's [Concordion]`http://concordion.org/`. 
 
 For an example of Fancordion results, see the output from the [Java Concordion framework]`http://concordion.org/dist/1.4.4/spec/concordion/Fancordion.html`.
 
@@ -105,8 +105,8 @@ See [What is TDD, BDD & ATDD?]`http://assertselenium.com/2012/11/05/difference-b
 
 Usage [#usage]
 **************
-Run as Fantom Class
-===================
+Run as Fantom Class [#runAsFantomClass]
+=======================================
 Any Fantom class annotated with the [@Fixture]`Fixture` facet can be run as a Fancordion fixture.
 To run it, just pass it into 'FancordionRunner.runFixture()':
 
@@ -287,14 +287,14 @@ Aliases [#aliases]
 ==================
 Several command shortcut aliases are added by default.
 
-  eq      --> verifyEq
-  notEq   --> verifyNotEq
-  type    --> verifyType
-  true    --> verifyTrue
-  false   --> verifyFalse
-  null    --> verifyNull
-  notNull --> verifyNotNull
-  exe     --> execute
+  verifyEq      --> eq
+  verifyNotEq   --> notEq
+  verifyType    --> type
+  verifyTrue    --> true
+  verifyFalse   --> false
+  verifyNull    --> null
+  verifyNotNull --> notNull
+  execute       --> exe
 
 The aliases may be used anywhere where the full command would be used. Example:
 
@@ -311,7 +311,7 @@ class ExampleFixture : FixtureTest {
 
 Commands [#commands]
 ********************
-A list of supported Fancordion commands.
+The list of supported Fancordion commands.
 
 
 
@@ -333,7 +333,7 @@ class ExampleFixture : FixtureTest {
 
 The property expression may be any valid Fantom expression, no matter how complex, as long as it references a field.
 
-Note how in the above example the Str '42' is automatically [coercered]`afBeanUtils::TypeCoercer` to an 'Int'. 
+Note how in the above example the 'Str' 42 is automatically [coercered]`afBeanUtils::TypeCoercer` to an 'Int'. 
 This is a useful feature, but is only available for simple, dot separated, expressions. 
 
 
@@ -341,9 +341,22 @@ This is a useful feature, but is only available for simple, dot separated, expre
 execute [#execute]
 ==================
 The 'execute' command calls a method on the fixture.
-The cmd is compiled as Fantom code so may be *any* valid Fantom code.
+The cmd is compiled and executed as Fantom code:
 
-Any occurrences of the token '#TEXT' are replaced with the command / link text.
+pre>
+syntax: fantom
+
+using afFancordion
+
+** [Hello!]`execute:sayHello()`
+class ExampleFixture : FixtureTest {
+  Void sayHello() {
+    echo("Hello!")
+  }
+}
+<pre
+
+'execute' cmds may use macros such as '#TEXT', and / or pass parameters to methods. Here is a more complex example:
 
 pre>
 syntax: fantom
@@ -352,8 +365,10 @@ using afFancordion
 
 ** [The end has come.]`execute:initiateShutdownSequence(42, #TEXT, "/tmp/end.txt".toUri)`
 class ExampleFixture : FixtureTest {
-  Void initiateShutdownSequence(Int num, Str cmdText, Uri url) {
-    ...
+  Void initiateShutdownSequence(Int num, Str txt, Uri url) {
+    // num = 42
+    // txt = "The end has come."
+    // url = `/tmp/end.txt`
   }
 }
 <pre
@@ -364,14 +379,14 @@ verify [#verify]
 ================
 The 'verify' suite of commands execute a Test verify method against the link text.
 Available verify commands are:
- - 'verify:'
- - 'verifyTrue:'
- - 'verifyFalse:'
- - 'verifyEq:'
- - 'verifyNotEq:'
- - 'verifyType:'
- - 'verifyNull:'
- - 'verifyNotNull:'
+ - 'verify'
+ - 'verifyTrue'
+ - 'verifyFalse'
+ - 'verifyEq'
+ - 'verifyNotEq'
+ - 'verifyType'
+ - 'verifyNull'
+ - 'verifyNotNull'
 
 Arguments to the verify methods are run against the fixture and may be any valid Fantom code.
 
@@ -403,6 +418,11 @@ using afFancordion
 
 ** The meaning of life is [42]`fail:TODO - Not Implemented`.
 class ExampleFixture : FixtureTest { }
+
+...
+
+TEST FAILED
+sys::FailErr: TODO - Not Implemented
 <pre
 
 
@@ -434,7 +454,7 @@ Using the '#' suffix can help you remember what the text represents! The fixture
 
 link [#link]
 ============
-The 'link' command renders a standard HTML <a> tag.
+The 'link' command renders a standard HTML '<a>' tag.
 It is added with the 'file', 'http', 'https' and 'mailto' schemes.
 
 pre>
@@ -469,8 +489,8 @@ class ExampleFixture : FixtureTest {
 
 
 
-Pre-Formatted Text
-******************
+Pre-Formatted Text [#preFormattedText]
+**************************************
 Pre-formatted text may be used as the input for commands by writing the command URL as the first line of the text:
 
 pre>
@@ -491,12 +511,13 @@ pre>
 
 Tables [#tables]
 ****************
+Above and beyond normal [fandoc]`pod:fandoc` syntax, Fancordion also has support for tables. (Yay!)
 
 
 
 Markup [#tableMarkup]
 =====================
-Fancordion also has support for tables. To render a HTML table, use preformatted text with 'table:' as the first line:
+To render a HTML table, use preformatted text with 'table:' as the first line:
 
 pre>
 syntax: fantom
@@ -513,7 +534,7 @@ syntax: fantom
 <pre
 
 Table parsing is simple, but expressive. The first line to start with a '-' character defines where the column boundaries are.
-All lines before are table headers, all lines after are table data.  Any data consisting entirely of '-' characters are ignored.
+All lines before are table headers, all lines after are table data.  Any lines consisting entirely of '-' or '+' characters are ignored.
 
 That means the above table could also be written as:
 
@@ -521,7 +542,6 @@ pre>
 syntax: fantom
 
 **   table:
-**
 **   +-------------+-------+--------+
 **   |             | First | Last   |
 **   | Full Name   | Name  | Name   |
@@ -538,7 +558,7 @@ Column Commands [#columnCommands]
 ======================================
 You can specify commands for each column, to be run for each row.
 After the 'table:' declaration, write commands on seperate lines prefixing them with 'col[x]+' to specify on which column they should operate.
-Use the '#TEXT' macro to 
+Use the '#TEXT' macro to reference the text in the column / table cell.
 
 The following example tests that each name can be split up into a first name and last name:
 
@@ -566,13 +586,13 @@ using afFancordion
 **   Steve Eynon  Steve       Eynon
 **
 class TestSplittingNames : FixtureTest {
-  Str? firstName
-  Str? lastName
+    Str? firstName
+    Str? lastName
 
-  Void split(Str name) {
-    firstName = name.split[0]
-    lastName  = name.split[1]
-  }
+    Void split(Str name) {
+        firstName = name.split[0]
+        lastName  = name.split[1]
+    }
 }
 <pre
 
@@ -612,10 +632,10 @@ using afFancordion
 **
 class TestSplittingNames : FixtureTest {
 
-  Void splitAndVerify(Str full, Str first, Str last) {
-    verifyEq(full.split[0], first)
-    verifyEq(full.split[1],  last)
-  }
+    Void splitAndVerify(Str full, Str first, Str last) {
+        verifyEq(full.split[0], first)
+        verifyEq(full.split[1],  last)
+    }
 }
 <pre
 
@@ -643,9 +663,9 @@ using afFancordion
 **   paul
 **
 class VerifyRowsFixture : FixtureTest {
-  Str[] results() {
-    ["john", "ringo", "george", "paul"]
-  }
+    Str[] results() {
+        ["john", "ringo", "george", "paul"]
+    }
 }
 <pre
 
@@ -670,9 +690,9 @@ using afFancordion
 **   Paul   McCartney
 **
 class VerifyRowsFixture : FixtureTest {
-  Str[] results() {
-    [["John","Lennon], ["Paul","McCartney"], ["George","Harrison"], ["Ringo","Starr"]]
-  }
+    Str[] results() {
+        [["John","Lennon], ["Paul","McCartney"], ["George","Harrison"], ["Ringo","Starr"]]
+    }
 }
 <pre
 
@@ -682,13 +702,13 @@ Test BedSheet Apps [#bedSheet]
 ******************************
 Fancordion can be used to test BedSheet applications.
 
-Typically I would start the web application under test (via [Bounce]`pod:afBounce`) in the runner's 'suiteSetup()'.
+Typically one would start the web application under test (via [Bounce]`pod:afBounce`) in the runner's 'suiteSetup()'.
 Since all web application state is (usually) stored in a database, there is little need to re-start the web app for every test.
 While this only saves you a couple of seconds, over the course of many tests it can add up to be quite a time saver!
 
 Web application shutdown would then occur in the runner's 'suiteTearDown()' method.
 
-Below shows a typical 'FancordionRunner' setup together with an abstract WebFixture class.
+Below shows a typical 'FancordionRunner' setup for a web app together with an abstract 'WebFixture' class.
 
 pre>
 syntax: fantom
@@ -773,7 +793,7 @@ v1.0.0 [#v1.0.0]
  - New: Added '#FIXTURE' command macro.
  - New: 'verifyRows' table command works on 2D tables.
  - New: Table 'col[n]' command with '#N' macro. 
- - Chg: Command expressions need not be run against the fixure - [stuff]`eq:afBounce::Element("div").text`
+ - Chg: Command expressions need not be run against the fixure.
  - Chg: Set command only uses 'BeanProperties' for simple expressions.
  - Chg: More lenient table parsing.
  - Chg: Arguments for 'verifyEq' commands are trimmed.
@@ -799,4 +819,3 @@ v0.0.4 [#v0.0.4]
 v0.0.2 [#v0.0.2]
 ----------------
  - New: Preview release.
-
