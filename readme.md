@@ -588,11 +588,11 @@ class VerifyRowsFixture : FixtureTest {
 
 Fancordion can be used to test BedSheet applications.
 
-Typically I would start the web application under test (via [Bounce](http://www.fantomfactory.org/pods/afBounce)) in the runner's `suiteSetup()`. Since all web application state is (usually) stored in a database, there is little need to re-start the web app for every test. While this only saves you a couple of seconds, over the course of many tests it can add up to be quite a time saver!
+Typically one would start the web application under test (via [Bounce](http://www.fantomfactory.org/pods/afBounce)) in the runner's `suiteSetup()`. Since all web application state is (usually) stored in a database, there is little need to re-start the web app for every test. While this only saves you a couple of seconds, over the course of many tests it can add up to be quite a time saver!
 
 Web application shutdown would then occur in the runner's `suiteTearDown()` method.
 
-Below shows a typical `FancordionRunner` setup together with an abstract WebFixture class.
+Below shows a typical `FancordionRunner` setup for a web app together with an abstract `WebFixture` class.
 
 ```
 using afIoc
