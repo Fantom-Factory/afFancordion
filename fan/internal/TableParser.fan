@@ -67,6 +67,9 @@ internal const class TableParser {
 			else
 				data = line.getRange(col.start..-1).trim
 		
+		if (data.isEmpty)
+			return data
+
 		// special case for fancy tables - needed for the last column where we grab all we can
 		if (!data.isEmpty && (data[-1] == '|' || data[-1] == '+'))
 			data = data[0..<-1].trim
