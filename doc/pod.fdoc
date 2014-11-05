@@ -638,6 +638,30 @@ class VerifyRowsFixture : FixtureTest {
 The fixture is marked as a failure should any item in the list not equal it's matching table row.
 Should the list contain too few or too many item, they are rendered as failures in the rendered HTML table.
 
+'verifyRows' may also be applied to a 2D table, in which case a list of lists must be provided:
+
+pre>
+syntax: fantom
+
+using afFancordion
+
+**   table:
+**   verifyRows:results()
+**
+**   First  Last
+**   ------ ---------
+**   John   Lennon
+**   Ringo  Starr  
+**   George Harrison
+**   Paul   McCartney
+**
+class VerifyRowsFixture : FixtureTest {
+  Str[] results() {
+    [["John","Lennon], ["Paul","McCartney"], ["George","Harrison"], ["Ringo","Starr"]]
+  }
+}
+<pre
+
 
 
 Test BedSheet Apps [#bedSheet]

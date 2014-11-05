@@ -49,10 +49,26 @@ internal const class ErrMsgs {
 		"Could not find table syntax in:\n${text}"
 	}
 
-//	static Str cmdTable_colNotFound(Str cmd) {
-//		"Command '${cmd}' does not specify a column. e.g. col[0]+execute:XXXX"
-//	}
-	
+	static Str cmdTable_onlyOneRowCmdAllowed(Str cmd1, Str cmd2) {
+		"Only one row command is allowed per table: row+${cmd1}, row+${cmd2}"
+	}
+
+	static Str cmdTable_onlyCmdPerColAllowed(Int idx, Str cmd1, Str cmd2) {
+		"Only one command per column is allowed per table: col[${idx}]+${cmd1}, col[${idx}]+${cmd2}"
+	}
+
+	static Str cmdTable_onlyOneVerifyRowsCmdAllowed(Str cmd1, Str cmd2) {
+		"Only one verifyRows command is allowed per table: ${cmd1}, ${cmd2}"
+	}
+
+	static Str cmdTable_cantMixAndMatchCommands(Str cmd) {
+		"VerifyRows command can not be used with any other table command: ${cmd}"
+	}
+
+	static Str cmdTable_expectingList(Obj? row) {
+		"Expecting a List to verify rows in a 2D table: ${row}"
+	}
+
 	private static Str stripSys(Str str) {
 		str.replace("sys::", "")
 	}

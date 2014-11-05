@@ -5,21 +5,33 @@ internal class CmdTable : Command {
 	private static const Regex 			regexRow	:= "row\\[([0-9]+)\\]".toRegex
 	private static const TableParser	tableParser	:= TableParser()
 
+	** Meh, this class may be messy - but it works!
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
+		
+		// limit the number of commands, i.e. only one cmd per col
+		// that way, it makes skinning the table easier...
+		// we don't have to blend 2 failures 1 pass into a single table cell!
+		
+		// ---- parse the commands --------------
+		
+		colCmds 		:= Int:Str[:]
+		rowCmd 			:= (Str?) null
 		verifyRowsCmd	:= (Str?) null
-		colCmds 		:= Int:Str[][:]
-		rowCmds 		:= Str[,]
 		lines := cmdCtx.cmdText.splitLines.exclude |line->Bool| {
 			i := line.index(":")
 			if (i != null) {
 				scheme := line[0..<i].trim	// real URI schemes cannot contain [] chars
 
 				if (scheme.lower.startsWith("row+")) {
-					rowCmds.add(line[4..-1])
+					if (rowCmd != null)
+						throw Err(ErrMsgs.cmdTable_onlyOneRowCmdAllowed(rowCmd, line[4..-1]))
+					rowCmd = line[4..-1]
 					return true
 				}
 
 				if (scheme.lower.startsWith("verifyrows")) {
+					if (verifyRowsCmd != null)
+						throw Err(ErrMsgs.cmdTable_onlyOneVerifyRowsCmdAllowed(verifyRowsCmd, line))
 					verifyRowsCmd = line
 					return true
 				}
@@ -29,7 +41,9 @@ internal class CmdTable : Command {
 				if (matcher.find) {
 					idx := matcher.group(1).toInt
 					cmd := "\\+?col\\[${idx}\\]\\+?".toRegex.matcher(line).replaceFirst("").trim
-					colCmds.getOrAdd(idx) { Str[,] }.add(cmd)
+					if (colCmds.containsKey(idx))
+						throw Err(ErrMsgs.cmdTable_onlyCmdPerColAllowed(idx, colCmds[idx], cmd))
+					colCmds[idx] = cmd
 					return true
 				}
 			}
@@ -37,12 +51,14 @@ internal class CmdTable : Command {
 		}
 		table := tableParser.parseTable(lines)
 		
+		if (verifyRowsCmd != null && (rowCmd != null || !colCmds.isEmpty))
+			throw Err(ErrMsgs.cmdTable_cantMixAndMatchCommands(verifyRowsCmd))
 		
-		rows := (Obj[]?) null
+		verifyRows := (Obj[]?) null
 		if (verifyRowsCmd != null) {
 			vrcScheme := verifyRowsCmd.split(':')[0]
 			vrcPath	  := verifyRowsCmd[vrcScheme.size+1..-1]
-			rows = (Obj[]) cmdCtx.getFromFixture(fixCtx.fixtureInstance, vrcPath)
+			verifyRows = (Obj[]) cmdCtx.getFromFixture(fixCtx.fixtureInstance, vrcPath)
 		}
 
 		
@@ -55,20 +71,23 @@ internal class CmdTable : Command {
 		table[0].each { buff.add(skin.th(it)) }
 		buff.add(skin.trEnd)
 		
-		// TODO: I should enable BOTH col commands and verify rows on the same table.
-		// The skin will probably need to be updated to reflect the new code
+		noOfCols := table[0].size
 		table.eachRange(1..-1) |row, ri| {
 			buff.add(skin.tr)
 			trIdx := buff.size-1
 			
 			row.each |col, i| {
 				if (colCmds.containsKey(i)) {
-					colCmds[i].each |cmd| {
-						commands.doCmd(fixCtx, cmd, col, null)
-					}
-				} else if (rows != null) {
-					// TODO: verifyRows should work on 2D tables
-					actual   := TypeCoercer().coerce(rows.getSafe(ri-1), Str?#) 
+					commands.doCmd(fixCtx, colCmds[i], col, null)
+
+				} else if (verifyRows != null) {
+					// do 2D tables
+					actualRow := verifyRows.getSafe(ri-1)
+					if (noOfCols > 1 && actualRow isnot List)
+						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
+					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
+					
+					actual   := TypeCoercer().coerce(actualCell, Str?#) 
 					expected := col 
 					try {
 						test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
@@ -79,12 +98,13 @@ internal class CmdTable : Command {
 						fixCtx.errs.add(err)
 						fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(expected, actual))
 					}
+
 				} else
 					buff.add(skin.td(col))
 			}
 			
 			// ---- do row commands ----
-			if (!rowCmds.isEmpty) {
+			if (rowCmd != null) {
 				// create a fake skin so successful cmds aren't rendered
 				tableSkin := TableSkinWrapper()
 				rowFixCtx := FixtureCtx {
@@ -95,10 +115,8 @@ internal class CmdTable : Command {
 					it.errs				= fixCtx.errs
 				}
 				
-				// run the commands
-				rowCmds.each |rowCmd| {
-					commands.doCmd(rowFixCtx, rowCmd, row.toStr, row)
-				}
+				// run the command
+				commands.doCmd(rowFixCtx, rowCmd, row.toStr, row)
 				
 				// highlight the row with the appropriate class
 				if (tableSkin.error)
@@ -117,11 +135,19 @@ internal class CmdTable : Command {
 			buff.add(skin.trEnd)
 		}
 		
-		if (rows != null && rows.size > (table.size-1)) {
+		// fail if the actual data has more rows than the table
+		if (verifyRows != null && verifyRows.size > (table.size-1)) {
 			// TODO: verifyRows should work on 2D tables
-			rows.eachRange(table.size-1..-1) |row| {
+			verifyRows.eachRange(table.size-1..-1) |actualRow| {
 				buff.add(skin.tr)
-				fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(Str.defVal, row))				
+				noOfCols.times |i| {
+					// do 2D tables
+					if (noOfCols > 1 && actualRow isnot List)
+						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
+					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
+					actual     := TypeCoercer().coerce(actualCell, Str?#) 
+					fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(Str.defVal, actual))				
+				}
 				buff.add(skin.trEnd)
 			}
 		}
