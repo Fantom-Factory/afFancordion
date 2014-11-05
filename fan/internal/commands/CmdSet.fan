@@ -41,7 +41,7 @@ internal class CmdSet : Command {
 		else {
 			fixCode := cmdCtx.applyVariables
 			fanCode := "${fixCode} = ${cmdCtx.cmdText.toCode}"
-			executeOnFixture(fixCtx.fixtureInstance, fanCode)
+			cmdCtx.executeOnFixture(fixCtx.fixtureInstance, fanCode)
 		}
 		
 		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdCtx.cmdText))

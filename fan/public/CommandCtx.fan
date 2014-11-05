@@ -1,6 +1,8 @@
+using afPlastic
 
 ** Contains contextual information about a Fancordion command.
 const class CommandCtx {
+	private static const PlasticCompiler compiler	:= PlasticCompiler()
 
 	** The *scheme* portion of the command URI:
 	** 
@@ -48,4 +50,54 @@ const class CommandCtx {
 		text = text.replace("#FIXTURE", "fixture")
 		return text
 	}
+	
+	** Executes the given code against the fixture instance. Example:
+	** 
+	**   executeOnFixture(fixture, "echo()") --> fixture.echo()
+	Void executeOnFixture(Obj fixture, Str code) {
+		model := PlasticClassModel("FixtureExecutor", false).extend(FixtureExecutor#)
+		body  := isSlotty(fixture, code)
+				? "fixture := (${fixture.typeof.qname}) obj;\nfixture.${code}"
+				: "fixture := (${fixture.typeof.qname}) obj;\n${code}"
+		model.overrideMethod(FixtureExecutor#executeOn, body)
+		if (fixture.typeof.pod != null)
+			model.usingPod(fixture.typeof.pod)
+		help := (FixtureExecutor) compiler.compileModel(model).make
+		help.executeOn(fixture)
+	}	
+
+	** Executes the given code on the fixture instance and returns a value. Example:
+	** 
+	**   getFromFixture(fixture, "toStr()")  --> return fixture.toStr()
+	Obj? getFromFixture(Obj fixture, Str code) {
+		model := PlasticClassModel("FixtureExecutor", false).extend(FixtureExecutor#)
+		body  := isSlotty(fixture, code)
+				? "fixture := (${fixture.typeof.qname}) obj;\nreturn fixture.${code}"
+				: "fixture := (${fixture.typeof.qname}) obj;\nreturn ${code}"
+		model.overrideMethod(FixtureExecutor#getFrom, body)
+		if (fixture.typeof.pod != null)
+			model.usingPod(fixture.typeof.pod)
+		help := (FixtureExecutor) compiler.compileModel(model).make
+		return help.getFrom(fixture)
+	}
+	
+	internal static Bool isSlotty(Obj fixture, Str code) {
+		slotName := ""
+		code.chars.eachWhile |char->Bool?| {
+			if (char.isAlphaNum || char == ':') {
+				slotName += char.toChar
+				return null
+			}
+			return true
+		}
+		if (slotName.contains("::"))
+			return false
+		return fixture.typeof.slot(slotName, false) != null
+	}
+}
+
+@NoDoc
+abstract class FixtureExecutor {
+	virtual Void executeOn(Obj obj) { }
+	virtual Obj? getFrom  (Obj obj) { null }
 }

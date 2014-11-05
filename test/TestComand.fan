@@ -3,13 +3,13 @@
 class TestComand : Test {
 	
 	Void test() {
-		verify     (Command.isSlotty(this, "verify"))
-		verify     (Command.isSlotty(this, "verifyEq(wot, ever)"))
-		verifyFalse(Command.isSlotty(this, "Klass.wotever()"))
-		verifyFalse(Command.isSlotty(this, "afBouce::Element.wotever()"))
+		verify     (CommandCtx.isSlotty(this, "verify"))
+		verify     (CommandCtx.isSlotty(this, "verifyEq(wot, ever)"))
+		verifyFalse(CommandCtx.isSlotty(this, "Klass.wotever()"))
+		verifyFalse(CommandCtx.isSlotty(this, "afBouce::Element.wotever()"))
 		
 		// aha! A sneaky one!
-		verifyFalse(Command.isSlotty(this, "verify::Klass.wotever()"))
+		verifyFalse(CommandCtx.isSlotty(this, "verify::Klass.wotever()"))
 	}
 	
 }

@@ -48,7 +48,7 @@ class CmdVerify : Command {
 	
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
 		arg			:= cmdCtx.applyVariables
-		fromFixture	:= getFromFixture(fixCtx.fixtureInstance, arg)
+		fromFixture	:= cmdCtx.getFromFixture(fixCtx.fixtureInstance, arg)
 		actual		:= fromFixture == null ? null : TypeCoercer().coerce(fromFixture, coerceTo[cmd])
 		expected	:= (cmd == "verifyType") ? findType(cmdCtx.cmdText) : cmdCtx.cmdText
 		

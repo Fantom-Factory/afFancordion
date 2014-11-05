@@ -42,7 +42,7 @@ internal class CmdTable : Command {
 		if (verifyRowsCmd != null) {
 			vrcScheme := verifyRowsCmd.split(':')[0]
 			vrcPath	  := verifyRowsCmd[vrcScheme.size+1..-1]
-			rows = (Obj[]) getFromFixture(fixCtx.fixtureInstance, vrcPath)
+			rows = (Obj[]) cmdCtx.getFromFixture(fixCtx.fixtureInstance, vrcPath)
 		}
 
 		
