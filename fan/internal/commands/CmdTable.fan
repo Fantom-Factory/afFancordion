@@ -1,11 +1,13 @@
 using afBeanUtils
 
 internal class CmdTable : Command {
-	private static const Regex 			regexCol	:= "col\\[([0-9]+)\\]".toRegex
-	private static const Regex 			regexRow	:= "row\\[([0-9]+)\\]".toRegex
+	private static const Regex 			regexCol	:= "col\\[([0-9n]+)\\]".toRegex
+	private static const Regex 			regexRow	:= "row\\[([0-9n]+)\\]".toRegex
+	private static const Regex 			regexReplce	:= "\\+?col\\[[0-9n]\\]\\+?".toRegex
 	private static const TableParser	tableParser	:= TableParser()
-
-	** Meh, this class may be messy - but it works!
+				override Bool 			canFailFast := false
+	
+	** Meh, this class is messy and needs clean up... at least it works... kind of!
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
 		
 		// limit the number of commands, i.e. only one cmd per col
@@ -14,7 +16,8 @@ internal class CmdTable : Command {
 		
 		// ---- parse the commands --------------
 		
-		colCmds 		:= Int:Str[:]
+		colNCmd			:= (Str?) null
+		colCmds 		:= Obj:Str[:]
 		rowCmd 			:= (Str?) null
 		verifyRowsCmd	:= (Str?) null
 		lines := cmdCtx.cmdText.splitLines.exclude |line->Bool| {
@@ -39,8 +42,9 @@ internal class CmdTable : Command {
 				// assume non-matching lines are *not* commands
 				matcher := regexCol.matcher(scheme)
 				if (matcher.find) {
-					idx := matcher.group(1).toInt
-					cmd := "\\+?col\\[${idx}\\]\\+?".toRegex.matcher(line).replaceFirst("").trim
+					cmd := regexReplce.matcher(line).replaceFirst("").trim
+					col := matcher.group(1)
+					idx := Int.fromStr(col, 10, false) == null ? col.upper : col.toInt
 					if (colCmds.containsKey(idx))
 						throw Err(ErrMsgs.cmdTable_onlyCmdPerColAllowed(idx, colCmds[idx], cmd))
 					colCmds[idx] = cmd
@@ -51,14 +55,29 @@ internal class CmdTable : Command {
 		}
 		table := tableParser.parseTable(lines)
 		
+		if (colCmds.containsKey("N") && colCmds.size > 1)
+			throw Err(ErrMsgs.cmdTable_onlyCmdPerColAllowed("N", colCmds[colCmds.keys[0]], colCmds[colCmds.keys[1]]))
 		if (verifyRowsCmd != null && (rowCmd != null || !colCmds.isEmpty))
 			throw Err(ErrMsgs.cmdTable_cantMixAndMatchCommands(verifyRowsCmd))
+		
+
+		if (cmdCtx.ignore) {
+			renderTable(fixCtx, table, "ignored")
+			return
+		}
+		
 		
 		verifyRows := (Obj[]?) null
 		if (verifyRowsCmd != null) {
 			vrcScheme := verifyRowsCmd.split(':')[0]
 			vrcPath	  := verifyRowsCmd[vrcScheme.size+1..-1]
-			verifyRows = (Obj[]) cmdCtx.getFromFixture(fixCtx.fixtureInstance, vrcPath)
+			try verifyRows = (Obj[]) cmdCtx.getFromFixture(fixCtx.fixtureInstance, vrcPath)
+			catch (Err err) {
+				fixCtx.errs.add(err)
+				fixCtx.renderBuf.add(fixCtx.skin.cmdErr(verifyRowsCmd, "", err))
+				renderTable(fixCtx, table, "error")
+				return
+			}
 		}
 
 		
@@ -79,6 +98,9 @@ internal class CmdTable : Command {
 			row.each |col, i| {
 				if (colCmds.containsKey(i)) {
 					commands.doCmd(fixCtx, colCmds[i], col, null)
+
+				} else if (colCmds.containsKey("N")) {
+					commands.doCmd(fixCtx, colCmds["N"].replace("#N", i.toStr), col, null)
 
 				} else if (verifyRows != null) {
 					// do 2D tables
@@ -119,6 +141,7 @@ internal class CmdTable : Command {
 				commands.doCmd(rowFixCtx, rowCmd, row.toStr, row)
 				
 				// highlight the row with the appropriate class
+				// TODO: this is bad, shouldn't pass the css class in, should let the skin decide
 				if (tableSkin.error)
 					buff.insert(trIdx, " class=\"error\"")
 				else if (tableSkin.failure)
@@ -137,7 +160,6 @@ internal class CmdTable : Command {
 		
 		// fail if the actual data has more rows than the table
 		if (verifyRows != null && verifyRows.size > (table.size-1)) {
-			// TODO: verifyRows should work on 2D tables
 			verifyRows.eachRange(table.size-1..-1) |actualRow| {
 				buff.add(skin.tr)
 				noOfCols.times |i| {
@@ -153,6 +175,32 @@ internal class CmdTable : Command {
 		}
 
 		buff.add(skin.tableEnd)
+	}
+	
+	
+	private Void renderTable(FixtureCtx fixCtx, Str[][] table, Str css) {
+		skin := fixCtx.skin
+		buff := fixCtx.renderBuf
+
+		// TODO: this is bad, shouldn't pass the css class in, should let the skin decide
+		buff.add(skin.table(css))
+		buff.add(skin.tr)
+		table[0].each { buff.add(skin.th(it)) }
+		buff.add(skin.trEnd)
+		
+		noOfCols := table[0].size
+		table.eachRange(1..-1) |row, ri| {
+			buff.add(skin.tr)
+			trIdx := buff.size-1
+			
+			row.each |col, i| {
+				buff.add(skin.td(col))
+			}
+					
+			buff.add(skin.trEnd)
+		}
+		
+		buff.add(skin.tableEnd)		
 	}
 }
 

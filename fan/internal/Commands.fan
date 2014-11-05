@@ -16,16 +16,26 @@ internal class Commands {
 		fixFacet := (Fixture) Type#.method("facet").callOn(fixCtx.fixtureInstance.typeof, [Fixture#])	// Stoopid F4
 		try {
 			cmdScheme := cmdUrl.split(':')[0]
-			if (!cmdUrl.contains(":") || cmdScheme.isEmpty)
-				throw CmdNotFoundErr(ErrMsgs.cmdHasNullScheme(cmdUrl), commands.keys)
+			command	  := (Command?) null
 
-			command := commands[cmdScheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmdScheme, cmdUrl), commands.keys)
+			if (!cmdUrl.contains(":") || cmdScheme.isEmpty)
+				// allow frag links
+				if (cmdUrl.startsWith("#")) {
+					cmdScheme = ""
+					command = CmdLink()
+				} else
+					throw CmdNotFoundErr(ErrMsgs.cmdHasNullScheme(cmdUrl), commands.keys)
+
+			if (command == null)
+				command = commands[cmdScheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmdScheme, cmdUrl), commands.keys)
 			
-			if (!fixCtx.errs.findAll { it isnot FailErr }.isEmpty && fixFacet.failFast && command.canFailFast)
+			ignore := !fixCtx.errs.findAll { it isnot FailErr }.isEmpty
+			if (ignore && fixFacet.failFast && command.canFailFast)
 				fixCtx.renderBuf.add(fixCtx.skin.cmdIgnored(cmdText))
-			else {
-				cmdPath := cmdUrl[cmdScheme.size+1..-1]
-				command.runCommand(fixCtx, CommandCtx(cmdScheme, cmdPath, cmdText, tableCols))
+
+			else { 
+				cmdPath	  := cmdUrl.contains(":") ? cmdUrl[cmdScheme.size+1..-1] : cmdUrl
+				command.runCommand(fixCtx, CommandCtx(cmdScheme, cmdPath, cmdText, tableCols, ignore))
 			}
 
 		} catch (Err err) {
