@@ -4,6 +4,7 @@ internal const class TableParser {
 	Str[][] parseTable(Str[] lines) {
 		ctrl := (Str) (lines.find { it.trim.startsWith("-") } ?: throw ParseErr(ErrMsgs.cmdTable_tableNotFound(lines.join("\n"))))
 		
+		// find the ranges of the ---'s
 		colRanges := Range[,]
 		last := 0
 		while (last < ctrl.size && ctrl.index("-", last) != null) {
@@ -14,6 +15,13 @@ internal const class TableParser {
 			if (!dashes.trim.isEmpty)
 				colRanges.add(start..<end)
 			last = end
+		}
+		
+		// extend the ranges to the start of the next - dash
+		colRanges = colRanges.map |col, i -> Range| {
+			next := colRanges.getSafe(i+1)
+			end  := next == null ? Int.maxVal : next.start - 1
+			return col.start..<end
 		}
 
 		inHeader := true
@@ -58,6 +66,11 @@ internal const class TableParser {
 				data = line.getRange(col).trim
 			else
 				data = line.getRange(col.start..-1).trim
-		return data.chars.all { it == '-' } ? null : data
+		
+		// special case for fancy tables - needed for the last column where we grab all we can
+		if (!data.isEmpty && (data[-1] == '|' || data[-1] == '+'))
+			data = data[0..<-1].trim
+		
+		return data.chars.all { it == '-' || it == '=' || it.isSpace } ? null : data
 	}
 }

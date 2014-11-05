@@ -19,17 +19,33 @@ class TestTableParsing : Test {
 		
 		table2 :=
 """
-     +-------------+-------+--------+
-     | Dual        | First | Last   |
-     | Full Name   | Name  | Name   |
-      -------------+-------+--------+
-     | John Smith  | John  | Smith  |
-     | Steve Eynon | Steve | Eynon  |
-     | Fred Bloggs | Fred  | Bloggs |
-     +-------------+-------+--------+"""
+     +-------------+-------+---------+
+     | Dual        | First | Last    |
+     | Full Name   | Name  | Name    |
+      -------------+-------+---------+
+     | John Smith  | John  | Smith   |
+     | Steve Eynon | Steve | Eynon   |
+     | Fred Bloggs | Fred  | Bloggs  |
+     +- - - - - - -+- - - -+- - - - -+
+   """
 
 		data2 := TableParser().parseTable(table2.splitLines)
 		verifyTable(data2)
+
+		// this syntax is because I keep forgetting to --- all the way across on the last line
+		// I may as well condence it too!
+		table3 :=
+"""
+        Dual      First Last
+      Full Name   Name  Name
+     -            -     -
+      John Smith  John  Smith
+      Steve Eynon Steve Eynon
+      Fred Bloggs Fred  Bloggs
+   """
+
+		data3 := TableParser().parseTable(table3.splitLines)
+		verifyTable(data3)
 	}
 	
 	private Void verifyTable(Str[][] data) {
