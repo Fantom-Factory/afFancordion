@@ -1,6 +1,7 @@
 using afBeanUtils
 
-internal class Commands {
+@NoDoc
+class Commands {
 	private Str:Command commands
 	
 	new make(Str:Command commands) {

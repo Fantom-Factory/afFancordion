@@ -1,18 +1,18 @@
 ## Overview 
 
-Inspired by [Concordion](http://concordion.org/), `Fancordion` is a tool for creating automated acceptance tests.
-
-`Fancordion` transforms your boring unit tests into beautiful specification documents! It is similar to [Cucumber](http://cukes.info/) but focuses on readability and presentation.
+`Fancordion` is a tool for creating automated acceptance tests, transforming your boring unit tests into beautiful specification documents! It is similar to [Cucumber](http://cukes.info/) but focuses on readability and presentation.
 
 `Fancordion` embeds test results directly into your test documentation, giving it real *meaning*.
 
 Features:
 
-- **Pretty** - creates beautiful HTML output.
-- **Simple** - run Fancordion tests with [fant](http://fantom.org/doc/docTools/Fant.html), just like a unit test!
-- **Linkable** - create organised and hierarchical index pages with the `run` command.
-- **Extensible** - write your own commands with ease.
-- **Skinnable** - Customise your HTML reports as you see fit.
+- **Pretty**     - creates beautiful HTML output.
+- **Simple**     - run Fancordion tests with [fant](http://fantom.org/doc/docTools/Fant.html), just like a unit test!
+- **Linkable**   - create organised and hierarchical result pages.
+- **Extensible** - write your own custom commands with ease.
+- **Skinnable**  - customise your HTML reports as you see fit.
+
+`Fancordion` was inspired by Java's [Concordion](http://concordion.org/).
 
 For an example of Fancordion results, see the output from the [Java Concordion framework](http://concordion.org/dist/1.4.4/spec/concordion/Fancordion.html).
 
@@ -24,7 +24,7 @@ Install `Fancordion` with the Fantom Repository Manager ( [fanr](http://fantom.o
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afFancordion 0.0+"]
+    depends = ["sys 1.0", ..., "afFancordion 1.0"]
 
 ## Documentation 
 
@@ -95,7 +95,7 @@ See [What is TDD, BDD & ATDD?](http://assertselenium.com/2012/11/05/difference-b
 
 ## Usage 
 
-### Run as Fantom Class
+### Run as Fantom Class 
 
 Any Fantom class annotated with the [@Fixture](http://repo.status302.com/doc/afFancordion/Fixture.html) facet can be run as a Fancordion fixture. To run it, just pass it into `FancordionRunner.runFixture()`:
 
@@ -133,7 +133,7 @@ To help you bridge the gap between Fancordion and Fantom tests, Fancordion ships
 using afFancordion
 
 ** My first Fancordion fixture.
-class TestStuff : FixtureTest{
+class TestStuff : FixtureTest {
     ...
 }
 ```
@@ -197,34 +197,119 @@ Specifications can be written in any way you wish, but the following structure i
 **  - [that explain edge cases]`run:MoreTests`
 ```
 
+## Command Syntax 
+
+All hyperlinks in a Fancordion specification are interpreted as commands. A standard fandoc hyperlink would look like:
+
+    Remember, [Google]`http://www.google.com` is your friend
+
+Fancordion hijacks this syntax and uses them as commands. Commands are generally broken down as:
+
+    [text]`scheme:path`
+
+The `text` is generally shown in the resulting HTML, the `scheme` is always the name of the command, and the `path` is contextual information passed to the command itself.
+
+The exact nature or syntax of the `path` depends on / is different for each command, but often it is either a snippet of Fantom code or a plain string.
+
+### Code 
+
+Commands such as `set`, `verify` and `execute` treat the `path` as a fantom expression that is run against the Fixture. So the command
+
+    [wotever]`execute:echo("Hello!")`
+
+would call the `echo()` method on your fixture.
+
+Sometimes you don't want to run the expression against the fixture, sometimes the expression is a statement in its own right. That's fine, if the first part of the expression doesn't match against the slots on your fixture, it is taken to be a statement. Examples:
+
+    [Stuff]`verifyEq:StrBuf().add("Stuff")`
+    
+    [value]`verifyEq:afBounce::Element("#id .class").text` 
+
+As shown above, when referencing classes not in `sys` or the same pod as the fixture, they need to be fully qualified.
+
+### Macros 
+
+Fancordion lets you use some pre-defined macros, or constants, in your Fantom expressions. The most common macro is `#TEXT` which refers to the `text` part of the command. Guess what this command does: (!)
+
+    [Mum!]`execute:echo("Hello " + #TEXT)`
+
+The other common macro is `#FIXTURE` which lets you reference your fixture. So if your fixture had a field called `name`, you could print it with:
+
+    [wotever]`execute:echo("Hello " + #FIXTURE.name)`
+
+See the [table section](http://repo.status302.com/doc/afFancordion/#tables.html) for other table specific macros.
+
+Note all macros must be UPPER CASE.
+
+### Aliases 
+
+Several command shortcut aliases are added by default.
+
+    verifyEq      --> eq
+    verifyNotEq   --> notEq
+    verifyType    --> type
+    verifyTrue    --> true
+    verifyFalse   --> false
+    verifyNull    --> null
+    verifyNotNull --> notNull
+    execute       --> exe
+
+The aliases may be used anywhere where the full command would be used. Example:
+
+```
+** The meaning of life is [42]`eq:number`.
+class ExampleFixture : FixtureTest {
+  Int? number := 43
+}
+```
+
 ## Commands 
+
+The list of supported Fancordion commands.
 
 ### set 
 
-The `set` command sets a field of the fixture to the value of the link text. The `Str` is [coercered](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to the field's type.
+The `set` command sets a field in the fixture to the value of the link text. Example, this fixture command sets the `age` field to `42`:
 
 ```
 using afFancordion
 
-** The meaning of life is [42]`set:number`.
+** The meaning of life is [42]`set:age`.
 class ExampleFixture : FixtureTest {
-  Int? number
+  Int? age
 }
 ```
 
+The property expression may be any valid Fantom expression, no matter how complex, as long as it references a field.
+
+Note how in the above example the `Str` 42 is automatically [coercered](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to an `Int`. This is a useful feature, but is only available for simple, dot separated, expressions.
+
 ### execute 
 
-The `execute` command calls a method on the fixture. The cmd is compiled as Fantom code so may be *any* valid Fantom code.
+The `execute` command calls a method on the fixture. The cmd is compiled and executed as Fantom code:
 
-Any occurrences of the token `#TEXT` are replaced with the command / link text.
+```
+using afFancordion
+
+** [Hello!]`execute:sayHello()`
+class ExampleFixture : FixtureTest {
+  Void sayHello() {
+    echo("Hello!")
+  }
+}
+```
+
+`execute` cmds may use macros such as `#TEXT`, and / or pass parameters to methods. Here is a more complex example:
 
 ```
 using afFancordion
 
 ** [The end has come.]`execute:initiateShutdownSequence(42, #TEXT, "/tmp/end.txt".toUri)`
 class ExampleFixture : FixtureTest {
-  Void initiateShutdownSequence(Int num, Str cmdText, Uri url) {
-    ...
+  Void initiateShutdownSequence(Int num, Str txt, Uri url) {
+    // num = 42
+    // txt = "The end has come."
+    // url = `/tmp/end.txt`
   }
 }
 ```
@@ -233,13 +318,14 @@ class ExampleFixture : FixtureTest {
 
 The `verify` suite of commands execute a Test verify method against the link text. Available verify commands are:
 
-- `verifyEq:`
-- `verifyNotEq:`
-- `verifyType:`
-- `verifyTrue:`
-- `verifyFalse:`
-- `verifyNull:`
-- `verifyNotNull:`
+- `verify`
+- `verifyTrue`
+- `verifyFalse`
+- `verifyEq`
+- `verifyNotEq`
+- `verifyType`
+- `verifyNull`
+- `verifyNotNull`
 
 Arguments to the verify methods are run against the fixture and may be any valid Fantom code.
 
@@ -252,24 +338,29 @@ class ExampleFixture : FixtureTest {
 }
 ```
 
-Arguments for the `eq()` and `notEq()` methods are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Str`. Arguments for the `true()` and `false()` are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Bool`.
+Arguments for the `verifyEq` and `verifyNotEq` methods are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Str` and trimmed. Arguments for the `verify`, `verifyTrue` and `verifyFalse` are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Bool`.
 
 ### fail 
 
-This simple command fails the test with the given message.
+This simple command fails the test with the given message. Example:
 
 ```
 using afFancordion
 
-** The meaning of life is [42]`fail:TODO`.
+** The meaning of life is [42]`fail:TODO - Not Implemented`.
 class ExampleFixture : FixtureTest { }
+
+...
+
+TEST FAILED
+sys::FailErr: TODO - Not Implemented
 ```
 
 ### run 
 
 The `run` command runs another Fancordion fixture and prints an appropriate success / failure link to it.
 
-The command path must be the name of the Fixture type to run. The fixture type may be qualified.
+The command path must be the name of the Fixture type to run.
 
 Use `run` commands to create a specification containing a list of all acceptance tests for a feature, in a similar way you would use a test suite.
 
@@ -279,13 +370,15 @@ You could even nest specifications to form a hierarchical index, with results ag
 using afFancordion
 
 ** Questions:
-** - [Why is the sky blue?]`run:BlueSkyFixture`.
+** - [Why is the sky blue?]`run:BlueSkyFixture#`.
 class ExampleFixture : FixtureTest { }
 ```
 
+As seen above, the command path may take an optional `#` character as a suffix. This is the same syntax that Fantom has to specify Types. Using the `#` suffix can help you remember what the text represents! The fixture type may also be qualified.
+
 ### link 
 
-The `link` command renders a standard HTML <a> tag. It is added with the `file`, `http`, `https` and `mailto` schemes.
+The `link` command renders a standard HTML `<a>` tag. It is added with the `file`, `http`, `https` and `mailto` schemes.
 
 ```
 using afFancordion
@@ -311,7 +404,7 @@ class ExampleFixture : FixtureTest {
 }
 ```
 
-## Pre-Formatted Text
+## Pre-Formatted Text 
 
 Pre-formatted text may be used as the input for commands by writing the command URL as the first line of the text:
 
@@ -331,29 +424,30 @@ Note that pre-formatted text may also be any line indended by 2 or more spaces. 
 
 ## Tables 
 
+Above and beyond normal [fandoc](http://fantom.org/doc/fandoc/index.html) syntax, Fancordion also has support for tables. (Yay!)
+
 ### Markup 
 
-Fancordion also has support for tables. To render a HTML table, use preformatted text with `table:` as the first line:
+To render a HTML table, use preformatted text with `table:` as the first line:
 
 ```
 ** pre>
 ** table:
 **
 ** Full Name    First Name  Last Name
-** -----------  ----------  ----------
+** -----------  ----------  ---------
 ** John Smith   John        Smith
 ** Fred Bloggs  Fred        Bloggs
 ** Steve Eynon  Steve       Eynon
 ** <pre
 ```
 
-Table parsing is simple, but expressive. The first line to start with a `-` character defines where the column boundaries are. All lines before are table headers, all lines after are table data.  Any data consisting entirely of `-` characters are ignored.
+Table parsing is simple, but expressive. The first line to start with a `-` character defines where the column boundaries are. All lines before are table headers, all lines after are table data.  Any lines consisting entirely of `-` or `+` characters are ignored.
 
-That means the above table could also we written as:
+That means the above table could also be written as:
 
 ```
 **   table:
-**
 **   +-------------+-------+--------+
 **   |             | First | Last   |
 **   | Full Name   | Name  | Name   |
@@ -364,9 +458,9 @@ That means the above table could also we written as:
 **   +-------------+-------+--------+
 ```
 
-### Commands 
+### Column Commands 
 
-You can also specify commands for each column, to be run on each row. After the `table:` declaration, write commands on seperate lines prefixing them with `col[n]+` to specify on which column they should operate.
+You can specify commands for each column, to be run for each row. After the `table:` declaration, write commands on seperate lines prefixing them with `col[x]+` to specify on which column they should operate. Use the `#TEXT` macro to reference the text in the column / table cell.
 
 The following example tests that each name can be split up into a first name and last name:
 
@@ -386,23 +480,63 @@ using afFancordion
 **   col[2]+verifyEq:lastName
 **
 **   Full Name    First Name  Last Name
-**   -----------  ----------  ----------
+**   -----------  ----------  ---------
 **   John Smith   John        Smith
 **   Fred Bloggs  Fred        Bloggs
 **   Steve Eynon  Steve       Eynon
 **
 class TestSplittingNames : FixtureTest {
-  Str? firstName
-  Str? lastName
+    Str? firstName
+    Str? lastName
 
-  Void split(Str name) {
-    firstName = name.split[0]
-    lastName  = name.split[1]
-  }
+    Void split(Str name) {
+        firstName = name.split[0]
+        lastName  = name.split[1]
+    }
 }
 ```
 
-### Verify Rows 
+There is also a special `col[n]` command which is run on every column. This command makes use of the `#N` macro which relates to the (zero based) column index being processed. Example:
+
+    col[n]+verifyEq:getDataForColumn(#N)
+
+### Row Commands 
+
+Similar to column commands, you can specify commands to be run on each row. Use the prefix `row+` when declaring a command.
+
+Use the Fancordion macros `#COL[0]`, `#COL[1]`, `#COL[2]`, etc...  to reference the text in each column. You may also use `#COLS` to inject a `Str[]` of all the column text in the row.
+
+```
+using afFancordion
+
+** Name Splitting
+** ##############
+** For personalalised mailshots, the system should be able
+** to split a full name up into it's constituent parts.
+**
+** Example:
+**
+**   table:
+**   row+execute:splitAndVerify(#COL[0], #COL[1], #COL[2])
+**
+**   Full Name    First Name  Last Name
+**   -----------  ----------  ---------
+**   John Smith   John        Smith
+**   Fred Bloggs  Fred        Bloggs
+**   Steve Eynon  Steve       Eynon
+**
+class TestSplittingNames : FixtureTest {
+
+    Void splitAndVerify(Str full, Str first, Str last) {
+        verifyEq(full.split[0], first)
+        verifyEq(full.split[1],  last)
+    }
+}
+```
+
+Note: Using both column *and* row commands in a table is not allowed.
+
+### Table Commands 
 
 `verifyRows` is a special table command that verifies that rows in the table are identical to a given list.
 
@@ -420,13 +554,35 @@ using afFancordion
 **   paul
 **
 class VerifyRowsFixture : FixtureTest {
-  Str[] results() {
-    ["john", "ringo", "george", "paul"]
-  }
+    Str[] results() {
+        ["john", "ringo", "george", "paul"]
+    }
 }
 ```
 
 The fixture is marked as a failure should any item in the list not equal it's matching table row. Should the list contain too few or too many item, they are rendered as failures in the rendered HTML table.
+
+`verifyRows` may also be applied to a 2D table, in which case a list of lists must be provided:
+
+```
+using afFancordion
+
+**   table:
+**   verifyRows:results()
+**
+**   First  Last
+**   ------ ---------
+**   John   Lennon
+**   Ringo  Starr  
+**   George Harrison
+**   Paul   McCartney
+**
+class VerifyRowsFixture : FixtureTest {
+    Str[] results() {
+        [["John","Lennon], ["Paul","McCartney"], ["George","Harrison"], ["Ringo","Starr"]]
+    }
+}
+```
 
 ## Test BedSheet Apps 
 
@@ -436,9 +592,11 @@ Typically I would start the web application under test (via [Bounce](http://www.
 
 Web application shutdown would then occur in the runner's `suiteTearDown()` method.
 
-Below shows a typical FancordionRunner setup together with an abstract WebFixture class.
+Below shows a typical `FancordionRunner` setup together with an abstract WebFixture class.
 
 ```
+using afIoc
+using afIocEnv
 using afBounce
 using afFancordion
 
@@ -480,15 +638,15 @@ class MyFancordionRunner : FancordionRunner {
 
 class WebTestModule {
 
-    @Contribute { serviceType=ServiceOverrides# }
-    static Void contributeServiceOverride(MappedConfig config) {
-        config["IocEnv"] = IocEnv.fromStr("Testing")
+    @Override
+    static IocEnv overrideIocEnv() {
+        IocEnv.fromStr("Testing")
     }
 
     // other test specific services and overrides...
 }
 
-// The super class for all Web Fixtures
+** The super class for all Web Fixtures
 abstract class WebFixture : FixtureTest {
     BedClient? client
 

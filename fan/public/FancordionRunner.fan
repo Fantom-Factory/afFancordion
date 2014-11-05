@@ -190,6 +190,7 @@ class FancordionRunner {
 			outputDir.list.each { it.delete }
 
 		} catch (Err err) {
+			// sometimes the files are locked...
 			msg := "\n"
 			msg += "*******************************************************************************\n"
 			msg += "** ${err.msg}\n"
@@ -201,15 +202,42 @@ class FancordionRunner {
 
 	** Called after the last fixture has run.
 	** 
-	** By default does nothing. 
+	** Writes an 'index.html' file that redirects to the first Fixture run.
+	** 
+	** Logs the final report.
 	virtual Void suiteTearDown(Type:FixtureResult resultsCache) {
 		indexFile := outputDir + `index.html`
 		if (!indexFile.exists && !resultsCache.isEmpty) {
 			url := resultsCache.vals.last.resultFile.uri.relTo(outputDir.uri)
 			indexFile.out.print("""<html><head><meta http-equiv="refresh" content="0; url=${url.encode.toXml}" /></head></html>""").close
 		}
+				
+		log.info(finalReport(resultsCache))
 	}
 
+	** Creates a pretty report to be printed after the last fixture has been run. 
+	virtual Str finalReport(Type:FixtureResult resultsCache) {
+		report 		 := "\n\n"
+		noOfFailures := resultsCache.reduce(0) |Int failures, result| { failures += result.errors.isEmpty ? 0 : 1 }
+		
+		if (noOfFailures > 0) {
+			report += "Failed:\n"
+			maxPad := resultsCache.reduce(0) |Int pad, result| { pad.max(result.errors.size > 0 ? result.fixtureMeta.fixtureType.qname.size : 0) } as Int
+			resultsCache.each |result| {
+				if (result.errors.size > 0) {
+					report += "  " + result.fixtureMeta.fixtureType.qname.plus(" ").padr(maxPad+3, '.') + ". " + result.resultFile.normalize.osPath + "\n"
+				}
+			}			
+			report += "\n"
+		}
+		
+		result := noOfFailures == 0 ? "All Fixtures Passed!" : "$noOfFailures Fixtures FAILED"
+		report += "***\n"
+		report += "*** ${result} [${resultsCache.size} Fixtures]\n"
+		report += "***\n"
+		return report
+	}
+	
 	** Called before every fixture.
 	** 
 	** By default does nothing. 
@@ -219,8 +247,8 @@ class FancordionRunner {
 	** 
 	** By default prints the location of the result file. 
 	virtual Void fixtureTearDown(Obj fixtureInstance, FixtureResult result) {
-		// TODO: print something better
-		log.info(result.resultFile.normalize.osPath)		
+		pf := result.errors.isEmpty ? " ... Ok" : " ... FAILED!"
+		log.info(result.resultFile.normalize.osPath + pf)
 	}
 	
 	** A hook that creates an 'FancordionSkin' instance.

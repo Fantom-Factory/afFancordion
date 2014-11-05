@@ -4,8 +4,8 @@ class Build : BuildPod {
 
 	new make() {
 		podName = "afFancordion"
-		summary = "A tool for creating automated acceptance tests"
-		version = Version("0.0.7")
+		summary = "A tool for creating automated acceptance tests and specification documents"
+		version = Version("1.0.0")
 
 		meta = [
 			"proj.name"		: "Fancordion",	
@@ -14,19 +14,19 @@ class Build : BuildPod {
 		]
 
 		depends = [
-			"sys 1.0",
+			"sys        1.0",
 			"concurrent 1.0",
-			"compiler 1.0",
-			"fandoc 1.0",
-			
+			"compiler   1.0",
+			"fandoc     1.0",
+
 			// ---- Core ------------------------
-			"afBeanUtils 1.0.2+",
-			"afConcurrent 1.0.6+",
-			"afPlastic 1.0.16+",			
+			"afBeanUtils  1.0.4  - 1.0",
+			"afConcurrent 1.0.6  - 1.0",
+			"afPlastic    1.0.16 - 1.0",			
 
 			// ---- Test ------------------------
-			"afBounce 1.0.16+",
-			"afSizzle 1.0.0+"
+			"afBounce     1.0.18 - 1.0",
+			"afSizzle     1.0.2  - 1.0"
 		]
 
 		srcDirs = [`test/`, `test/cmd-verify/`, `test/cmd-table/`, `test/cmd-set/`, `test/cmd-run/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/commands/`]
