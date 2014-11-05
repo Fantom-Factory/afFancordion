@@ -64,8 +64,7 @@ internal class FindSpecFromTypeFandoc : SpecificationFinder {
 
 	override SpecificationMeta? findSpecification(Type fixtureType) {
 		try  {
-			// TODO: Winge at Fantom - prints an Err if not in a pod
-			// see 'fan.sys.ClassType.java'
+			// TODO: Fantom 1.0.67
 			// see http://fantom.org/sidewalk/topic/2335
 			// assume if we're running a src file then it's not a pod resource
 			if (Env.cur.args.last.trim.endsWith(".fan"))
