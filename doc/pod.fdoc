@@ -735,6 +735,7 @@ v1.0.0 [#v1.0.0]
  - New: Added '#FIXTURE' command variable.
  - Chg: Command expressions need not be run against the fixure - [stuff]`eq:afBounce::Element("div").text`
  - Chg: Set command only uses 'BeanProperties' for simple expressions.
+ - Chg: More lenient table parsing.
  - Chg: Arguments for 'verifyEq' commands are trimmed.
  - Bug: Tables are no longer rendered in a 'pre' tag.
  - Bug: Fixture variables were not applied to verify commands.
