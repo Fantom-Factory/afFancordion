@@ -192,7 +192,7 @@ mixin FancordionSkin {
 	// ---- Table Methods -------------------------------------------------------------------------
 
 	** Starts a '<table>' tag.
-	virtual Str table() {		setInTable(true); return "<table>\n"	}
+	virtual Str table(Str cssClass := "") {	setInTable(true); return "<table class=\"${cssClass}\">\n"	}
 	** Ends a '</table>' tag.
 	virtual Str tableEnd() {	setInTable(false); return "</table>"	}
 	** Starts a '<tr>' tag.

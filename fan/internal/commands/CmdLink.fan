@@ -12,7 +12,8 @@ internal class CmdLink : Command {
 	override Bool canFailFast	:= false
 	
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
-		html := fixCtx.skin.a(`${cmdCtx.cmdScheme}:${cmdCtx.cmdPath}`, cmdCtx.cmdText)
+		scheme := cmdCtx.cmdScheme.isEmpty ? "" : "${cmdCtx.cmdScheme}:"
+		html := fixCtx.skin.a(`${scheme}${cmdCtx.cmdPath}`, cmdCtx.cmdText)
 		fixCtx.renderBuf.add(html)
 	}
 }

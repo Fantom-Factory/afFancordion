@@ -23,12 +23,16 @@ const class CommandCtx {
 	
 	** The columns that make up a table row. Only available in table row commands.
 	const Str[]?	tableCols
+	
+	** Is set to 'true' if there has been previous errors in the fixture and this command should be ignored.
+	const Bool		ignore
 
-	internal new make(Str cmdScheme, Str cmdPath, Str cmdText, Str[]? tableCols) {
+	internal new make(Str cmdScheme, Str cmdPath, Str cmdText, Str[]? tableCols, Bool ignore) {
 		this.cmdScheme	= cmdScheme
 		this.cmdPath	= cmdPath
 		this.cmdText	= cmdText
 		this.tableCols	= tableCols
+		this.ignore		= ignore
 	}
 	
 	** Applies Fancordion variables to the given str. 

@@ -53,7 +53,7 @@ internal const class ErrMsgs {
 		"Only one row command is allowed per table: row+${cmd1}, row+${cmd2}"
 	}
 
-	static Str cmdTable_onlyCmdPerColAllowed(Int idx, Str cmd1, Str cmd2) {
+	static Str cmdTable_onlyCmdPerColAllowed(Obj idx, Str cmd1, Str cmd2) {
 		"Only one command per column is allowed per table: col[${idx}]+${cmd1}, col[${idx}]+${cmd2}"
 	}
 

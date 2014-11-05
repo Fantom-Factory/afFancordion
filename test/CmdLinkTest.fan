@@ -5,8 +5,8 @@ using afBounce
 **
 ** Link commands should pass through unhindered.
 ** 
-** Example
-** -------
+** Example [#top]
+** --------------
 ** A http link to [Fantom-Factory]`http://www.fantomfactory.org/`
 ** 
 ** Example
@@ -16,6 +16,10 @@ using afBounce
 ** Example
 ** -------
 ** A file link to [me]`file:CmdLinkTest.fan`
+** 
+** Example
+** -------
+** A frag link to [top]`#top`
 ** 
 class CmdLinkTest : ConTest {
 
@@ -35,5 +39,9 @@ class CmdLinkTest : ConTest {
 		link = Link(".example a")[2] 
 		link.verifyTextEq("me")
 		verifyEq(link.href, `file:CmdLinkTest.fan`)
+
+		link = Link(".example a")[3] 
+		link.verifyTextEq("top")
+		verifyEq(link.href, `#top`)
 	}
 }

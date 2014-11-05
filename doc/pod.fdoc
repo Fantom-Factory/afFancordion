@@ -266,22 +266,54 @@ As shown above, when referencing classes not in 'sys' or the same pod as the fix
 
 
 
-Variables [#variables] 
-======================
-Fancordion lets you use some pre-defined variable, or constants, in your Fantom expressions. The most common one is '#TEXT' which refers to the 'text' part of the command.
+Macros [#macros] 
+================
+Fancordion lets you use some pre-defined macros, or constants, in your Fantom expressions. The most common macro is '#TEXT' which refers to the 'text' part of the command.
 Guess what this command does: (!)
 
   [Mum!]`execute:echo("Hello " + #TEXT)`
 
-The other common variable is '#FIXTURE' which lets you reference your fixture. So if your fixture had a field called 'name', you could print it with:
+The other common macro is '#FIXTURE' which lets you reference your fixture. So if your fixture had a field called 'name', you could print it with:
 
   [wotever]`execute:echo("Hello " + #FIXTURE.name)`
 
-See the [table section]`#tables` for other table specific variables.
+See the [table section]`#tables` for other table specific macros.
+
+Note all macros must be UPPER CASE.
+
+
+
+Aliases [#aliases]
+==================
+Several command shortcut aliases are added by default.
+
+  eq      --> verifyEq
+  notEq   --> verifyNotEq
+  type    --> verifyType
+  true    --> verifyTrue
+  false   --> verifyFalse
+  null    --> verifyNull
+  notNull --> verifyNotNull
+  exe     --> execute
+
+The aliases may be used anywhere where the full command would be used. Example:
+
+pre>
+syntax: fantom
+
+** The meaning of life is [42]`eq:number`.
+class ExampleFixture : FixtureTest {
+  Int? number := 43
+}
+<pre
+
 
 
 Commands [#commands]
 ********************
+A list of supported Fancordion commands.
+
+
 
 set [#set]
 ==========
@@ -437,32 +469,6 @@ class ExampleFixture : FixtureTest {
 
 
 
-Aliases [#aliases]
-==================
-Several command shortcut aliases are added by default.
-
-  eq      --> verifyEq
-  notEq   --> verifyNotEq
-  type    --> verifyType
-  true    --> verifyTrue
-  false   --> verifyFalse
-  null    --> verifyNull
-  notNull --> verifyNotNull
-  exe     --> execute
-
-The aliases may be used anywhere where the full command would be used. Example:
-
-pre>
-syntax: fantom
-
-** The meaning of life is [42]`eq:number`.
-class ExampleFixture : FixtureTest {
-  Int? number := 43
-}
-<pre
-
-
-
 Pre-Formatted Text
 ******************
 Pre-formatted text may be used as the input for commands by writing the command URL as the first line of the text:
@@ -485,6 +491,9 @@ pre>
 
 Tables [#tables]
 ****************
+
+
+
 Markup [#tableMarkup]
 =====================
 Fancordion also has support for tables. To render a HTML table, use preformatted text with 'table:' as the first line:
@@ -525,10 +534,11 @@ syntax: fantom
 
 
 
-Column Commands [#tableColumnCommands]
+Column Commands [#columnCommands]
 ======================================
 You can specify commands for each column, to be run for each row.
-After the 'table:' declaration, write commands on seperate lines prefixing them with 'col[n]+' to specify on which column they should operate.
+After the 'table:' declaration, write commands on seperate lines prefixing them with 'col[x]+' to specify on which column they should operate.
+Use the '#TEXT' macro to 
 
 The following example tests that each name can be split up into a first name and last name:
 
@@ -566,14 +576,18 @@ class TestSplittingNames : FixtureTest {
 }
 <pre
 
+There is also a special 'col[n]' command which is run on every column. This command makes use of the '#N' macro which relates to the (zero based) column index being processed. Example:
+
+  col[n]+verifyEq:getDataForColumn(#N)
 
 
-Row Commands [#tableRowCommands]
+
+Row Commands [#rowCommands]
 ================================
 Similar to column commands, you can specify commands to be run on each row. Use the prefix 'row+' when declaring a command.
 
-Use the Fancordion variables '#COL[0]', '#COL[1]' and '#COL[n]' to reference the text in each column.
-You may also use '#COLS' to inject a 'Str[]' of all row text in all the columns.
+Use the Fancordion macros '#COL[0]', '#COL[1]', '#COL[2]', etc...  to reference the text in each column.
+You may also use '#COLS' to inject a 'Str[]' of all the column text in the row.
 
 pre>
 syntax: fantom
@@ -605,12 +619,12 @@ class TestSplittingNames : FixtureTest {
 }
 <pre
 
-If a table contains both column *and* row commands, then the row commands are executed after the column commands.
+Note: Using both column *and* row commands in a table is not allowed.
 
 
 
-Verify Rows [#tableRows]
-========================
+Table Commands [#tableCommands]
+===============================
 'verifyRows' is a special table command that verifies that rows in the table are identical to a given list.
 
 pre>
@@ -674,7 +688,7 @@ While this only saves you a couple of seconds, over the course of many tests it 
 
 Web application shutdown would then occur in the runner's 'suiteTearDown()' method.
 
-Below shows a typical FancordionRunner setup together with an abstract WebFixture class.
+Below shows a typical 'FancordionRunner' setup together with an abstract WebFixture class.
 
 pre>
 syntax: fantom
@@ -756,14 +770,17 @@ v1.0.0 [#v1.0.0]
  - New: Added Table 'row+' command to execute commands on row by row basis.
  - New: 'CommandCtx' wraps some common command methods.
  - New: Added cmd shortcut aliases, e.g. use 'eq:' in place of 'verifyEq:'.
- - New: Added '#FIXTURE' command variable.
+ - New: Added '#FIXTURE' command macro.
  - New: 'verifyRows' table command works on 2D tables.
+ - New: Table 'col[n]' command with '#N' macro. 
  - Chg: Command expressions need not be run against the fixure - [stuff]`eq:afBounce::Element("div").text`
  - Chg: Set command only uses 'BeanProperties' for simple expressions.
  - Chg: More lenient table parsing.
  - Chg: Arguments for 'verifyEq' commands are trimmed.
+ - Bug: Table markup was not rendered when table command failed fast.
  - Bug: Tables are no longer rendered in a 'pre' tag.
- - Bug: Fixture variables were not applied to verify commands.
+ - Bug: Could not render plain anchor / frag links.
+ - Bug: Fixture macros were not applied to verify commands.
  - Bug: Tables could not have empty cells.
 
 v0.0.6 [#v0.0.6]
