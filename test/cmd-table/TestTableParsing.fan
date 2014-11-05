@@ -16,6 +16,8 @@ class TestTableParsing : Test {
    """
 		data := TableParser().parseTable(table.splitLines)
 		verifyTable(data)
+
+		
 		
 		table2 :=
 """
@@ -28,10 +30,11 @@ class TestTableParsing : Test {
      | Fred Bloggs | Fred  | Bloggs  |
      +- - - - - - -+- - - -+- - - - -+
    """
-
 		data2 := TableParser().parseTable(table2.splitLines)
 		verifyTable(data2)
 
+		
+		
 		// this syntax is because I keep forgetting to --- all the way across on the last line
 		// I may as well condence it too!
 		table3 :=
@@ -43,9 +46,31 @@ class TestTableParsing : Test {
       Steve Eynon Steve Eynon
       Fred Bloggs Fred  Bloggs
    """
-
 		data3 := TableParser().parseTable(table3.splitLines)
 		verifyTable(data3)
+		
+		
+		// BugFix - Allow blanks in table
+		table4 :=
+"""
+      Full Name   Name  Name
+     -            -     -
+                  John  Smith
+      Steve Eynon       Eynon
+      Fred Bloggs Fred        
+   """
+		data4 := TableParser().parseTable(table4.splitLines)
+		verifyEq(data4[1][0], "")
+		verifyEq(data4[1][1], "John")
+		verifyEq(data4[1][2], "Smith")
+		
+		verifyEq(data4[2][0], "Steve Eynon")
+		verifyEq(data4[2][1], "")
+		verifyEq(data4[2][2], "Eynon")
+		
+		verifyEq(data4[3][0], "Fred Bloggs")
+		verifyEq(data4[3][1], "Fred")
+		verifyEq(data4[3][2], "")
 	}
 	
 	private Void verifyTable(Str[][] data) {

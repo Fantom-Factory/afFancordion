@@ -62,6 +62,11 @@ class CmdVerify : Command {
 			actual 	 = ((Str) actual).trim
 			expected = ((Str) expected).trim
 		}
+		
+		if ((cmd == "verifyEq" || cmd == "verifyNotEq") && actual == null) {
+			// being a string based spec, we can *never* compare to null, so lets approximate to Str.defVal 
+			actual = ""
+		}
 
 		try {
 			// try to use the real fixture if we can so it notches up the verify count
