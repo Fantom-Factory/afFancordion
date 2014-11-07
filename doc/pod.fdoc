@@ -14,7 +14,7 @@ Features:
 
 'Fancordion' was inspired by Java's [Concordion]`http://concordion.org/`. 
 
-For an example of Fancordion results, see the output from the [Java Concordion framework]`http://concordion.org/dist/1.4.4/spec/concordion/Fancordion.html`.
+For a great explanation of how to write great acceptance tests, along with do's and don't's, see [Hints and Tips]`http://concordion.org/Technique.html` on the Concordion website.
 
 
 
