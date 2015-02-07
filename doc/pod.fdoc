@@ -198,7 +198,7 @@ class MyFixture { }
 
 Specifications, when they exist in their own file, do *not* start each line with a double asterisk '**'.
 
-> TIP: Use [Fandoc Viewer]`pod:afFandocViewer` to edit fandoc files and specifications.
+> TIP: Use [Explorer App]`pod:afExplorer` to edit fandoc files and specifications.
 
 Specifications can be written in any way you wish, but the following structure is very useful.
 It is written here as a fandoc comment so you may cut and paste it into your specifications.
@@ -786,7 +786,7 @@ abstract class WebFixture : FixtureTest {
 Release Notes [#releaseNotes]
 *****************************
 v1.0.0 [#v1.0.0]
-----------------
+================
  - New: Added Table 'row+' command to execute commands on row by row basis.
  - New: 'CommandCtx' wraps some common command methods.
  - New: Added cmd shortcut aliases, e.g. use 'eq:' in place of 'verifyEq:'.
@@ -804,18 +804,18 @@ v1.0.0 [#v1.0.0]
  - Bug: Tables could not have empty cells.
 
 v0.0.6 [#v0.0.6]
-----------------
+================
  - New: Added Table syntax in pre-formatted text.
  - New: Added Table column commands.
  - New: Added Table 'verifyRows' command.
  - Chg: Simplified verify command syntax: 'verify:Eq(xxx)' -> 'verifyEq:xxx'.
 
 v0.0.4 [#v0.0.4]
-----------------
+================
  - New: Project renamed to 'Fancordion' - see [Concordion for Fantom]`https://groups.google.com/forum/#!msg/concordion-dev/Hk9bGZQ4Hb4/08KLAKbXFsYJ`.
  - New: Added 'FancordionRunner.current()' that returns the current 'FancordionRunner' in use, or 'null' if none.
  - Chg: 'FixtureTest' now extends 'Test'.
 
 v0.0.2 [#v0.0.2]
-----------------
+================
  - New: Preview release.

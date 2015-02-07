@@ -1,4 +1,10 @@
-## Overview 
+#Fancordion v1.0.0
+---
+[![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
+[![pod: v1.0.0](http://img.shields.io/badge/pod-v1.0.0-yellow.svg)](http://www.fantomfactory.org/pods/afFancordion)
+![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
+
+## Overview
 
 `Fancordion` is a tool for creating automated acceptance tests, transforming your boring unit tests into beautiful specification documents! It is similar to [Cucumber](http://cukes.info/) but focuses on readability and presentation.
 
@@ -14,9 +20,9 @@ Features:
 
 `Fancordion` was inspired by Java's [Concordion](http://concordion.org/).
 
-For an example of Fancordion results, see the output from the [Java Concordion framework](http://concordion.org/dist/1.4.4/spec/concordion/Fancordion.html).
+For a great explanation of how to write great acceptance tests, along with do's and don't's, see [Hints and Tips](http://concordion.org/Technique.html) on the Concordion website.
 
-## Install 
+## Install
 
 Install `Fancordion` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
@@ -26,11 +32,11 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
     depends = ["sys 1.0", ..., "afFancordion 1.0"]
 
-## Documentation 
+## Documentation
 
 Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afFancordion/).
 
-## Quick Start 
+## Quick Start
 
 1). Create a text file called `HelloWorldFixture.fan`
 
@@ -81,7 +87,7 @@ Try changing `Hello World!` to something else and re-run the test to watch it fa
 
 Then have `greeting()` throw an Err... See the stacktrace embedded in the result!
 
-## Terminology 
+## Terminology
 
 An **Acceptance Test** is a standard Fantom Test that has been enhanced to verify real user requirements.
 
@@ -93,9 +99,9 @@ The **Fixture** is the code part of the *acceptance test* that does the actual w
 
 See [What is TDD, BDD & ATDD?](http://assertselenium.com/2012/11/05/difference-between-tdd-bdd-atdd/) for the differences between *Test Driven* Development, *Behaviour Driven* Development & *Acceptance Test Driven* Development.
 
-## Usage 
+## Usage
 
-### Run as Fantom Class 
+### Run as Fantom Class
 
 Any Fantom class annotated with the [@Fixture](http://repo.status302.com/doc/afFancordion/Fixture.html) facet can be run as a Fancordion fixture. To run it, just pass it into `FancordionRunner.runFixture()`:
 
@@ -123,7 +129,7 @@ runner.runFixture(fixture)
 - `outputDir` is where the result files are saved.
 - `commands` is a map of all the [Commands](http://repo.status302.com/doc/afFancordion/Commands.html) made available to the test. To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
 
-### Run as Test 
+### Run as Test
 
 Fancordion fixtures can also be run as standard Fantom tests.
 
@@ -140,7 +146,7 @@ class TestStuff : FixtureTest {
 
 To use a specific `FancordionRunner` in your tests, override `FixtureTest.fancordionRunner()` to return the desired instance. Even though all your tests will extend `FixtureTest`, the `fancordionRunner()` method will only be called once. This means you can run a single test with [fant](http://fantom.org/doc/docTools/Fant.html), or all of them, and they will still only use the same runner instance.
 
-## Specifications 
+## Specifications
 
 Specifications are documents written in Fantom's own [Fandoc](http://fantom.org/doc/fandoc/index.html) format, similar to [Markdown](http://daringfireball.net/projects/markdown/) and [Almost Plain Text](http://maven.apache.org/doxia/references/apt-format.html).
 
@@ -168,7 +174,7 @@ class MyFixture { }
 
 Specifications, when they exist in their own file, do *not* start each line with a double asterisk `**`.
 
-> TIP: Use [Fandoc Viewer](http://www.fantomfactory.org/pods/afFandocViewer) to edit fandoc files and specifications.
+> TIP: Use [Explorer App](http://www.fantomfactory.org/pods/afExplorer) to edit fandoc files and specifications.
 
 Specifications can be written in any way you wish, but the following structure is very useful. It is written here as a fandoc comment so you may cut and paste it into your specifications.
 
@@ -197,7 +203,7 @@ Specifications can be written in any way you wish, but the following structure i
 **  - [that explain edge cases]`run:MoreTests`
 ```
 
-## Command Syntax 
+## Command Syntax
 
 All hyperlinks in a Fancordion specification are interpreted as commands. A standard fandoc hyperlink would look like:
 
@@ -211,7 +217,7 @@ The `text` is generally shown in the resulting HTML, the `scheme` is always the 
 
 The exact nature or syntax of the `path` depends on / is different for each command, but often it is either a snippet of Fantom code or a plain string.
 
-### Code 
+### Code
 
 Commands such as `set`, `verify` and `execute` treat the `path` as a fantom expression that is run against the Fixture. So the command
 
@@ -227,7 +233,7 @@ Sometimes you don't want to run the expression against the fixture, sometimes th
 
 As shown above, when referencing classes not in `sys` or the same pod as the fixture, they need to be fully qualified.
 
-### Macros 
+### Macros
 
 Fancordion lets you use some pre-defined macros, or constants, in your Fantom expressions. The most common macro is `#TEXT` which refers to the `text` part of the command. Guess what this command does: (!)
 
@@ -237,11 +243,11 @@ The other common macro is `#FIXTURE` which lets you reference your fixture. So i
 
     [wotever]`execute:echo("Hello " + #FIXTURE.name)`
 
-See the [table section](http://repo.status302.com/doc/afFancordion/#tables.html) for other table specific macros.
+See the [table section](#tables) for other table specific macros.
 
 Note all macros must be UPPER CASE.
 
-### Aliases 
+### Aliases
 
 Several command shortcut aliases are added by default.
 
@@ -263,11 +269,11 @@ class ExampleFixture : FixtureTest {
 }
 ```
 
-## Commands 
+## Commands
 
 The list of supported Fancordion commands.
 
-### set 
+### set
 
 The `set` command sets a field in the fixture to the value of the link text. Example, this fixture command sets the `age` field to `42`:
 
@@ -284,7 +290,7 @@ The property expression may be any valid Fantom expression, no matter how comple
 
 Note how in the above example the `Str` 42 is automatically [coercered](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to an `Int`. This is a useful feature, but is only available for simple, dot separated, expressions.
 
-### execute 
+### execute
 
 The `execute` command calls a method on the fixture. The cmd is compiled and executed as Fantom code:
 
@@ -314,7 +320,7 @@ class ExampleFixture : FixtureTest {
 }
 ```
 
-### verify 
+### verify
 
 The `verify` suite of commands execute a Test verify method against the link text. Available verify commands are:
 
@@ -340,7 +346,7 @@ class ExampleFixture : FixtureTest {
 
 Arguments for the `verifyEq` and `verifyNotEq` methods are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Str` and trimmed. Arguments for the `verify`, `verifyTrue` and `verifyFalse` are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Bool`.
 
-### fail 
+### fail
 
 This simple command fails the test with the given message. Example:
 
@@ -356,7 +362,7 @@ TEST FAILED
 sys::FailErr: TODO - Not Implemented
 ```
 
-### run 
+### run
 
 The `run` command runs another Fancordion fixture and prints an appropriate success / failure link to it.
 
@@ -376,7 +382,7 @@ class ExampleFixture : FixtureTest { }
 
 As seen above, the command path may take an optional `#` character as a suffix. This is the same syntax that Fantom has to specify Types. Using the `#` suffix can help you remember what the text represents! The fixture type may also be qualified.
 
-### link 
+### link
 
 The `link` command renders a standard HTML `<a>` tag. It is added with the `file`, `http`, `https` and `mailto` schemes.
 
@@ -387,7 +393,7 @@ using afFancordion
 class ExampleFixture : FixtureTest { }
 ```
 
-### embed 
+### embed
 
 The `embed` command executes the given function against the fixture and embeds the results as raw HTML.
 
@@ -404,7 +410,7 @@ class ExampleFixture : FixtureTest {
 }
 ```
 
-## Pre-Formatted Text 
+## Pre-Formatted Text
 
 Pre-formatted text may be used as the input for commands by writing the command URL as the first line of the text:
 
@@ -422,11 +428,11 @@ Note that pre-formatted text may also be any line indended by 2 or more spaces. 
 **   This is the Err Msg.
 ```
 
-## Tables 
+## Tables
 
 Above and beyond normal [fandoc](http://fantom.org/doc/fandoc/index.html) syntax, Fancordion also has support for tables. (Yay!)
 
-### Markup 
+### Markup
 
 To render a HTML table, use preformatted text with `table:` as the first line:
 
@@ -458,7 +464,7 @@ That means the above table could also be written as:
 **   +-------------+-------+--------+
 ```
 
-### Column Commands 
+### Column Commands
 
 You can specify commands for each column, to be run for each row. After the `table:` declaration, write commands on seperate lines prefixing them with `col[x]+` to specify on which column they should operate. Use the `#TEXT` macro to reference the text in the column / table cell.
 
@@ -500,7 +506,7 @@ There is also a special `col[n]` command which is run on every column. This comm
 
     col[n]+verifyEq:getDataForColumn(#N)
 
-### Row Commands 
+### Row Commands
 
 Similar to column commands, you can specify commands to be run on each row. Use the prefix `row+` when declaring a command.
 
@@ -536,7 +542,7 @@ class TestSplittingNames : FixtureTest {
 
 Note: Using both column *and* row commands in a table is not allowed.
 
-### Table Commands 
+### Table Commands
 
 `verifyRows` is a special table command that verifies that rows in the table are identical to a given list.
 
@@ -584,7 +590,7 @@ class VerifyRowsFixture : FixtureTest {
 }
 ```
 
-## Test BedSheet Apps 
+## Test BedSheet Apps
 
 Fancordion can be used to test BedSheet applications.
 
