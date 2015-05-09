@@ -258,9 +258,11 @@ Several command shortcut aliases are added by default.
     verifyFalse   --> false
     verifyNull    --> null
     verifyNotNull --> notNull
+    verifyErrType --> errType
+    verifyErrMsg  --> errMsg
     execute       --> exe
 
-The aliases may be used anywhere where the full command would be used. Example:
+The aliases may be used anywhere in place of the full command. Example:
 
 ```
 ** The meaning of life is [42]`eq:number`.
@@ -345,6 +347,40 @@ class ExampleFixture : FixtureTest {
 ```
 
 Arguments for the `verifyEq` and `verifyNotEq` methods are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Str` and trimmed. Arguments for the `verify`, `verifyTrue` and `verifyFalse` are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Bool`.
+
+### verifyErrType
+
+Similar to [execute](#execute) except the expression *must* throw an Err of the specified type.
+
+```
+using afFancordion
+
+** This should throw an [sys::ArgErr]`verifyErrType:dodgyMethod()`.
+class ExampleFixture : FixtureTest {
+  
+	Void dodgyMethod() {
+		throw ArgErr("Whoops")
+	}
+}
+```
+
+Note that the Err Type must be qualified, for example `sys::ArgErr` not `ArgErr`.
+
+### verifyErrMsg
+
+Similar to [verifyErrType](#verifyErrType) except that the Err *must* have the specified message.
+
+```
+using afFancordion
+
+** This should throw an Err with the msg [Whoops]`verifyErrMsg:dodgyMethod()`.
+class ExampleFixture : FixtureTest {
+  
+	Void dodgyMethod() {
+		throw ArgErr("Whoops")
+	}
+}
+```
 
 ### fail
 
