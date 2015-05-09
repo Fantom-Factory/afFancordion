@@ -42,7 +42,7 @@ class FixtureCtx {
 	** The 'StrBuf' that the result HTML is printed to.
 	StrBuf			renderBuf
 
-	** A list of Errs encountered.
+	** A list of Errs encountered, passed to 'FixtureResult' for reporting.
 	Err[]			errs
 	
 	@NoDoc

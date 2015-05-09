@@ -119,10 +119,10 @@ mixin FancordionSkin {
 	** Ends a '</li>' tag.
 	virtual Str liEnd() 		{ "</li>\n" }
 	
-	** Starts an '<emphasis>' tag.
-	virtual Str emphasis()		{ "<emphasis>" }
-	** Ends an '</emphasis>' tag.
-	virtual Str emphasisEnd()	{ "</emphasis>" }
+	** Starts an '<em>' tag.
+	virtual Str em()			{ "<em>" }
+	** Ends an '</em>' tag.
+	virtual Str emEnd()			{ "</em>" }
 	
 	** Starts a '<strong>' tag.
 	virtual Str strong()		{ "<strong>" }

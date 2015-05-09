@@ -76,7 +76,7 @@ internal class FixtureDocWriter : DocWriter {
 				append(fixCtx.skin.li)
 
 			case DocNodeId.emphasis:
-				append(fixCtx.skin.emphasis)
+				append(fixCtx.skin.em)
 
 			case DocNodeId.strong:
 				append(fixCtx.skin.strong)
@@ -156,7 +156,7 @@ internal class FixtureDocWriter : DocWriter {
 				append(fixCtx.skin.liEnd)
 
 			case DocNodeId.emphasis:
-				append(fixCtx.skin.emphasisEnd)
+				append(fixCtx.skin.emEnd)
 
 			case DocNodeId.strong:
 				append(fixCtx.skin.strongEnd)

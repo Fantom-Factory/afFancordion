@@ -30,6 +30,8 @@ class FancordionRunner {
 		commands["verifyFalse"]		= CmdVerify("verifyFalse")
 		commands["verifyNull"]		= CmdVerify("verifyNull")
 		commands["verifyNotNull"]	= CmdVerify("verifyNotNull")
+		commands["verifyErrType"]	= CmdVerifyErrType()
+		commands["verifyErrMsg"]	= CmdVerifyErrMsg()
 		commands["set"]				= CmdSet()
 		commands["execute"]			= CmdExecute()
 		commands["fail"]			= CmdFail()
@@ -49,6 +51,8 @@ class FancordionRunner {
 		commands["false"]	= commands["verifyFalse"]
 		commands["null"]	= commands["verifyNull"]
 		commands["notNull"]	= commands["verifyNotNull"]
+		commands["errType"]	= commands["verifyErrType"]
+		commands["errMsg"]	= commands["verifyErrMsg"]
 		commands["exe"]		= commands["execute"]
 
 		specFinders.add(FindSpecFromFacetValue())
