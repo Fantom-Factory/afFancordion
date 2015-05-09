@@ -29,7 +29,7 @@ class Build : BuildPod {
 			"afSizzle     1.0.2  - 1.0"
 		]
 
-		srcDirs = [`test/`, `test/cmd-verify/`, `test/cmd-table/`, `test/cmd-set/`, `test/cmd-run/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/commands/`]
+		srcDirs = [`test/`, `test/cmd-verifyErrType/`, `test/cmd-verifyErrMsg/`, `test/cmd-verify/`, `test/cmd-table/`, `test/cmd-set/`, `test/cmd-run/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/commands/`]
 		resDirs = [`test/`, `res/classicSkin/`]
 	}
 	

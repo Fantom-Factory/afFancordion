@@ -4,6 +4,9 @@ using afPlastic
 const class CommandCtx {
 	private static const PlasticCompiler compiler	:= PlasticCompiler()
 
+	** The command URI.
+	const Str		cmdUri
+
 	** The *scheme* portion of the command URI:
 	** 
 	**   [text]`scheme:path`
@@ -28,6 +31,7 @@ const class CommandCtx {
 	const Bool		ignore
 
 	internal new make(Str cmdScheme, Str cmdPath, Str cmdText, Str[]? tableCols, Bool ignore) {
+		this.cmdUri		= "${cmdScheme}:${cmdPath}"
 		this.cmdScheme	= cmdScheme
 		this.cmdPath	= cmdPath
 		this.cmdText	= cmdText

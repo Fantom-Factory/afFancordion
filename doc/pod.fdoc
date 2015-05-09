@@ -294,9 +294,11 @@ Several command shortcut aliases are added by default.
   verifyFalse   --> false
   verifyNull    --> null
   verifyNotNull --> notNull
+  verifyErrType --> errType
+  verifyErrMsg  --> errMsg
   execute       --> exe
 
-The aliases may be used anywhere where the full command would be used. Example:
+The aliases may be used anywhere in place of the full command. Example:
 
 pre>
 syntax: fantom
@@ -403,6 +405,48 @@ class ExampleFixture : FixtureTest {
 
 Arguments for the 'verifyEq' and 'verifyNotEq' methods are [type coerced]`afBeanUtils::TypeCoercer` to a 'Str' and trimmed.
 Arguments for the 'verify', 'verifyTrue' and 'verifyFalse' are [type coerced]`afBeanUtils::TypeCoercer` to a 'Bool'.
+
+
+
+verifyErrType [#verifyErrType]
+==============================
+Similar to [execute]`#execute` except the expression *must* throw an Err of the specified type.
+
+pre>
+syntax: fantom
+
+using afFancordion
+
+** This should throw an [sys::ArgErr]`verifyErrType:dodgyMethod()`.
+class ExampleFixture : FixtureTest {
+  
+	Void dodgyMethod() {
+		throw ArgErr("Whoops")
+	}
+}
+<pre
+
+Note that the Err Type must be qualified, for example 'sys::ArgErr' not 'ArgErr'.
+
+
+
+verifyErrMsg [#verifyErrMsg]
+==============================
+Similar to [verifyErrType]`#verifyErrType` except that the Err *must* have the specified message.
+
+pre>
+syntax: fantom
+
+using afFancordion
+
+** This should throw an Err with the msg [Whoops]`verifyErrMsg:dodgyMethod()`.
+class ExampleFixture : FixtureTest {
+  
+	Void dodgyMethod() {
+		throw ArgErr("Whoops")
+	}
+}
+<pre
 
 
 
@@ -785,6 +829,12 @@ abstract class WebFixture : FixtureTest {
 
 Release Notes [#releaseNotes]
 *****************************
+v1.0.2 [#v1.0.2]
+================
+ - New: Added 'verifyErrType' command.
+ - New: Added 'verifyErrMsg' command.
+ - Bug: In 'FancordionSkin', replaced the '<emphasis>' HTML tag with '<em>' - D'Oh!
+
 v1.0.0 [#v1.0.0]
 ================
  - New: Added Table 'row+' command to execute commands on row by row basis.
