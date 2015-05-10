@@ -104,7 +104,7 @@ internal class CmdTable : Command {
 
 				} else if (verifyRows != null) {
 					// do 2D tables
-					actualRow := verifyRows.getSafe(ri-1)
+					actualRow := verifyRows.getSafe(ri-1) ?: Obj#.emptyList
 					if (noOfCols > 1 && actualRow isnot List)
 						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
 					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)

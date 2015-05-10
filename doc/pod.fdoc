@@ -734,7 +734,7 @@ using afFancordion
 **   Paul   McCartney
 **
 class VerifyRowsFixture : FixtureTest {
-    Str[] results() {
+    Str[][] results() {
         [["John","Lennon], ["Paul","McCartney"], ["George","Harrison"], ["Ringo","Starr"]]
     }
 }
