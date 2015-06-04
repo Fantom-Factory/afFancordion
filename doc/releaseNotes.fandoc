@@ -1,0 +1,44 @@
+Versions
+********
+
+v1.0.2
+======
+ - New: Added 'verifyErrType' command.
+ - New: Added 'verifyErrMsg' command.
+ - Bug: In 'FancordionSkin', replaced the '<emphasis>' HTML tag with '<em>' - D'Oh!
+
+v1.0.0
+======
+ - New: Added Table 'row+' command to execute commands on row by row basis.
+ - New: 'CommandCtx' wraps some common command methods.
+ - New: Added cmd shortcut aliases, e.g. use 'eq:' in place of 'verifyEq:'.
+ - New: Added '#FIXTURE' command macro.
+ - New: 'verifyRows' table command works on 2D tables.
+ - New: Table 'col[n]' command with '#N' macro.
+ - Chg: Command expressions need not be run against the fixure.
+ - Chg: Set command only uses 'BeanProperties' for simple expressions.
+ - Chg: More lenient table parsing.
+ - Chg: Arguments for 'verifyEq' commands are trimmed.
+ - Bug: Table markup was not rendered when table command failed fast.
+ - Bug: Tables are no longer rendered in a 'pre' tag.
+ - Bug: Could not render plain anchor / frag links.
+ - Bug: Fixture macros were not applied to verify commands.
+ - Bug: Tables could not have empty cells.
+
+v0.0.6
+======
+ - New: Added Table syntax in pre-formatted text.
+ - New: Added Table column commands.
+ - New: Added Table 'verifyRows' command.
+ - Chg: Simplified verify command syntax: 'verify:Eq(xxx)' -> 'verifyEq:xxx'.
+
+v0.0.4
+======
+ - New: Project renamed to 'Fancordion' - see [Concordion for Fantom]`https://groups.google.com/forum/#!msg/concordion-dev/Hk9bGZQ4Hb4/08KLAKbXFsYJ`.
+ - New: Added 'FancordionRunner.current()' that returns the current 'FancordionRunner' in use, or 'null' if none.
+ - Chg: 'FixtureTest' now extends 'Test'.
+
+v0.0.2
+======
+ - New: Preview release.
+

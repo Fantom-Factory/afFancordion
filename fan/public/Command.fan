@@ -2,6 +2,8 @@
 ** Implement to create your own Fancordion commands. 
 ** To use your own command in a specification, add it to the 'FancordionRunner':
 ** 
+**   syntax: fantom
+** 
 **   runner := FancordionRunner()
 **   myCmd  := MyCommand()
 **   runner.commands["mycmd"] = myCmd

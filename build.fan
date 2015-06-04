@@ -9,8 +9,8 @@ class Build : BuildPod {
 
 		meta = [
 			"proj.name"		: "Fancordion",	
-			"tags"			: "testing",
-			"repo.private"	: "true"
+			"repo.tags"		: "testing",
+			"repo.public"	: "false"
 		]
 
 		depends = [
