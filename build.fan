@@ -30,7 +30,7 @@ class Build : BuildPod {
 		]
 
 		srcDirs = [`test/`, `test/cmd-verifyErrType/`, `test/cmd-verifyErrMsg/`, `test/cmd-verify/`, `test/cmd-table/`, `test/cmd-set/`, `test/cmd-run/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/commands/`]
-		resDirs = [`test/`, `res/classicSkin/`]
+		resDirs = [`doc/`, `test/`, `res/classicSkin/`]
 	}
 	
 	override Void compile() {
