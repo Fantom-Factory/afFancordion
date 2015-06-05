@@ -6,9 +6,9 @@
 
 ## Overview
 
-`Fancordion` is a tool for creating automated acceptance tests, transforming your boring unit tests into beautiful specification documents! It is similar to [Cucumber](http://cukes.info/) but focuses on readability and presentation.
+Fancordion is a tool for creating automated acceptance tests, transforming your boring unit tests into beautiful specification documents! It is similar to [Cucumber](http://cukes.info/) but focuses on readability and presentation.
 
-`Fancordion` embeds test results directly into your test documentation, giving it real *meaning*.
+Fancordion embeds test results directly into your test documentation, giving it real *meaning*.
 
 Features:
 
@@ -18,7 +18,7 @@ Features:
 - **Extensible** - write your own custom commands with ease.
 - **Skinnable**  - customise your HTML reports as you see fit.
 
-`Fancordion` was inspired by Java's [Concordion](http://concordion.org/).
+Fancordion was inspired by Java's [Concordion](http://concordion.org/).
 
 For a great explanation of how to write great acceptance tests, along with do's and don't's, see [Hints and Tips](http://concordion.org/Technique.html) on the Concordion website.
 
@@ -34,52 +34,52 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
 ## Documentation
 
-Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afFancordion/).
+Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fantomfactory.org/pods/afFancordion/).
 
 ## Quick Start
 
-1). Create a text file called `HelloWorldFixture.fan`
+1. Create a text file called `HelloWorldFixture.fan`
 
-```
-using afFancordion
+        using afFancordion
+        
+        ** My First Fixture
+        ** ################
+        **
+        ** This is a simple Fancordion fixture that verifies that the method
+        ** 'greeting()' returns 'Hello World!'.
+        **
+        ** Example
+        ** -------
+        ** Fancordion says, [Hello World!]`verifyEq:greeting()`
+        **
+        class HelloWorldFixture : FixtureTest {
+            Str greeting() {
+                "Hello World!"
+            }
+        }
 
-** My First Fixture
-** ################
-**
-** This is a simple Fancordion fixture that verifies that the method
-** 'greeting()' returns 'Hello World!'.
-**
-** Example
-** -------
-** Fancordion says, [Hello World!]`verifyEq:greeting()`
-**
-class HelloWorldFixture : FixtureTest {
-    Str greeting() {
-        "Hello World!"
-    }
-}
-```
 
-2). Run `HelloWorldFixture.fan` as a Fantom test script ( [fant](http://fantom.org/doc/docTools/Fant.html) ) from the command prompt:
+2. Run `HelloWorldFixture.fan` as a Fantom test script ( [fant](http://fantom.org/doc/docTools/Fant.html) ) from the command prompt:
 
-```
-C:\> fant HelloWorldFixture.fan
+        C:\> fant HelloWorldFixture.fan
+        
+        -- Run:  HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture...
+           Pass: HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture [0]
+        
+        [info] [afFancordion] file:/C:/temp/fancordion/HelloWorldFixture.html
+        
+        Time: 691ms
+        
+        ***
+        *** All tests passed! [1 tests, 1 methods, 1 verifies]
+        ***
 
--- Run:  HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture...
-   Pass: HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture [0]
 
-[info] [afFancordion] file:/C:/temp/fancordion/HelloWorldFixture.html
+3. View the generated fixture result file:
 
-Time: 691ms
+  ![Screenshot of Hello World Fixture Results](http://pods.fantomfactory.org/pods/afFancordion/doc/helloWorldFixture.png)
 
-***
-*** All tests passed! [1 tests, 1 methods, 1 verifies]
-***
-```
 
-3). View the generated fixture result file:
-
-![Screenshot of Hello World Fixture Results](http://static.alienfactory.co.uk/fantom-docs/afFancordion.helloWorldFixture.png)
 
 The green highlight means the test passed.
 
@@ -103,7 +103,7 @@ See [What is TDD, BDD & ATDD?](http://assertselenium.com/2012/11/05/difference-b
 
 ### Run as Fantom Class
 
-Any Fantom class annotated with the [@Fixture](http://repo.status302.com/doc/afFancordion/Fixture.html) facet can be run as a Fancordion fixture. To run it, just pass it into `FancordionRunner.runFixture()`:
+Any Fantom class annotated with the [@Fixture](http://pods.fantomfactory.org/pods/afFancordion/api/Fixture) facet can be run as a Fancordion fixture. To run it, just pass it into `FancordionRunner.runFixture()`:
 
 ```
 using afFancordion
@@ -119,7 +119,7 @@ runner  := FancordionRunner()
 runner.runFixture(fixture)
 ```
 
-[FancordionRunner](http://repo.status302.com/doc/afFancordion/FancordionRunner.html) is designed to be subclassed and has several methods, or hooks, that change it's behaviour:
+[FancordionRunner](http://pods.fantomfactory.org/pods/afFancordion/api/FancordionRunner) is designed to be subclassed and has several methods, or hooks, that change it's behaviour:
 
 - `suiteSetup()` is only ever called once no matter how many fixtures are run, or `FancordionRunners` created.
 - `suiteTearDown()` is only ever called the once (currently in an Env shutdown hook).
@@ -127,13 +127,13 @@ runner.runFixture(fixture)
 - `fixtureTearDown()` is called after every fixture.
 - `skinType` & `gimmeSomeSkin()` determine & create an instance of the `FancordionSkin` class used to render the result HTML. You could, for instance, change this to use a Bootstrap skin.
 - `outputDir` is where the result files are saved.
-- `commands` is a map of all the [Commands](http://repo.status302.com/doc/afFancordion/Commands.html) made available to the test. To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
+- `commands` is a map of all the [Commands](http://pods.fantomfactory.org/pods/afFancordion/api/Commands) made available to the test. To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
 
-### Run as Test
+### Run as a Fantom Test
 
 Fancordion fixtures can also be run as standard Fantom tests.
 
-To help you bridge the gap between Fancordion and Fantom tests, Fancordion ships with a handy [FixtureTest](http://repo.status302.com/doc/afFancordion/FixtureTest.html) class. Extending `FixtureTest` lets you run any Fixture as a Fantom Test.
+To help you bridge the gap between Fancordion and Fantom tests, Fancordion ships with a handy [FixtureTest](http://pods.fantomfactory.org/pods/afFancordion/api/FixtureTest) class. Extending `FixtureTest` lets you run any Fixture as a Fantom Test.
 
 ```
 using afFancordion
@@ -174,7 +174,7 @@ class MyFixture { }
 
 Specifications, when they exist in their own file, do *not* start each line with a double asterisk `**`.
 
-> TIP: Use [Explorer App](http://www.fantomfactory.org/pods/afExplorer) to edit fandoc files and specifications.
+> TIP: Use [Explorer App](http://pods.fantomfactory.org/pods/afExplorer) to edit fandoc files and specifications.
 
 Specifications can be written in any way you wish, but the following structure is very useful. It is written here as a fandoc comment so you may cut and paste it into your specifications.
 
@@ -229,7 +229,7 @@ Sometimes you don't want to run the expression against the fixture, sometimes th
 
     [Stuff]`verifyEq:StrBuf().add("Stuff")`
     
-    [value]`verifyEq:afBounce::Element("#id .class").text` 
+    [value]`verifyEq:afBounce::Element("#id .class").text`
 
 As shown above, when referencing classes not in `sys` or the same pod as the fixture, they need to be fully qualified.
 
@@ -290,7 +290,7 @@ class ExampleFixture : FixtureTest {
 
 The property expression may be any valid Fantom expression, no matter how complex, as long as it references a field.
 
-Note how in the above example the `Str` 42 is automatically [coercered](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to an `Int`. This is a useful feature, but is only available for simple, dot separated, expressions.
+Note how in the above example the `Str` 42 is automatically [coercered](http://pods.fantomfactory.org/pods/afBeanUtils/api/TypeCoercer) to an `Int`. This is a useful feature, but is only available for simple, dot separated, expressions.
 
 ### execute
 
@@ -346,7 +346,7 @@ class ExampleFixture : FixtureTest {
 }
 ```
 
-Arguments for the `verifyEq` and `verifyNotEq` methods are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Str` and trimmed. Arguments for the `verify`, `verifyTrue` and `verifyFalse` are [type coerced](http://repo.status302.com/doc/afBeanUtils/TypeCoercer.html) to a `Bool`.
+Arguments for the `verifyEq` and `verifyNotEq` methods are [type coerced](http://pods.fantomfactory.org/pods/afBeanUtils/api/TypeCoercer) to a `Str` and trimmed. Arguments for the `verify`, `verifyTrue` and `verifyFalse` are [type coerced](http://pods.fantomfactory.org/pods/afBeanUtils/api/TypeCoercer) to a `Bool`.
 
 ### verifyErrType
 
@@ -357,10 +357,10 @@ using afFancordion
 
 ** This should throw an [sys::ArgErr]`verifyErrType:dodgyMethod()`.
 class ExampleFixture : FixtureTest {
-  
-	Void dodgyMethod() {
-		throw ArgErr("Whoops")
-	}
+
+    Void dodgyMethod() {
+        throw ArgErr("Whoops")
+    }
 }
 ```
 
@@ -375,10 +375,10 @@ using afFancordion
 
 ** This should throw an Err with the msg [Whoops]`verifyErrMsg:dodgyMethod()`.
 class ExampleFixture : FixtureTest {
-  
-	Void dodgyMethod() {
-		throw ArgErr("Whoops")
-	}
+
+    Void dodgyMethod() {
+        throw ArgErr("Whoops")
+    }
 }
 ```
 
@@ -615,12 +615,12 @@ using afFancordion
 **   First  Last
 **   ------ ---------
 **   John   Lennon
-**   Ringo  Starr  
+**   Ringo  Starr
 **   George Harrison
 **   Paul   McCartney
 **
 class VerifyRowsFixture : FixtureTest {
-    Str[] results() {
+    Str[][] results() {
         [["John","Lennon], ["Paul","McCartney"], ["George","Harrison"], ["Ringo","Starr"]]
     }
 }
@@ -630,7 +630,7 @@ class VerifyRowsFixture : FixtureTest {
 
 Fancordion can be used to test BedSheet applications.
 
-Typically one would start the web application under test (via [Bounce](http://www.fantomfactory.org/pods/afBounce)) in the runner's `suiteSetup()`. Since all web application state is (usually) stored in a database, there is little need to re-start the web app for every test. While this only saves you a couple of seconds, over the course of many tests it can add up to be quite a time saver!
+Typically one would start the web application under test (via [Bounce](http://pods.fantomfactory.org/pods/afBounce)) in the runner's `suiteSetup()`. Since all web application state is (usually) stored in a database, there is little need to re-start the web app for every test. While this only saves you a couple of seconds, over the course of many tests it can add up to be quite a time saver!
 
 Web application shutdown would then occur in the runner's `suiteTearDown()` method.
 
