@@ -42,6 +42,7 @@ class FancordionRunner {
 		commands["https"]			= CmdLink()
 		commands["mailto"]			= CmdLink()
 		commands["file"]			= CmdLink()
+		commands["fandoc"]			= CmdFandoc()
 
 		// add shortcut aliases
 		commands["eq"]		= commands["verifyEq"]
