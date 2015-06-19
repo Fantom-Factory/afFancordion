@@ -20,6 +20,7 @@ class Commands {
 			command	  := (Command?) null
 
 			if (!cmdUrl.contains(":") || cmdScheme.isEmpty)
+				// FIXME: this is a fudge
 				// allow frag links
 				if (cmdUrl.startsWith("#")) {
 					cmdScheme = ""
