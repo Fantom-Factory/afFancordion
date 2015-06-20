@@ -41,8 +41,12 @@ internal const class ErrMsgs {
 		stripSys("Template Uri `${specLoc}` for ${fixtureType.qname} could not be resolved!")
 	}
 
-	static Str cmdTest_fixtureNotFound(Str fixtureType) {
+	static Str cmdRun_fixtureNotFound(Str fixtureType) {
 		"Could not find Fixture '${fixtureType}'"
+	}
+
+	static Str cmdRun_stoopidRecursion(Type fixtureType) {
+		"Recursion Error - Fixture '${fixtureType}' calls itself!"
 	}
 
 	static Str cmdTable_tableNotFound(Str text) {
