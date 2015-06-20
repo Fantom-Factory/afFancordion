@@ -6,12 +6,12 @@ class Build : BuildPod {
 	new make() {
 		podName = "afFancordion"
 		summary = "A tool for creating automated acceptance tests and specification documents"
-		version = Version("1.0.2")
+		version = Version("1.0.3")
 
 		meta = [
 			"proj.name"		: "Fancordion",	
 			"repo.tags"		: "testing",
-			"repo.public"	: "true"
+			"repo.public"	: "false"
 		]
 
 		depends = [
