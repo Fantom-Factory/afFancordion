@@ -21,6 +21,14 @@ using afBounce
 ** -------
 ** A frag link to [top]`#top`
 ** 
+** Example
+** -------
+** A link to [IoC Registry]`fandoc:/afIoc/api/Registry`
+** 
+** Example
+** -------
+** A link to [sys URI]`sys::Uri`
+** 
 class CmdLinkTest : ConTest {
 
 	override Void testFixture() {
@@ -43,5 +51,13 @@ class CmdLinkTest : ConTest {
 		link = Link(".example a")[3] 
 		link.verifyTextEq("top")
 		verifyEq(link.href, `#top`)
+
+		link = Link(".example a")[4] 
+		link.verifyTextEq("IoC Registry")
+		verifyEq(link.href, `http://pods.fantomfactory.org/pods/afIoc/api/Registry`)
+
+		link = Link(".example a")[5] 
+		link.verifyTextEq("sys URI")
+		verifyEq(link.href, `http://fantom.org/doc/sys/Uri.html`)
 	}
 }

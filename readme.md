@@ -146,6 +146,8 @@ class TestStuff : FixtureTest {
 
 To use a specific `FancordionRunner` in your tests, override `FixtureTest.fancordionRunner()` to return the desired instance. Even though all your tests will extend `FixtureTest`, the `fancordionRunner()` method will only be called once. This means you can run a single test with [fant](http://fantom.org/doc/docTools/Fant.html), or all of them, and they will still only use the same runner instance.
 
+### Run from Pod
+
 ## Specifications
 
 Specifications are documents written in Fantom's own [Fandoc](http://fantom.org/doc/fandoc/index.html) format, similar to [Markdown](http://daringfireball.net/projects/markdown/) and [Almost Plain Text](http://maven.apache.org/doxia/references/apt-format.html).
@@ -163,18 +165,6 @@ class MyFixture { }
 ```
 
 By doing so, every line in the doc comment must start with a double asterisk `**`.
-
-The specification may also exist in its own file, just give a URL to its location in the `@Fixture` facet:
-
-```
-** This comment is the specification.
-@Fixture { specification=`/myproj/specs/Spec1.fandoc` }
-class MyFixture { }
-```
-
-Specifications, when they exist in their own file, do *not* start each line with a double asterisk `**`.
-
-> TIP: Use [Explorer App](http://pods.fantomfactory.org/pods/afExplorer) to edit fandoc files and specifications.
 
 Specifications can be written in any way you wish, but the following structure is very useful. It is written here as a fandoc comment so you may cut and paste it into your specifications.
 
@@ -202,6 +192,24 @@ Specifications can be written in any way you wish, but the following structure i
 **  - [link to other fixtures here]`run:OtherTest`
 **  - [that explain edge cases]`run:MoreTests`
 ```
+
+### Specifications Files
+
+The specification may also exist in its own file. To do so, just ensure the Fixture / Test has *no* fandoc comment and Fancordion will walk the current directory tree looking for a file with the same name as the fixture, but with an extension of `.specificaion`, `.spec` or `.fandoc`.
+
+You may also give a URL (relative or absolute) to its location in the `@Fixture` facet:
+
+```
+** This comment is the specification.
+@Fixture { specification=`/myproj/specs/Spec1.fandoc` }
+class MyFixture { }
+```
+
+Relative URLs are relative to the directory Fantom was started in. If the URL is a directory then a file with the same name as the fixture is looked for, but with an extension of `.specificaion`, `.spec` or `.fandoc`.
+
+Note that specifications, when they exist in their own file, do *not* start each line with a double asterisk `**`.
+
+> TIP: Use [Explorer App](http://pods.fantomfactory.org/pods/afExplorer) to edit fandoc files and specifications.
 
 ## Command Syntax
 
