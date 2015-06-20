@@ -19,8 +19,8 @@ class Commands {
 			cmdScheme := cmdUrl.split(':')[0]
 			command	  := (Command?) null
 
+			// FIXME: this is a command fudge
 			if (!cmdUrl.contains(":") || cmdScheme.isEmpty)
-				// FIXME: this is a fudge
 				// allow frag links
 				if (cmdUrl.startsWith("#")) {
 					cmdScheme = ""
@@ -29,7 +29,15 @@ class Commands {
 					throw CmdNotFoundErr(ErrMsgs.cmdHasNullScheme(cmdUrl), commands.keys)
 
 			if (command == null)
-				command = commands[cmdScheme] ?: throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmdScheme, cmdUrl), commands.keys)
+				command = commands[cmdScheme]
+			
+			// FIXME: this is a command fudge
+			if (command == null)
+				if (FandocUri(cmdUrl) != null)
+					command = CmdFandoc()
+			
+			if (command == null)
+				 throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmdScheme, cmdUrl), commands.keys)
 			
 			ignore := !fixCtx.errs.findAll { it isnot FailErr }.isEmpty
 			if (ignore && fixFacet.failFast && command.canFailFast)
