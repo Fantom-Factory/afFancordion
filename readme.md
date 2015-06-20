@@ -148,6 +148,26 @@ To use a specific `FancordionRunner` in your tests, override `FixtureTest.fancor
 
 ### Run from Pod
 
+If you plan to run Fancordion tests from a pod, then you'll need to alter the `build.fan` slightly. By default, documentation for Test files are not included in a pod. This means your Fancordion tests loose their specifications. To re-include, add the following:
+
+```
+using build
+using compiler
+
+class Build : BuildPod {
+
+  ...
+
+    override Void onCompileFan(CompilerInput ci) {
+        ci.docTests = true
+    }
+}
+```
+
+See the Fantom forum topic [Test Documentation](http://fantom.org/forum/topic/2283) for details.
+
+Alternatively, you could include the Test source files in the pod.
+
 ## Specifications
 
 Specifications are documents written in Fantom's own [Fandoc](http://fantom.org/doc/fandoc/index.html) format, similar to [Markdown](http://daringfireball.net/projects/markdown/) and [Almost Plain Text](http://maven.apache.org/doxia/references/apt-format.html).
@@ -210,6 +230,25 @@ Relative URLs are relative to the directory Fantom was started in. If the URL is
 Note that specifications, when they exist in their own file, do *not* start each line with a double asterisk `**`.
 
 > TIP: Use [Explorer App](http://pods.fantomfactory.org/pods/afExplorer) to edit fandoc files and specifications.
+
+Specifications are looked up in the following order:
+
+- from `@Fixture` Facet value
+- from the Type's class level fandoc
+  - from the runtime loaded pod
+  - from the `.fan` source file file on the file system
+  - from the `.fan` source file file in the pod
+
+- from an external specification file
+  - on the file system
+  - in the pod
+
+
+The exhaustive lookup proceedure allows Fancordion to run from IDEs such as [F4](http://www.xored.com/products/f4/); just ensure that the working directory is that of the project (and not the test) so file walking finds *all* the src and spec files:
+
+    Run -> Run configurations... -> Test -> Arguments -> Working Directory
+
+Note that when looking for source files, the source file **must** have the same name as the class.
 
 ## Command Syntax
 

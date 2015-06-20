@@ -6,7 +6,8 @@ v1.0.2
  - New: Added 'SpecificationFinders' that look for external '.spec' files.
  - New: Added 'verifyErrType' command.
  - New: Added 'verifyErrMsg' command.
- - New: Added 'FandocCmd' for fandoc URLs.
+ - New: Use Fantom links (like 'sys::Uri') and fandoc scheme links (like 'fandoc:sys/api/Uri') in specifications - thanks to a new 'FandocCmd'.
+ - New: 'CmdRun' now guards against stoopid recursion.
  - Bug: In 'FancordionSkin', replaced the '<emphasis>' HTML tag with '<em>' - D'Oh!
 
 v1.0.0
