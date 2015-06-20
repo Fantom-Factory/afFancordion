@@ -143,6 +143,32 @@ This means you can run a single test with [fant]`docTools::Fant`, or all of them
 
 
 
+Run from Pod
+============
+If you plan to run Fancordion tests from a pod, then you'll need to alter the 'build.fan' slightly. By default, documentation for Test files are not included in a pod. This means your Fancordion tests loose their specifications. To re-include, add the following:
+
+pre>
+syntax: fantom
+
+using build
+using compiler
+
+class Build : BuildPod {
+
+  ...
+
+    override Void onCompileFan(CompilerInput ci) {
+        ci.docTests = true
+    }
+}
+<pre
+
+See the Fantom forum topic [Test Documentation]`http://fantom.org/forum/topic/2283` for details.
+
+Alternatively, you could include the Test source files in the pod.
+
+
+
 Specifications
 **************
 Specifications are documents written in Fantom's own [Fandoc]`fandoc::index` format, similar to [Markdown]`http://daringfireball.net/projects/markdown/` and [Almost Plain Text]`http://maven.apache.org/doxia/references/apt-format.html`.
@@ -164,20 +190,6 @@ class MyFixture { }
 <pre
 
 By doing so, every line in the doc comment must start with a double asterisk '**'.
-
-The specification may also exist in its own file, just give a URL to its location in the '@Fixture' facet:
-
-pre>
-syntax: fantom
-
-** This comment is the specification.
-@Fixture { specification=`/myproj/specs/Spec1.fandoc` }
-class MyFixture { }
-<pre
-
-Specifications, when they exist in their own file, do *not* start each line with a double asterisk '**'.
-
-> TIP: Use [Explorer App]`pod:afExplorer` to edit fandoc files and specifications.
 
 Specifications can be written in any way you wish, but the following structure is very useful.
 It is written here as a fandoc comment so you may cut and paste it into your specifications.
@@ -206,6 +218,45 @@ pre>
 **  - [link to other fixtures here]`run:OtherTest`
 **  - [that explain edge cases]`run:MoreTests`
 <pre
+
+
+
+Specifications Files
+====================
+The specification may also exist in its own file. To do so, just ensure the Fixture / Test has *no* fandoc comment and Fancordion will walk the current directory tree looking for a file with the same name as the fixture, but with an extension of '.specificaion', '.spec' or '.fandoc'.
+
+You may also give a URL (relative or absolute) to its location in the '@Fixture' facet:
+
+pre>
+syntax: fantom
+
+** This comment is the specification.
+@Fixture { specification=`/myproj/specs/Spec1.fandoc` }
+class MyFixture { }
+<pre
+
+Relative URLs are relative to the directory Fantom was started in. If the URL is a directory then a file with the same name as the fixture is looked for, but with an extension of '.specificaion', '.spec' or '.fandoc'.
+
+Note that specifications, when they exist in their own file, do *not* start each line with a double asterisk '**'.
+
+> TIP: Use [Explorer App]`pod:afExplorer` to edit fandoc files and specifications.
+
+Specifications are looked up in the following order:
+
+ - from '@Fixture' Facet value
+ - from the Type's class level fandoc
+   - from the runtime loaded pod
+   - from the '.fan' source file file on the file system
+   - from the '.fan' source file file in the pod
+ - from an external specification file
+   - on the file system
+   - in the pod
+
+The exhaustive lookup proceedure allows Fancordion to run from IDEs such as [F4]`http://www.xored.com/products/f4/`; just ensure that the working directory is that of the project (and not the test) so file walking finds *all* the src and spec files:
+
+  Run -> Run configurations... -> Test -> Arguments -> Working Directory
+
+Note that when looking for source files, the source file **must** have the same name as the class.
 
 
 

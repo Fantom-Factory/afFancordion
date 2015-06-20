@@ -3,8 +3,10 @@ Versions
 
 v1.0.2
 ======
+ - New: Added 'SpecificationFinders' that look for external '.spec' files.
  - New: Added 'verifyErrType' command.
  - New: Added 'verifyErrMsg' command.
+ - New: Added 'FandocCmd' for fandoc URLs.
  - Bug: In 'FancordionSkin', replaced the '<emphasis>' HTML tag with '<em>' - D'Oh!
 
 v1.0.0
