@@ -1,6 +1,5 @@
 
-
-class CmdVerifyErrType : Command {
+internal class CmdVerifyErrType : Command {
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
 		fcode := cmdCtx.applyVariables
 
