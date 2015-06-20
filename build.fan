@@ -1,4 +1,5 @@
 using build
+using compiler
 
 class Build : BuildPod {
 
@@ -33,6 +34,11 @@ class Build : BuildPod {
 		resDirs = [`doc/`, `test/`, `res/classicSkin/`]
 	}
 	
+	** see http://fantom.org/forum/topic/2283
+	override Void onCompileFan(CompilerInput ci) {
+		ci.docTests = true
+	}
+
 	override Void compile() {
 		// remove test pods from final build
 		testPods := "afBounce afSizzle".split

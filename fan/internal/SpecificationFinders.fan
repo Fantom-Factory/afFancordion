@@ -31,12 +31,11 @@ internal class FindSpecFromFacetValue : SpecificationFinder {
 		if (specUrl == null)
 			return null
 		
-		if (specUrl.isDir)
-			specUrl = specUrl.plusName("${fixtureType.name}.fandoc")
-		
-		
 		// if absolute, it should resolve against a scheme (hopefully fan:!)
 		if (specUrl.isAbs) {
+			if (specUrl.isDir)
+				// TODO: should also look for .specification and .spec
+				specUrl = specUrl.plusName("${fixtureType.name}.fandoc")
 			obj := specUrl.get
 			if (!obj.typeof.fits(File#))
 				throw Err(ErrMsgs.specFinder_specNotFile(specUrl, fixtureType, obj.typeof))
@@ -44,9 +43,16 @@ internal class FindSpecFromFacetValue : SpecificationFinder {
 		}
 		
 		// if relative, a local file maybe?
-		efanFile := specUrl.toFile 
-		if (efanFile.exists)
-			return efanFile
+		specUrls := Uri[,]
+		if (specUrl.isDir) {
+			specUrls.add(specUrl.plusName("${fixtureType.name}.specification"))
+			specUrls.add(specUrl.plusName("${fixtureType.name}.spec"))
+			specUrls.add(specUrl.plusName("${fixtureType.name}.fandoc"))			
+		} else
+			specUrls.add(specUrl)
+		file := specUrls.eachWhile { it.toFile.exists ? it.toFile : null }
+		if (file != null)
+			return file
 		
 		// last ditch attempt, look for a local pod resource
 		if (specUrl.isPathAbs)
@@ -60,11 +66,11 @@ internal class FindSpecFromFacetValue : SpecificationFinder {
 	}
 }
 
+** Returns the type's fandoc 
 internal class FindSpecFromTypeFandoc : SpecificationFinder {
 
 	override SpecificationMeta? findSpecification(Type fixtureType) {
 		try  {
-			// TODO: Fantom 1.0.67
 			// see http://fantom.org/sidewalk/topic/2335
 			// assume if we're running a src file then it's not a pod resource
 			if (Env.cur.args.last.trim.endsWith(".fan"))
@@ -83,30 +89,42 @@ internal class FindSpecFromTypeFandoc : SpecificationFinder {
 	}
 }
 
-internal class FindSpecFromSrcFile : SpecificationFinder {
+** Returns the type's fandoc, loaded from the src file on the file system
+internal class FindSpecFromTypeInSrcFile : SpecificationFinder {
 	
 	override SpecificationMeta? findSpecification(Type fixtureType) {
 		fileName := fixtureType.name + ".fan"
 		srcFile := (File?) null
 		baseDir	:= File(`./`).normalize 
-		baseDir.walk |file| { if (file.name.equalsIgnoreCase(fileName)) srcFile = file }
-		srcStr	:= srcFile?.readAllStr(true)
+		try
+			baseDir.walk |file| { 
+				if (file.name.equalsIgnoreCase(fileName)) {
+					srcFile = file
+					throw CancelledErr()	// break out of the file walking
+				}
+			}
+		catch (CancelledErr err) { }
+		srcStr	:= fandocFromTypeSrc(srcFile)
 		return (srcStr == null) ? null : SpecificationMeta {
 			it.fixtureType		= fixtureType
-			it.specificationSrc	= fandocFromTypeSrc(srcStr) ?: ""
+			it.specificationSrc	= srcStr
 			it.specificationLoc	= srcFile.normalize.uri
 		}
 	}
 
-	private Str? fandocFromTypeSrc(Str srcStr) {
+	private Str? fandocFromTypeSrc(File? srcFile) {
+		if (srcFile == null)
+			return null
+		srcStr	:= srcFile.readAllStr(true)
 		tokens	:= Tokenizer(Compiler(CompilerInput()), Loc("wotever"), srcStr, true).tokenize
 		docCom	:= tokens.find { it.kind == Token.docComment }		
 		fandoc	:= ((Str[]?) docCom?.val)?.join("\n")
-		return fandoc
+		return fandoc?.trimToNull
 	}
 }
 	
-internal class FindSpecFromPodFile : SpecificationFinder {
+** Returns the type's fandoc, loaded from a src file in the pod
+internal class FindSpecFromTypeInPodFile : SpecificationFinder {
 
 	override SpecificationMeta? findSpecification(Type fixtureType) {
 		podFile := Env.cur.findPodFile(fixtureType.pod.name)
@@ -114,20 +132,90 @@ internal class FindSpecFromPodFile : SpecificationFinder {
 			return null
 		podZip	:= Zip.open(podFile)
 		srcFile	:= podZip.contents.find |file, uri| { uri.path.last == "${fixtureType.name}.fan" }
+		srcStr	:= fandocFromTypeSrc(srcFile)
+		podZip.close
+		
+		return (srcStr == null) ? null : SpecificationMeta {
+			it.fixtureType		= fixtureType
+			it.specificationSrc	= srcStr
+			it.specificationLoc	= `fan://${fixtureType.pod}/${fixtureType.name}.fan`
+		}
+	}
+
+	private Str? fandocFromTypeSrc(File? srcFile) {
+		if (srcFile == null)
+			return null
+		srcStr	:= srcFile.readAllStr(true)
+		tokens	:= Tokenizer(Compiler(CompilerInput()), Loc("wotever"), srcStr, true).tokenize
+		docCom	:= tokens.find { it.kind == Token.docComment }		
+		fandoc	:= ((Str[]?) docCom?.val)?.join("\n")
+		return fandoc?.trimToNull
+	}
+}
+
+** Returns a spec file from the pod
+internal class FindSpecInPodFile : SpecificationFinder {
+
+	override SpecificationMeta? findSpecification(Type fixtureType) {
+		podFile := Env.cur.findPodFile(fixtureType.pod.name)
+		if (podFile == null)
+			return null
+		podZip	:= Zip.open(podFile)
+		srcFile	:= podZip.contents.find |file, uri| { 
+			fileName := uri.path.last 
+			if (fileName == "${fixtureType.name}.specification")
+				return true
+			if (fileName == "${fixtureType.name}.spec")
+				return true
+			if (fileName == "${fixtureType.name}.fandoc")
+				return true	
+			return false
+		}
 		srcStr	:= srcFile?.readAllStr(true)
 		podZip.close
 		
 		return (srcStr == null) ? null : SpecificationMeta {
 			it.fixtureType		= fixtureType
-			it.specificationSrc	= fandocFromTypeSrc(srcStr)
+			it.specificationSrc	= srcStr
 			it.specificationLoc	= `fan://${fixtureType.pod}/${fixtureType.name}.fan`
 		}
 	}
 
-	private Str fandocFromTypeSrc(Str srcStr) {
+	private Str? fandocFromTypeSrc(File? srcFile) {
+		if (srcFile == null)
+			return null
+		srcStr	:= srcFile.readAllStr(true)
 		tokens	:= Tokenizer(Compiler(CompilerInput()), Loc("wotever"), srcStr, true).tokenize
 		docCom	:= tokens.find { it.kind == Token.docComment }		
-		fandoc	:= ((Str[]) docCom.val).join("\n")
-		return fandoc
+		fandoc	:= ((Str[]?) docCom?.val)?.join("\n")
+		return fandoc?.trimToNull
+	}
+}
+
+** Returns a spec file from the file system
+internal class FindSpecOnFileSystem : SpecificationFinder {
+	
+	override SpecificationMeta? findSpecification(Type fixtureType) {
+		exts 	:= "specification spec fandoc".split
+		srcFile := (File?) null
+		baseDir	:= File(`./`).normalize
+		try
+			baseDir.walk |file| {
+				exts.each |ext| {
+					fileName := fixtureType.name + "." + ext
+					if (file.name.equalsIgnoreCase(fileName)) {
+						srcFile = file
+						throw CancelledErr()	// break out of the file walking
+					}
+				}
+			}
+		catch (CancelledErr err) { }
+		
+		srcStr	:= srcFile?.readAllStr(true)
+		return (srcStr == null) ? null : SpecificationMeta {
+			it.fixtureType		= fixtureType
+			it.specificationSrc	= srcStr
+			it.specificationLoc	= srcFile.normalize.uri
+		}
 	}
 }

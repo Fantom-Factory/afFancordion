@@ -58,8 +58,10 @@ class FancordionRunner {
 
 		specFinders.add(FindSpecFromFacetValue())
 		specFinders.add(FindSpecFromTypeFandoc())
-		specFinders.add(FindSpecFromSrcFile())
-		specFinders.add(FindSpecFromPodFile())
+		specFinders.add(FindSpecFromTypeInSrcFile())
+		specFinders.add(FindSpecFromTypeInPodFile())
+		specFinders.add(FindSpecInPodFile())
+		specFinders.add(FindSpecOnFileSystem())
 
 		f?.call(this)
 	}
