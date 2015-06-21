@@ -13,8 +13,10 @@ class FancordionRunner {
 	** The skin applied to generated HTML result files.
 	Type		skinType				:= ClassicSkin#
 	
-	** The commands made available to Fancordion tests. 
-	Str:Command	commands				:= Str:Command[:] { caseInsensitive = true }
+	** The commands made available to Fancordion tests.
+	** 
+	** The key may either be a 'Str' or an immutable func of '|Str cmdUrl->Bool|'.  
+	Obj:Command	commands				:= Obj:Command[:]
 
 	** A command chain of 'SpecificationFinders'.
 	@NoDoc
@@ -43,6 +45,14 @@ class FancordionRunner {
 		commands["mailto"]			= CmdLink()
 		commands["file"]			= CmdLink()
 		commands["fandoc"]			= CmdFandoc()
+
+		commands[|Str cmdUrl->Bool| {
+			cmdUrl.startsWith("#")
+		}.toImmutable] = CmdLink()
+
+		commands[|Str cmdUrl->Bool| {
+			cmdUrl.contains("::") && cmdUrl.all { it.isAlphaNum || it == ':' }
+		}.toImmutable] = CmdFandoc()
 
 		// add shortcut aliases
 		commands["eq"]		= commands["verifyEq"]
