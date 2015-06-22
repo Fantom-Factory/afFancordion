@@ -44,6 +44,6 @@ internal class CmdSet : Command {
 			cmdCtx.executeOnFixture(fixCtx.fixtureInstance, fanCode)
 		}
 		
-		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdCtx.cmdText))
+		fixCtx.skin.cmdSuccess(cmdCtx.cmdText)
 	}
 }

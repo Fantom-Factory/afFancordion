@@ -13,9 +13,10 @@ class FancordionRunner {
 	** The skin applied to generated HTML result files.
 	Type		skinType				:= ClassicSkin#
 	
+	// This way there is a clean separation between the cmd and key func 
 	** The commands made available to Fancordion tests.
 	** 
-	** The key may either be a 'Str' or an immutable func of '|Str cmdUrl->Bool|'.  
+	** The key may either be a 'Str' (that matches the URI scheme) or an immutable func of '|Str cmdUrl->Bool|'.  
 	Obj:Command	commands				:= Obj:Command[:]
 
 	** A command chain of 'SpecificationFinders'.
@@ -148,7 +149,8 @@ class FancordionRunner {
 			it.fancordionRunner	= this
 			it.fixtureInstance	= fixtureInstance
 			it.skin				= gimmeSomeSkin
-			it.renderBuf		= StrBuf(specMeta.specificationSrc.size * 2)
+			// FIXME:
+//			it.renderBuf		= StrBuf(specMeta.specificationSrc.size * 2)
 			it.errs				= Err[,]
 		}
 		
@@ -308,6 +310,6 @@ class FancordionRunner {
 			fdw.docEnd(doc)
 		} finally
 			fixCtx.skin.tearDown
-		return fixCtx.renderBuf.toStr			
+		return fixCtx.skin.renderBuf.toStr
 	}
 }

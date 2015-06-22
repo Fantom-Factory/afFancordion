@@ -9,7 +9,7 @@ internal class CmdVerifyErrType : Command {
 
 			failErr := FailErr("Was expecting an Err to be thrown!")
 			fixCtx.errs.add(failErr)
-			fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdCtx.cmdText, failErr.msg))
+			fixCtx.skin.cmdFailure(cmdCtx.cmdText, failErr.msg)
 
 		} catch (Err err) {
 			// try to use the real fixture if we can so it notches up the verify count
@@ -17,11 +17,11 @@ internal class CmdVerifyErrType : Command {
 			errType := cmdCtx.cmdText.endsWith("#") ? cmdCtx.cmdText[0..<-1] : cmdCtx.cmdText 
 			try {
 				test.typeof.method("verifyEq").callOn(test, [errType, err.typeof.qname])
-				fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdCtx.cmdText))
+				fixCtx.skin.cmdSuccess(cmdCtx.cmdText)
 				
 			} catch (Err err2) {
 				fixCtx.errs.add(err2)
-				fixCtx.renderBuf.add(fixCtx.skin.cmdErr(cmdCtx.cmdUri, cmdCtx.cmdText, err))
+				fixCtx.skin.cmdErr(cmdCtx.cmdUri, cmdCtx.cmdText, err)
 			}				
 		}		
 	}

@@ -7,8 +7,9 @@ using concurrent
 ** This mixin by default renders bare, but valid, HTML5 markup. Override methods to alter the markup generated.
 mixin FancordionSkin {
 
-	abstract Uri[] cssUrls
-	abstract Uri[] scriptUrls
+	abstract Uri[] 	cssUrls
+	abstract Uri[] 	scriptUrls
+	abstract StrBuf renderBuf
 	
 	// ---- Setup / Tear Down ---------------------------------------------------------------------
 	
@@ -29,110 +30,106 @@ mixin FancordionSkin {
 	** Note that XHTML5 documents require the 'xmlns':
 	** 
 	**   <html xmlns="http://www.w3.org/1999/xhtml"> 
-	virtual Str html() {
-		"""<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n"""
+	virtual This html() {
+		write("""<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml">\n""")
 	}
 	** Ends a '<html>' tag. 
 	** This also renders the 'cssUrls' as link tags into the '<head>'.
-	virtual Str htmlEnd() {
+	virtual This htmlEnd() {
 		// insert the CSS links to the <head> tag
 		headIdx := renderBuf.toStr.index("</head>")
-		cssUrls.eachr { renderBuf.insert(headIdx, link(it)) }
-		
-		return "</html>\n"
+		cssUrls.eachr { renderBuf.insert(headIdx, """<link rel="stylesheet" type="text/css" href="${it.encode.toXml}" />\n""") }		
+		return write("</html>\n")
 	}
 	
 	** Starts a <head> tag - this should also render a <title> tag.
-	virtual Str head() {
-		"<head>\n\t<title>${fixtureMeta.title.toXml} : Fancordion</title>\n"
+	virtual This head() {
+		write("<head>\n\t<title>${fixtureMeta.title.toXml} : Fancordion</title>\n")
 	}
-	virtual Str headEnd() { "</head>\n" }
+	virtual This headEnd() { write("</head>\n") }
 	
 	** Starts a '<body>' tag and renders the breadcrumbs. 
-	virtual Str body() { "<body>\n" + breadcrumbs }
+	virtual This body() { write("<body>\n"); return breadcrumbs }
 	** Ends a '</body>' tag.
 	**  
 	** This also calls 'footer()' and renders the 'scriptUrls' as '<script>' tags.
-	virtual Str bodyEnd() {
-		bodyBuf	:= StrBuf().add(footer)
-
-		// render the script tags
-		scriptUrls.each { bodyBuf.add(script(it)) }
-
-		return bodyBuf.add("</body>\n").toStr
+	virtual This bodyEnd() {
+		footer
+		scriptUrls.each { script(it) }
+		return write("</body>\n")
 	}
 	
 	** Starts an *example* section.
 	** By default this returns a 'div' with the class 'example':
 	** 
 	**   <div class="example">
-	virtual Str example() 		{ """<div class="example">\n""" }
+	virtual This example() 		{ write("""<div class="example">\n""") }
 	** Ends an *example* section.
 	** By default this ends a div:
 	** 
 	**   </div>
-	virtual Str exampleEnd()	{ "</div>\n" }
+	virtual This exampleEnd()	{ write("</div>\n") }
 
 	** Starts a heading tag, e.g. '<h1>'
-	virtual Str heading(Int level, Str title, Str? anchorId) {
+	virtual This heading(Int level, Str title, Str? anchorId) {
 		id := (anchorId == null) ? Str.defVal : " id=\"${anchorId.toXml}\"" 
-		return "<h${level}${id}>"
+		return write("<h${level}${id}>")
 	}
 	** Ends a heading tag, e.g. '</h1>'
-	virtual Str headingEnd(Int level) {
-		"""</h${level}>\n"""
+	virtual This headingEnd(Int level) {
+		write("""</h${level}>\n""")
 	}
 
 	** Starts a '<p>' tag.
 	** The admonition is added as a class (lowercase):
 	** 
 	**   LEAD: Here I am  --> <p class="lead">Here I am</p>
-	virtual Str p(Str? admonition) { admonition == null ? "<p>" : """<p class="${admonition.lower.toXml}">""" }
+	virtual This p(Str? admonition) { write(admonition == null ? "<p>" : """<p class="${admonition.lower.toXml}">""") }
 	** Ends a '</p>' tag.
-	virtual Str pEnd() { "</p>\n" }
+	virtual This pEnd() 		{ write("</p>\n") }
 
 	** Starts a '<pre>' tag.
-	virtual Str pre() 			{ "<pre>" }
+	virtual This pre() 			{ write("<pre>") }
 	** Ends a '</pre>' tag.
-	virtual Str preEnd()		{ "</pre>\n" }
+	virtual This preEnd()		{ write("</pre>\n") }
 	
 	** Starts a '<blockquote>' tag.
-	virtual Str blockQuote()	{ "<blockquote>" }
+	virtual This blockQuote()	{ write("<blockquote>") }
 	** Ends a '</blockquote>' tag.
-	virtual Str blockQuoteEnd() { "</blockquote>\n" }
+	virtual This blockQuoteEnd() { write("</blockquote>\n") }
 	
 	** Starts an '<ol>' tag.
 	** By default the list style is added as a CSS style attribute:
 	** 
 	**    <ol style="list-style-type: upper-roman;">
-	virtual Str ol(OrderedListStyle style)	{ """<ol style="list-style-type: ${style.htmlType};">""" }
+	virtual This ol(OrderedListStyle style)	{ write("""<ol style="list-style-type: ${style.htmlType};">""") }
 	** Ends an '</ol>' tag.
-	virtual Str olEnd() 		{ "</ol>" }
+	virtual This olEnd() 		{ write("</ol>") }
 	
 	** Starts a '<ul>' tag.
-	virtual Str ul()			{ "<ul>" }
+	virtual This ul()			{ write("<ul>") }
 	** Ends a '</ul>' tag.
-	virtual Str ulEnd() 		{ "</ul>\n" }
+	virtual This ulEnd() 		{ write("</ul>\n") }
 	
 	** Starts a '<li>' tag.
-	virtual Str li()			{ "<li>" }
+	virtual This li()			{ write("<li>") }
 	** Ends a '</li>' tag.
-	virtual Str liEnd() 		{ "</li>\n" }
+	virtual This liEnd() 		{ write("</li>\n") }
 	
 	** Starts an '<em>' tag.
-	virtual Str em()			{ "<em>" }
+	virtual This em()			{ write("<em>") }
 	** Ends an '</em>' tag.
-	virtual Str emEnd()			{ "</em>" }
+	virtual This emEnd()		{ write("</em>") }
 	
 	** Starts a '<strong>' tag.
-	virtual Str strong()		{ "<strong>" }
+	virtual This strong()		{ write("<strong>") }
 	** Ends a '</strong>' tag.
-	virtual Str strongEnd()		{ "</strong>" }
+	virtual This strongEnd()	{ write("</strong>") }
 	
 	** Starts a '<code>' tag.
-	virtual Str code()			{ "<code>" }
+	virtual This code()			{ write("<code>") }
 	** Ends a '</code>' tag.
-	virtual Str codeEnd()		{ "</code>" }
+	virtual This codeEnd()		{ write("</code>") }
 	
 	
 	
@@ -141,31 +138,32 @@ mixin FancordionSkin {
 	** Renders a complete '<link>' tag. 
 	** 
 	** Note that in HTML5 the '<link>' tag is a [Void element]`http://www.w3.org/TR/html5/syntax.html#void-elements` and may be self closing. 
-	virtual Str link(Uri href)			{ """<link rel="stylesheet" type="text/css" href="${href.encode.toXml}" />\n""" }
+	virtual This link(Uri href)			{ write("""<link rel="stylesheet" type="text/css" href="${href.encode.toXml}" />\n""") }
 	
 	** Renders a complete '<script>' tag.
 	** 
 	** Note that in HTML5 the '<script>' tag is NOT a [Void element]`http://www.w3.org/TR/html5/syntax.html#void-elements` and therefore MUST not be self colsing. 
-	virtual Str script(Uri src)			{ """<script type="text/javascript" src="${src.encode.toXml}"></script>\n""" }
+	virtual This script(Uri src)		{ write("""<script type="text/javascript" src="${src.encode.toXml}"></script>\n""") }
 	
 	** Renders a complete '<a>' tag.
-	virtual Str a(Uri href, Str text) 	{ """<a href="${href.encode.toXml}">${text.toXml}</a>""" }
+	virtual This a(Uri href, Str text) 	{ write("""<a href="${href.encode.toXml}">${text.toXml}</a>""") }
 	
 	** Renders the given text. 
 	** By default the text is XML escaped.
-	virtual Str text(Str text)			{ text.toXml }
+	virtual This text(Str text)			{ write(text.toXml) }
 
 	** Renders a complete '<img>' tag. 
 	** 
 	** Note that in HTML5 the '<img>' tag is a [Void element]`http://www.w3.org/TR/html5/syntax.html#void-elements` and may be self closing. 
-	virtual Str img(Uri src, Str alt)	{
+	virtual This img(Uri src, Str alt)	{
 		srcUrl := copyFile(src.get, `images/`.plusName(src.name))
-		return """<img src="${srcUrl.encode.toXml}" alt="${alt.toXml}" />"""
+		return write("""<img src="${srcUrl.encode.toXml}" alt="${alt.toXml}" />""")
 	}
 
 	** Renders the breadcrumbs. Makes a call to 'breadcrumbPaths()'
-	virtual Str breadcrumbs() {
-		"""<span class="breadcrumbs">""" + breadcrumbPaths.join(" > ") |text, href| { a(href, text) } + "</span>"
+	virtual This breadcrumbs() {
+		html := """<span class="breadcrumbs">""" + breadcrumbPaths.join(" > ") |text, href| { basicLink(href, text) } + "</span>"
+		return write(html)
 	}
 	
 	** Returns an ordered map of URLs to fixture titles to use for the breadcrumbs.
@@ -183,8 +181,8 @@ mixin FancordionSkin {
 	** Renders a footer.
 	** This is (usually) called by 'bodyEnd()'. 
 	** By default it just renders a simple link to the Fancordion website.
-	virtual Str footer() {
-		"<footer>\n" + a(`http://www.fantomfactory.org/pods/afFancordion`, "Fancordion v${Pod.of(this).version}") + "</footer>"
+	virtual This footer() {
+		write("<footer>\n" + a(`http://www.fantomfactory.org/pods/afFancordion`, "Fancordion v${Pod.of(this).version}") + "</footer>")
 	}
 
 
@@ -192,23 +190,23 @@ mixin FancordionSkin {
 	// ---- Table Methods -------------------------------------------------------------------------
 
 	** Starts a '<table>' tag.
-	virtual Str table(Str? cssClass := null) {
+	virtual This table(Str? cssClass := null) {
 		setInTable(true)
-		return cssClass == null ? "<table>\n" : "<table class=\"${cssClass}\">\n"
+		return write(cssClass == null ? "<table>\n" : "<table class=\"${cssClass}\">\n")
 	}
 	** Ends a '</table>' tag.
-	virtual Str tableEnd() {	setInTable(false); return "</table>"	}
+	virtual This tableEnd() {	setInTable(false); return write("</table>")	}
 	** Starts a '<tr>' tag.
-	virtual Str tr() {			"<tr>"		}
+	virtual This tr() 		{	write("<tr>")		}
 	** Ends a '</tr>' tag.
-	virtual Str trEnd() {		"</tr>\n"	}
+	virtual This trEnd()	{	write("</tr>\n")	}
 	** Returns a '<th>' tag.
-	virtual Str th(Str heading) {
-		"<th>${heading}</th>"
+	virtual This th(Str heading) {
+		write("<th>${heading}</th>")
 	}
 	** Returns a '<td>' tag.
-	virtual Str td(Str heading) {
-		"<td>${heading}</td>"
+	virtual This td(Str heading) {
+		write("<td>${heading}</td>")
 	}
 	
 	
@@ -216,31 +214,31 @@ mixin FancordionSkin {
 	// ---- Test Results --------------------------------------------------------------------------
 	
 	** Called to render an ignored command.
-	virtual Str cmdIgnored(Str text) {
-		"""<${cmdElem} class="ignored">${text.toXml}</${cmdElem}>"""
+	virtual This cmdIgnored(Str text) {
+		write("""<${cmdElem} class="ignored">${text.toXml}</${cmdElem}>""")
 	}
 
 	** Called to render a command success.
-	virtual Str cmdSuccess(Str text, Bool escape := true) {
+	virtual This cmdSuccess(Str text, Bool escape := true) {
 		html := escape ? text.toXml : text
-		return """<${cmdElem} class="success">${html}</${cmdElem}>"""
+		return write("""<${cmdElem} class="success">${html}</${cmdElem}>""")
 	}
 
 	** Called to render a command failure.
-	virtual Str cmdFailure(Str expected, Obj? actual, Bool escape := true) {
+	virtual This cmdFailure(Str expected, Obj? actual, Bool escape := true) {
 		html := escape ? expected.toXml : expected
-		return """<${cmdElem} class="failure"><del class="expected">${html}</del> <span class="actual">${firstLine(actual?.toStr).toXml}</span></${cmdElem}>"""
+		return write("""<${cmdElem} class="failure"><del class="expected">${html}</del> <span class="actual">${firstLine(actual?.toStr).toXml}</span></${cmdElem}>""")
 	}
 
 	** Called to render a command error.
-	virtual Str cmdErr(Str cmdUrl, Str cmdText, Err err) {
-		"""<${cmdElem} class="error"><del class="expected">${cmdText.toXml}</del> <span class="actual">${firstLine(err.msg).toXml}</span></${cmdElem}>"""
+	virtual This cmdErr(Str cmdUrl, Str cmdText, Err err) {
+		write("""<${cmdElem} class="error"><del class="expected">${cmdText.toXml}</del> <span class="actual">${firstLine(err.msg).toXml}</span></${cmdElem}>""")
 	}
 	
 	** Custom commands may use this method as a generic hook into the skin.
 	** 
 	** By default this method returns an empty string.
-	virtual Str cmdHook(Uri cmdUrl, Str cmdText, Obj?[]? data) { Str.defVal }
+	virtual This cmdHook(Uri cmdUrl, Str cmdText, Obj?[]? data) { this }
 
 
 	
@@ -291,12 +289,17 @@ mixin FancordionSkin {
 	
 	// ---- Private Helpers -----------------------------------------------------------------------
 	
-	private Str firstLine(Str? txt) {
-		txt?.splitLines?.exclude { it.trim.isEmpty }?.first ?: Str.defVal
+	static public Str basicLink(Uri href, Str text) {
+		 """<a href="${href.encode.toXml}">${text.toXml}</a>"""
 	}
 	
-	private StrBuf renderBuf() {
-		fixtureCtx.renderBuf
+	public This write(Str str) {
+		renderBuf.add(str)
+		return this
+	}
+	
+	private Str firstLine(Str? txt) {
+		txt?.splitLines?.exclude { it.trim.isEmpty }?.first ?: Str.defVal
 	}
 	
 	private Str cmdElem() {
@@ -308,6 +311,10 @@ mixin FancordionSkin {
 			Actor.locals["afFancordion.inTable"] = true
 		else
 			Actor.locals.remove("afFancordion.inTable")
+	}
+	
+	override Str toStr() {
+		Err().traceToStr.splitLines[1..5].join(", ")
 	}
 }
 

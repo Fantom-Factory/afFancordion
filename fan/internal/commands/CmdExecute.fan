@@ -21,6 +21,6 @@ internal class CmdExecute : Command {
 		// run the command!
 		cmdCtx.executeOnFixture(fixCtx.fixtureInstance, fcode)
 		
-		fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdCtx.cmdText))
+		fixCtx.skin.cmdSuccess(cmdCtx.cmdText)
 	}
 }

@@ -31,7 +31,7 @@ class ErrPageTest : ConTest {
 
 @NoDoc
 class MySkin : ClassicSkin {
-	override Str htmlEnd() {
+	override This htmlEnd() {
 		throw Err("There are spiders under my skin!")
 	}
 }

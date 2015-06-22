@@ -1,5 +1,9 @@
 Versions
 ********
+v1.1.0
+======
+ - Chg: 'FancordionSkin' methods now render direct to the skin's 'StrBuf' and return 'this'. (Breaking change.)
+ - Chg: 'FancordionRunner.commands' now also accepts an immutable function of '|Str cmdUrl->Bool|' as a key.
 
 v1.0.2
 ======

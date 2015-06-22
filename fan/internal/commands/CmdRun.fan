@@ -72,16 +72,14 @@ internal class CmdRun : Command {
 			}
 			
 			last := Locals.instance.resultsCache[newType]
-			link := fixCtx.skin.a(last.resultFile.name.toUri, cmdCtx.cmdText)
-			succ := fixCtx.skin.cmdSuccess(link, false)
-			fixCtx.renderBuf.add(succ)
+			link := FancordionSkin.basicLink(last.resultFile.name.toUri, cmdCtx.cmdText)
+			fixCtx.skin.cmdSuccess(link, false)
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
 			last := Locals.instance.resultsCache[newType]
-			link := last != null ? fixCtx.skin.a(last.resultFile.name.toUri, cmdCtx.cmdText) : null
-			fail := fixCtx.skin.cmdFailure(link ?: cmdCtx.cmdText, err.msg, false)
-			fixCtx.renderBuf.add(fail)
+			link := last == null ? cmdCtx.cmdText : FancordionSkin.basicLink(last.resultFile.name.toUri, cmdCtx.cmdText)
+			fixCtx.skin.cmdFailure(link, err.msg, false)
 		}
 	}
 }
