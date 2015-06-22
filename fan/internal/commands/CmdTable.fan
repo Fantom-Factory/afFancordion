@@ -178,27 +178,21 @@ internal class CmdTable : Command {
 	
 	private Void renderTable(FixtureCtx fixCtx, Str[][] table, Str css) {
 		skin := fixCtx.skin
-		buff := fixCtx.skin.renderBuf
 
 		// TODO: this is bad, shouldn't pass the css class in, should let the skin decide
-		buff.add(skin.table(css))
-		buff.add(skin.tr)
-		table[0].each { buff.add(skin.th(it)) }
-		buff.add(skin.trEnd)
+		skin.table(css)
+		skin.tr
+		table[0].each { skin.th(it) }
+		skin.trEnd
 		
 		noOfCols := table[0].size
 		table.eachRange(1..-1) |row, ri| {
-			buff.add(skin.tr)
-			trIdx := buff.size-1
-			
-			row.each |col, i| {
-				buff.add(skin.td(col))
-			}
-					
-			buff.add(skin.trEnd)
+			skin.tr
+			row.each |col, i| { skin.td(col) }
+			skin.trEnd
 		}
 		
-		buff.add(skin.tableEnd)		
+		skin.tableEnd		
 	}
 }
 
