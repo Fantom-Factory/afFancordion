@@ -38,7 +38,7 @@ class Commands {
 			
 			ignore := !fixCtx.errs.findAll { it isnot FailErr }.isEmpty
 			if (ignore && fixFacet.failFast && command.canFailFast)
-				fixCtx.renderBuf.add(fixCtx.skin.cmdIgnored(cmdText))
+				fixCtx.skin.cmdIgnored(cmdText)
 
 			else { 
 				cmdPath	  := cmdUrl.contains(":") ? cmdUrl[cmdScheme.size+1..-1] : cmdUrl
@@ -47,7 +47,7 @@ class Commands {
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
-			fixCtx.renderBuf.add(fixCtx.skin.cmdErr(cmdUrl, cmdText, err))
+			fixCtx.skin.cmdErr(cmdUrl, cmdText, err)
 		}
 	}
 }

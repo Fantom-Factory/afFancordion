@@ -38,9 +38,10 @@ class FixtureCtx {
 
 	** The fancordion skin being used to render the result HTML
 	FancordionSkin	skin
-	
-	** The 'StrBuf' that the result HTML is printed to.
-	StrBuf			renderBuf
+
+	// FIXME: deprecate
+//	** The 'StrBuf' that the result HTML is printed to.
+//	StrBuf			renderBuf
 
 	** A list of Errs encountered, passed to 'FixtureResult' for reporting.
 	Err[]			errs

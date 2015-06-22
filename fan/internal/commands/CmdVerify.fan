@@ -78,11 +78,11 @@ class CmdVerify : Command {
 			if (doubleArgCmds.contains(cmd))
 				test.typeof.method(cmd).callOn(test, [expected, actual])
 			
-			fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(cmdCtx.cmdText))
+			fixCtx.skin.cmdSuccess(cmdCtx.cmdText)
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
-			fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(cmdCtx.cmdText, actual))
+			fixCtx.skin.cmdFailure(cmdCtx.cmdText, actual)
 		}
 	}
 	

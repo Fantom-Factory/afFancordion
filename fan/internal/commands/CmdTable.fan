@@ -74,7 +74,7 @@ internal class CmdTable : Command {
 			try verifyRows = (Obj[]) cmdCtx.getFromFixture(fixCtx.fixtureInstance, vrcPath)
 			catch (Err err) {
 				fixCtx.errs.add(err)
-				fixCtx.renderBuf.add(fixCtx.skin.cmdErr(verifyRowsCmd, "", err))
+				fixCtx.skin.cmdErr(verifyRowsCmd, "", err)
 				renderTable(fixCtx, table, "error")
 				return
 			}
@@ -84,16 +84,15 @@ internal class CmdTable : Command {
 		commands := Commands(fixCtx.fancordionRunner.commands)
 		
 		skin := fixCtx.skin
-		buff := fixCtx.renderBuf
-		buff.add(skin.table)
-		buff.add(skin.tr)
-		table[0].each { buff.add(skin.th(it)) }
-		buff.add(skin.trEnd)
+		skin.table
+		skin.tr
+		table[0].each { skin.th(it) }
+		skin.trEnd
 		
 		noOfCols := table[0].size
 		table.eachRange(1..-1) |row, ri| {
-			buff.add(skin.tr)
-			trIdx := buff.size-1
+			skin.tr
+			trIdx := fixCtx.skin.renderBuf.size-1
 			
 			row.each |col, i| {
 				if (colCmds.containsKey(i)) {
@@ -114,15 +113,15 @@ internal class CmdTable : Command {
 					try {
 						test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
 						test.verifyEq(expected, actual)
-						fixCtx.renderBuf.add(fixCtx.skin.cmdSuccess(actual))
+						fixCtx.skin.cmdSuccess(actual)
 			
 					} catch (Err err) {
 						fixCtx.errs.add(err)
-						fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(expected, actual))
+						fixCtx.skin.cmdFailure(expected, actual)
 					}
 
 				} else
-					buff.add(skin.td(col))
+					skin.td(col)
 			}
 			
 			// ---- do row commands ----
@@ -133,7 +132,6 @@ internal class CmdTable : Command {
 					it.fancordionRunner	= fixCtx.fancordionRunner
 					it.fixtureInstance	= fixCtx.fixtureInstance
 					it.skin				= tableSkin
-					it.renderBuf		= fixCtx.renderBuf
 					it.errs				= fixCtx.errs
 				}
 				
@@ -143,44 +141,44 @@ internal class CmdTable : Command {
 				// highlight the row with the appropriate class
 				// TODO: this is bad, shouldn't pass the css class in, should let the skin decide
 				if (tableSkin.error)
-					buff.insert(trIdx, " class=\"error\"")
+					fixCtx.skin.renderBuf.insert(trIdx, " class=\"error\"")
 				else if (tableSkin.failure)
-					buff.insert(trIdx, " class=\"failure\"")
+					fixCtx.skin.renderBuf.insert(trIdx, " class=\"failure\"")
 				else if (tableSkin.ignored)
-					buff.insert(trIdx, " class=\"ignored\"")
+					fixCtx.skin.renderBuf.insert(trIdx, " class=\"ignored\"")
 				else
-					buff.insert(trIdx, " class=\"success\"")
+					fixCtx.skin.renderBuf.insert(trIdx, " class=\"success\"")
 
 				// render the errors and failures
-				tableSkin.funcs.each { fixCtx.renderBuf.add(it.call(fixCtx.skin)) }
+				tableSkin.funcs.each { it.call(fixCtx.skin) }
 			}
 			
-			buff.add(skin.trEnd)
+			skin.trEnd
 		}
 		
 		// fail if the actual data has more rows than the table
 		if (verifyRows != null && verifyRows.size > (table.size-1)) {
 			verifyRows.eachRange(table.size-1..-1) |actualRow| {
-				buff.add(skin.tr)
+				skin.tr
 				noOfCols.times |i| {
 					// do 2D tables
 					if (noOfCols > 1 && actualRow isnot List)
 						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
 					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
 					actual     := TypeCoercer().coerce(actualCell, Str?#) 
-					fixCtx.renderBuf.add(fixCtx.skin.cmdFailure(Str.defVal, actual))				
+					fixCtx.skin.cmdFailure(Str.defVal, actual)				
 				}
-				buff.add(skin.trEnd)
+				skin.trEnd
 			}
 		}
 
-		buff.add(skin.tableEnd)
+		skin.tableEnd
 	}
 	
 	
 	private Void renderTable(FixtureCtx fixCtx, Str[][] table, Str css) {
 		skin := fixCtx.skin
-		buff := fixCtx.renderBuf
+		buff := fixCtx.skin.renderBuf
 
 		// TODO: this is bad, shouldn't pass the css class in, should let the skin decide
 		buff.add(skin.table(css))
@@ -207,30 +205,31 @@ internal class CmdTable : Command {
 internal class TableSkinWrapper : FancordionSkin {
 	override Uri[]	cssUrls		:= [,]
 	override Uri[]	scriptUrls	:= [,]
+	override StrBuf	renderBuf	:= StrBuf()
 	
-	|FancordionSkin->Str|[] funcs	:= [,]
+	|FancordionSkin|[] funcs	:= [,]
 	Bool 			ignored		:= false
 	Bool 			failure		:= false
 	Bool 			error		:= false
 	
-	override Str cmdIgnored(Str text) {
+	override This cmdIgnored(Str text) {
 		ignored = true
-		return Str.defVal
+		return this
 	}
 
-	override Str cmdSuccess(Str text, Bool escape := true) {
-		Str.defVal
+	override This cmdSuccess(Str text, Bool escape := true) {
+		this
 	}
 
-	override Str cmdFailure(Str expected, Obj? actual, Bool escape := true) {
+	override This cmdFailure(Str expected, Obj? actual, Bool escape := true) {
 		failure = true
-		funcs.add(|FancordionSkin skin->Str| { skin.cmdFailure(expected, actual, escape) })
-		return Str.defVal
+		funcs.add(|FancordionSkin skin| { skin.cmdFailure(expected, actual, escape) })
+		return this
 	}
 
-	override Str cmdErr(Str cmdUrl, Str cmdText, Err err) {
+	override This cmdErr(Str cmdUrl, Str cmdText, Err err) {
 		error = true
-		funcs.add(|FancordionSkin skin->Str| { skin.cmdErr(cmdUrl, cmdText, err) })
-		return Str.defVal
+		funcs.add(|FancordionSkin skin| { skin.cmdErr(cmdUrl, cmdText, err) })
+		return this
 	}
 }

@@ -16,19 +16,19 @@ internal class FixtureDocWriter : DocWriter {
 	}
 	
 	override Void docStart(Doc doc) {
-		append(fixCtx.skin.html)
-		append(fixCtx.skin.head)
-		append(fixCtx.skin.headEnd)
-		append(fixCtx.skin.body)
+		fixCtx.skin.html
+		fixCtx.skin.head
+		fixCtx.skin.headEnd
+		fixCtx.skin.body
 	}
 	
 	override Void docEnd(Doc doc) {
 		if (inExample) {
 			inExample = false
-			append(fixCtx.skin.exampleEnd)
+			fixCtx.skin.exampleEnd
 		}		
-		append(fixCtx.skin.bodyEnd)
-		append(fixCtx.skin.htmlEnd)
+		fixCtx.skin.bodyEnd
+		fixCtx.skin.htmlEnd
 	}
 	
 	override Void elemStart(DocElem elem) {
@@ -42,51 +42,51 @@ internal class FixtureDocWriter : DocWriter {
 				
 				if (inExample) {
 					inExample = false
-					append(fixCtx.skin.exampleEnd)
+					fixCtx.skin.exampleEnd
 				}
 				
 				// TODO: contribute section titles
 				// even better, contribute functions! so that titles can have custom content
 				if (examples.contains(head.title.trim.lower)) {
 					inExample = true
-					append(fixCtx.skin.example)
+					fixCtx.skin.example
 				}
 				
-				append(fixCtx.skin.heading(head.level, head.title, head.anchorId))
+				fixCtx.skin.heading(head.level, head.title, head.anchorId)
 			
 			case DocNodeId.para:
 				para := elem as Para
-				append(fixCtx.skin.p(para.admonition))
+				fixCtx.skin.p(para.admonition)
 			
 			case DocNodeId.pre:
 				inPre = true
 				linkText = StrBuf()
 			
 			case DocNodeId.blockQuote:
-				append(fixCtx.skin.blockQuote)
+				fixCtx.skin.blockQuote
 			
 			case DocNodeId.orderedList:
 				list := elem as OrderedList
-				append(fixCtx.skin.ol(list.style))
+				fixCtx.skin.ol(list.style)
 			
 			case DocNodeId.unorderedList:
-				append(fixCtx.skin.ul)
+				fixCtx.skin.ul
 
 			case DocNodeId.listItem:
-				append(fixCtx.skin.li)
+				fixCtx.skin.li
 
 			case DocNodeId.emphasis:
-				append(fixCtx.skin.em)
+				fixCtx.skin.em
 
 			case DocNodeId.strong:
-				append(fixCtx.skin.strong)
+				fixCtx.skin.strong
 
 			case DocNodeId.code:
-				append(fixCtx.skin.code)
+				fixCtx.skin.code
 
 			case DocNodeId.image:
 				image := elem as Image
-				append(fixCtx.skin.img(image.uri.toUri, image.alt))
+				fixCtx.skin.img(image.uri.toUri, image.alt)
 
 			default:
 				throw Err("WTF is a ${elem.id} element???")
@@ -99,7 +99,7 @@ internal class FixtureDocWriter : DocWriter {
 			return
 		}
 
-		append(fixCtx.skin.text(docText.str))
+		fixCtx.skin.text(docText.str)
 	}
 
 	override Void elemEnd(DocElem elem) {
@@ -123,46 +123,46 @@ internal class FixtureDocWriter : DocWriter {
 					if (cmdUrl.toUri.scheme == "table")
 						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null)
 					else {
-						append(fixCtx.skin.pre)
+						fixCtx.skin.pre
 						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null)
-						append(fixCtx.skin.preEnd)
+						fixCtx.skin.preEnd
 					}
 					
 				} else {
-					append(fixCtx.skin.pre)
-					append(fixCtx.skin.text(preText))
-					append(fixCtx.skin.preEnd)
+					fixCtx.skin.pre
+					fixCtx.skin.text(preText)
+					fixCtx.skin.preEnd
 				}
 			
 			case DocNodeId.heading:
 				head := elem as Heading
-				append(fixCtx.skin.headingEnd(head.level))
+				fixCtx.skin.headingEnd(head.level)
 		
 			case DocNodeId.para:
 				para := elem as Para
-				append(fixCtx.skin.pEnd)
+				fixCtx.skin.pEnd
 			
 			case DocNodeId.blockQuote:
-				append(fixCtx.skin.blockQuoteEnd)
+				fixCtx.skin.blockQuoteEnd
 			
 			case DocNodeId.orderedList:
 				list := elem as OrderedList
-				append(fixCtx.skin.olEnd)
+				fixCtx.skin.olEnd
 			
 			case DocNodeId.unorderedList:
-				append(fixCtx.skin.ulEnd)
+				fixCtx.skin.ulEnd
 
 			case DocNodeId.listItem:
-				append(fixCtx.skin.liEnd)
+				fixCtx.skin.liEnd
 
 			case DocNodeId.emphasis:
-				append(fixCtx.skin.emEnd)
+				fixCtx.skin.emEnd
 
 			case DocNodeId.strong:
-				append(fixCtx.skin.strongEnd)
+				fixCtx.skin.strongEnd
 
 			case DocNodeId.code:
-				append(fixCtx.skin.codeEnd)
+				fixCtx.skin.codeEnd
 
 			case DocNodeId.image:
 				null?.toStr
@@ -170,9 +170,5 @@ internal class FixtureDocWriter : DocWriter {
 			default:
 				throw Err("WTF is a ${elem.id} element???")
 		}
-	}
-	
-	private Void append(Str s) {
-		fixCtx.renderBuf.add(s)
 	}
 }

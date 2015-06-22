@@ -20,6 +20,6 @@ internal class CmdEmbed : Command {
 		// run the command!
 		html := cmdCtx.getFromFixture(fixCtx.fixtureInstance, fcode)
 		
-		fixCtx.renderBuf.add(html?.toStr ?: "NULL")
+		fixCtx.skin.write(html?.toStr ?: "NULL")
 	}
 }

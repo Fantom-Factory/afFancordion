@@ -6,8 +6,7 @@ internal class CmdFandoc : Command {
 		if (fandocUri == null)
 			return
 		
-		html := fixCtx.skin.a(fandocUri.toAbsUrl, cmdCtx.cmdText)
-		fixCtx.renderBuf.add(html)
+		fixCtx.skin.a(fandocUri.toAbsUrl, cmdCtx.cmdText)
 	}
 }
 
