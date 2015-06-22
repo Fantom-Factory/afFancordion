@@ -114,7 +114,7 @@ runner.runFixture(fixture)
  - 'skinType' & 'gimmeSomeSkin()' determine & create an instance of the 'FancordionSkin' class used to render the result HTML.
    You could, for instance, change this to use a Bootstrap skin.
  - 'outputDir' is where the result files are saved.
- - 'commands' is a map of all the [Commands]`Commands` made available to the test.
+ - 'commands' is a map of all the [Commands]`Command` made available to the test.
    To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
 
 
