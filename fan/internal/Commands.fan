@@ -36,8 +36,8 @@ class Commands {
 			if (command == null)
 				 throw CmdNotFoundErr(ErrMsgs.cmdNotFound(cmdScheme, cmdUrl), commandHints)
 			
-			ignore := !fixCtx.errs.findAll { it isnot FailErr }.isEmpty
-			if (ignore && fixFacet.failFast && command.canFailFast)
+			ignore := !fixCtx.errs.findAll { it isnot FailErr }.isEmpty && fixFacet.failFast
+			if (ignore && command.canFailFast)
 				fixCtx.skin.cmdIgnored(cmdText)
 
 			else { 

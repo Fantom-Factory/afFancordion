@@ -96,10 +96,10 @@ internal class CmdTable : Command {
 			
 			row.each |col, i| {
 				if (colCmds.containsKey(i)) {
-					commands.doCmd(fixCtx, colCmds[i], col, null)
+					commands.doCmd(fixCtx, colCmds[i], col, row)
 
 				} else if (colCmds.containsKey("N")) {
-					commands.doCmd(fixCtx, colCmds["N"].replace("#N", i.toStr), col, null)
+					commands.doCmd(fixCtx, colCmds["N"].replace("#N", i.toStr), col, row)
 
 				} else if (verifyRows != null) {
 					// do 2D tables
@@ -197,10 +197,6 @@ internal class CmdTable : Command {
 }
 
 internal class TableSkinWrapper : FancordionSkin {
-	override Uri[]	cssUrls		:= [,]
-	override Uri[]	scriptUrls	:= [,]
-	override StrBuf	renderBuf	:= StrBuf()
-	
 	|FancordionSkin|[] funcs	:= [,]
 	Bool 			ignored		:= false
 	Bool 			failure		:= false

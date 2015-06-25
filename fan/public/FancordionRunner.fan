@@ -11,6 +11,8 @@ class FancordionRunner {
 	File		outputDir				:= Env.cur.tempDir + `fancordion/`
 	
 	** The skin applied to generated HTML result files.
+	** 
+	** Defaults to `ClassicSkin`.
 	Type		skinType				:= ClassicSkin#
 	
 	// This way there is a clean separation between the cmd and key func 
