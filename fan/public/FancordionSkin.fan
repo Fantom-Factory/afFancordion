@@ -1,15 +1,23 @@
 using fandoc
-using concurrent
 
 ** Implement to create a skin for specification output. 
-** Skins are used by Fancordion and its command to generate the HTML result files.
+** Skins are used by Fancordion Commands to generate the HTML result files.
 ** 
-** This mixin by default renders bare, but valid, HTML5 markup. Override methods to alter the markup generated.
-mixin FancordionSkin {
+** This class renders bare, but valid, HTML5 markup. Override methods to alter the markup generated.
+class FancordionSkin {
 
-	abstract Uri[] 	cssUrls
-	abstract Uri[] 	scriptUrls
-	abstract StrBuf renderBuf
+	** CSS URLs are rendered in the '<head>' element. 
+	** CSS URLs may be added at any stage of rendering as they are added during 'htmlEnd()'.
+	Uri[]	cssUrls		:= [,]
+	
+	** Script URLs are rendered just before the closing '</body>' element. 
+	** Script URLs may be added at any stage of rendering as they are added during 'bodyEnd()'.
+	Uri[]	scriptUrls	:= [,]
+	
+	** The 'StrBuf' that this Skin renders to.
+	StrBuf	renderBuf	:= StrBuf()
+
+	
 	
 	// ---- Setup / Tear Down ---------------------------------------------------------------------
 	
@@ -19,7 +27,10 @@ mixin FancordionSkin {
 
 	** Called after every fixture run.
 	** This should reset / cleardown any state held by the skin, e.g. the 'cssUrls' and 'scriptUrls'.
-	virtual Void tearDown() { }
+	virtual Void tearDown() {
+		cssUrls.clear
+		scriptUrls.clear		
+	}
 	
 
 	
@@ -38,7 +49,7 @@ mixin FancordionSkin {
 	virtual This htmlEnd() {
 		// insert the CSS links to the <head> tag
 		headIdx := renderBuf.toStr.index("</head>")
-		cssUrls.eachr { renderBuf.insert(headIdx, """<link rel="stylesheet" type="text/css" href="${it.encode.toXml}" />\n""") }		
+		cssUrls.eachr |url| { renderBuf.insert(headIdx, render |->| { link(url) } ) }		
 		return write("</html>\n")
 	}
 	
@@ -59,16 +70,16 @@ mixin FancordionSkin {
 		return write("</body>\n")
 	}
 	
-	** Starts an *example* section.
+	** Starts a section.
 	** By default this returns a 'div' with the class 'example':
 	** 
 	**   <div class="example">
-	virtual This example() 		{ write("""<div class="example">\n""") }
+	virtual This section() 		{ write("""<div class="example">\n""") }
 	** Ends an *example* section.
 	** By default this ends a div:
 	** 
 	**   </div>
-	virtual This exampleEnd()	{ write("</div>\n") }
+	virtual This sectionEnd()	{ write("</div>\n") }
 
 	** Starts a heading tag, e.g. '<h1>'
 	virtual This heading(Int level, Str title, Str? anchorId) {
@@ -135,12 +146,12 @@ mixin FancordionSkin {
 	
 	// ---- Un-Matched HTML ---------------------
 
-	** Renders a complete '<link>' tag. 
+	** Renders a CSS '<link>' tag. 
 	** 
 	** Note that in HTML5 the '<link>' tag is a [Void element]`http://www.w3.org/TR/html5/syntax.html#void-elements` and may be self closing. 
 	virtual This link(Uri href)			{ write("""<link rel="stylesheet" type="text/css" href="${href.encode.toXml}" />\n""") }
 	
-	** Renders a complete '<script>' tag.
+	** Renders a javascript '<script>' tag.
 	** 
 	** Note that in HTML5 the '<script>' tag is NOT a [Void element]`http://www.w3.org/TR/html5/syntax.html#void-elements` and therefore MUST not be self colsing. 
 	virtual This script(Uri src)		{ write("""<script type="text/javascript" src="${src.encode.toXml}"></script>\n""") }
@@ -162,7 +173,7 @@ mixin FancordionSkin {
 
 	** Renders the breadcrumbs. Makes a call to 'breadcrumbPaths()'
 	virtual This breadcrumbs() {
-		html := """<span class="breadcrumbs">""" + breadcrumbPaths.join(" > ") |text, href| { basicLink(href, text) } + "</span>"
+		html := """<span class="breadcrumbs">""" + breadcrumbPaths.join(" > ") |text, href| { renderAnchor(href, text) } + "</span>"
 		return write(html)
 	}
 	
@@ -191,11 +202,11 @@ mixin FancordionSkin {
 
 	** Starts a '<table>' tag.
 	virtual This table(Str? cssClass := null) {
-		setInTable(true)
+		inTable = true
 		return write(cssClass == null ? "<table>\n" : "<table class=\"${cssClass}\">\n")
 	}
 	** Ends a '</table>' tag.
-	virtual This tableEnd() {	setInTable(false); return write("</table>")	}
+	virtual This tableEnd() {	inTable = false; return write("</table>")	}
 	** Starts a '<tr>' tag.
 	virtual This tr() 		{	write("<tr>")		}
 	** Ends a '</tr>' tag.
@@ -255,14 +266,14 @@ mixin FancordionSkin {
 	}
 
 	** Copies the given css file to the output dir and adds the resultant URL to 'cssUrls'.
-	virtual Void addCss(File cssFile) {
-		cssUrl	:= copyFile(cssFile, `css/`.plusName(cssFile.name))
+	virtual Void addCss(File cssFile, Bool overwrite := false) {
+		cssUrl	:= copyFile(cssFile, `css/`, overwrite)
 		cssUrls.add(cssUrl)
 	}
 
 	** Copies the given script file to the output dir and adds the resultant URL to 'scriptUrls'.
-	virtual Void addScript(File scriptFile) {
-		scriptUrl	:= copyFile(scriptFile, `scripts/`.plusName(scriptFile.name))
+	virtual Void addScript(File scriptFile, Bool overwrite := false) {
+		scriptUrl	:= copyFile(scriptFile, `scripts/`, overwrite)
 		scriptUrls.add(scriptUrl)
 	}
 
@@ -272,16 +283,18 @@ mixin FancordionSkin {
 	** 
 	**   copyFile(`fan://afFancordion/res/fancordion.css`.get, `etc/fancordion.css`)
 	**   --> `../../etc/fancordion.css`
-	virtual Uri copyFile(File srcFile, Uri destUrl) {
+	** 
+	** If 'destUrl' is a dir, then the file is copied into it.
+	virtual Uri copyFile(File srcFile, Uri destUrl, Bool overwrite := false) {
 		if (!destUrl.isPathOnly)
 			throw ArgErr(ErrMsgs.urlMustBePathOnly("Dest URL", destUrl, `etc/fancordion.css`))
 		if (destUrl.isPathAbs)
 			throw ArgErr(ErrMsgs.urlMustNotStartWithSlash("Dest URL", destUrl, `etc/fancordion.css`))
 		if (destUrl.isDir)
-			throw ArgErr(ErrMsgs.urlMustNotEndWithSlash("Dest URL", destUrl, `etc/fancordion.css`))
+			destUrl = destUrl.plusName(srcFile.name)
 
 		dstFile := fixtureMeta.baseOutputDir + destUrl
-		srcFile.copyTo(dstFile, ["overwrite": false])
+		srcFile.copyTo(dstFile, ["overwrite": overwrite])
 		
 		return dstFile.normalize.uri.relTo(fixtureMeta.resultFile.parent.normalize.uri)
 	}
@@ -289,8 +302,28 @@ mixin FancordionSkin {
 	
 	// ---- Private Helpers -----------------------------------------------------------------------
 	
-	static public Str basicLink(Uri href, Str text) {
-		 """<a href="${href.encode.toXml}">${text.toXml}</a>"""
+	** Renders and returns an '<a>' anchor. 
+	public Str renderAnchor(Uri href, Str text) {
+		render |->| {
+			a(href, text)
+		}
+	}
+
+	** Renders the contents of the given func into a 'Str' without appending it to the skin's 'renderBuf'.
+	** 
+	**   syntax: fantom
+	**   activeLink := skin.render |->| {
+	**       write("<div class='active'>")
+	**       a(`http://fantom.org`, "Fantom")
+	**       write("</div>")
+	**   }
+	public Str render(|->| writeFunc) {
+		oldBuf := renderBuf
+		newBuf := StrBuf()
+		renderBuf = newBuf
+		writeFunc()
+		renderBuf = oldBuf
+		return newBuf.toStr
 	}
 	
 	public This write(Str str) {
@@ -302,19 +335,11 @@ mixin FancordionSkin {
 		txt?.splitLines?.exclude { it.trim.isEmpty }?.first ?: Str.defVal
 	}
 	
-	private Str cmdElem() {
-		Actor.locals.containsKey("afFancordion.inTable") ? "td" : "span"
-	}
-	
-	private Void setInTable(Bool in) {
-		if (in)
-			Actor.locals["afFancordion.inTable"] = true
-		else
-			Actor.locals.remove("afFancordion.inTable")
-	}
-	
-	override Str toStr() {
-		Err().traceToStr.splitLines[1..5].join(", ")
+	@NoDoc	// 'cos it's a bit of hack!
+	protected Bool inTable
+	@NoDoc	// 'cos it's a bit of hack!
+	protected Str cmdElem() {
+		inTable ? "td" : "span"
 	}
 }
 

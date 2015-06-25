@@ -15,7 +15,7 @@ abstract class ConTest : Test {
 		Actor.locals.remove("afBounce.sizzleDoc")
 	}
 	
-	abstract Void doTest()
+	virtual Void doTest() { }
 	
 	virtual FancordionRunner fancordionRunner() {
 		FancordionRunner() {

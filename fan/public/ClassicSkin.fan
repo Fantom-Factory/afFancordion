@@ -2,13 +2,6 @@ using concurrent
 
 ** A Fancordion Skin that mimics the style of the classic Java Concordion library.
 class ClassicSkin : FancordionSkin {
-	@NoDoc
-	override Uri[]	cssUrls		:= [,]
-	@NoDoc
-	override Uri[]	scriptUrls	:= [,]
-	@NoDoc
-	override StrBuf	renderBuf	:= StrBuf()
-
 	private	 Int	buttonId	:= 0
 	private	 Str	cmdElement	:= "span"
 
@@ -16,8 +9,7 @@ class ClassicSkin : FancordionSkin {
 
 	@NoDoc
 	override Void tearDown() {
-		cssUrls.clear
-		scriptUrls.clear
+		super.tearDown
 		buttonId = 0
 	}
 
@@ -26,7 +18,7 @@ class ClassicSkin : FancordionSkin {
 	@NoDoc
 	override This head() {
 		addCss(`fan://afFancordion/res/classicSkin/fancordion.css`.get)
-		return (ClassicSkin) FancordionSkin.super.head
+		return (ClassicSkin) super.head
 	}
 
 	@NoDoc
@@ -50,7 +42,7 @@ class ClassicSkin : FancordionSkin {
 		stack := err.traceToStr.splitLines.join("") { "<span class=\"stackTraceEntry\">${it.toXml}</span>\n" }
 		exp := """<del class="expected">${cmdText.toXml}</del>"""
 		html :=
-		"""<span class="exceptionMessage">${firstLine2(err.msg).toXml}</span>
+		"""<span class="exceptionMessage">${err.typeof.name.toXml}: ${firstLine2(err.msg).toXml}</span>
 		   <input id="stackTraceButton${buttonId}" type="button" class="stackTraceButton" onclick="javascript:toggleStackTrace('${buttonId}')" value="View Stack" />
 		   <span class="stackTrace" id="stackTrace${buttonId}">
 		     <span>While evaluating command: <code>${cmdUrl}</code></span>
@@ -67,9 +59,5 @@ class ClassicSkin : FancordionSkin {
 	
 	private Str firstLine2(Str? txt) {
 		txt?.splitLines?.exclude { it.trim.isEmpty }?.first ?: Str.defVal
-	}
-	
-	private Bool inTable() {
-		Actor.locals.containsKey("afFancordion.inTable")
-	}
+	}	
 }

@@ -8,6 +8,8 @@
 ** You could even nest specifications to form a hierarchical index, with results aggregated to display a single green / red / gray result.     
 ** 
 ** pre>
+** syntax: fantom
+** 
 ** ** Questions:
 ** ** - [Why is the sky blue?]`run:BlueSkyFixture#`.
 ** @Fixture
@@ -72,13 +74,13 @@ internal class CmdRun : Command {
 			}
 			
 			last := Locals.instance.resultsCache[newType]
-			link := FancordionSkin.basicLink(last.resultFile.name.toUri, cmdCtx.cmdText)
+			link := fixCtx.skin.renderAnchor(last.resultFile.name.toUri, cmdCtx.cmdText)
 			fixCtx.skin.cmdSuccess(link, false)
 
 		} catch (Err err) {
 			fixCtx.errs.add(err)
 			last := Locals.instance.resultsCache[newType]
-			link := last == null ? cmdCtx.cmdText : FancordionSkin.basicLink(last.resultFile.name.toUri, cmdCtx.cmdText)
+			link := last == null ? cmdCtx.cmdText : fixCtx.skin.renderAnchor(last.resultFile.name.toUri, cmdCtx.cmdText)
 			fixCtx.skin.cmdFailure(link, err.msg, false)
 		}
 	}

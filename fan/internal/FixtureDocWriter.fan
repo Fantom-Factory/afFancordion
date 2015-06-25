@@ -1,11 +1,14 @@
 using fandoc
 
 internal class FixtureDocWriter : DocWriter {
-	private static const Str[] examples	:= "Example Example: Examples Examples:".lower.split
+	private |Str, Int->Bool|[] sectionFuncs := [
+		|Str heading, Int level->Bool| { heading.lower.startsWith("example") }
+	]
+	
 	private Bool 	inLink
 	private Bool 	inPre
 	private StrBuf?	linkText
-	private Bool 	inExample
+	private Bool 	inSection
 	
 	private Commands 	cmds
 	private FixtureCtx	fixCtx
@@ -23,9 +26,9 @@ internal class FixtureDocWriter : DocWriter {
 	}
 	
 	override Void docEnd(Doc doc) {
-		if (inExample) {
-			inExample = false
-			fixCtx.skin.exampleEnd
+		if (inSection) {
+			inSection = false
+			fixCtx.skin.sectionEnd
 		}		
 		fixCtx.skin.bodyEnd
 		fixCtx.skin.htmlEnd
@@ -40,16 +43,16 @@ internal class FixtureDocWriter : DocWriter {
 			case DocNodeId.heading:
 				head := elem as Heading
 				
-				if (inExample) {
-					inExample = false
-					fixCtx.skin.exampleEnd
+				if (inSection) {
+					inSection = false
+					fixCtx.skin.sectionEnd
 				}
 				
 				// TODO: contribute section titles
 				// even better, contribute functions! so that titles can have custom content
-				if (examples.contains(head.title.trim.lower)) {
-					inExample = true
-					fixCtx.skin.example
+				if (sectionFuncs.any { it(head.title.trim, head.level) }) {
+					inSection = true
+					fixCtx.skin.section
 				}
 				
 				fixCtx.skin.heading(head.level, head.title, head.anchorId)
