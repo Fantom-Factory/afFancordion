@@ -23,7 +23,10 @@ class FancordionSkin {
 	
 	** Called before every fixture run.
 	** This should reset any state held by the skin, e.g. the 'cssUrls' and 'scriptUrls'.
-	virtual Void setup() { }
+	virtual Void setup() {
+		// create a larger buf based on spec size
+		renderBuf = StrBuf(fixtureMeta.specificationSrc.size * 2)
+	}
 
 	** Called after every fixture run.
 	** This should reset / cleardown any state held by the skin, e.g. the 'cssUrls' and 'scriptUrls'.
@@ -49,7 +52,7 @@ class FancordionSkin {
 	virtual This htmlEnd() {
 		// insert the CSS links to the <head> tag
 		headIdx := renderBuf.toStr.index("</head>")
-		cssUrls.eachr |url| { renderBuf.insert(headIdx, render |->| { link(url) } ) }		
+		cssUrls.unique.eachr |url| { renderBuf.insert(headIdx, render |->| { link(url) } ) }		
 		return write("</html>\n")
 	}
 	
@@ -66,7 +69,7 @@ class FancordionSkin {
 	** This also calls 'footer()' and renders the 'scriptUrls' as '<script>' tags.
 	virtual This bodyEnd() {
 		footer
-		scriptUrls.each { script(it) }
+		scriptUrls.unique.each { script(it) }
 		return write("</body>\n")
 	}
 	

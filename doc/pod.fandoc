@@ -21,6 +21,7 @@ For a great explanation of how to write great acceptance tests, along with do's 
 Quick Start
 ***********
 1. Create a text file called 'HelloWorldFixture.fan'
+
     syntax: fantom
 
     using afFancordion
@@ -42,17 +43,18 @@ Quick Start
     }
 
 2. Run 'HelloWorldFixture.fan' as a Fantom test script ( [fant]`docTools::Fant` ) from the command prompt:
+
     C:\> fant HelloWorldFixture.fan
 
     -- Run:  HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture...
        Pass: HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture [0]
 
-    [info] [afFancordion] file:/C:/temp/fancordion/HelloWorldFixture.html
+    [info] [afFancordion] C:\temp\fancordion\from-script\HelloWorldFixture.html ... Ok
 
     Time: 691ms
 
     ***
-    *** All tests passed! [1 tests, 1 methods, 1 verifies]
+    *** All Fixtures Passed! [1 Fixtures]
     ***
 
 3. View the generated fixture result file:
