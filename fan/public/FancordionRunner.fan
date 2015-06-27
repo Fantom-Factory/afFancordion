@@ -24,9 +24,14 @@ class FancordionRunner {
 	** A command chain of 'SpecificationFinders'.
 	@NoDoc
 	SpecificationFinder[] specFinders	:= SpecificationFinder[,]
-		
+
+	** A hook that creates an 'FancordionSkin' instance.
+	** 
+	** Simply returns 'skinType.make()' by default.
+	|->FancordionSkin| gimmeSomeSkin	:= |->FancordionSkin| { skinType.make }
+
 	** Creates a 'FancordionRunner'.
-	new make(|This|? f := null) {
+	new make() {
 		commands["verifyEq"]		= CmdVerify("verifyEq")
 		commands["verifyNotEq"]		= CmdVerify("verifyNotEq")
 		commands["verifyType"]		= CmdVerify("verifyType")
@@ -75,8 +80,6 @@ class FancordionRunner {
 		specFinders.add(FindSpecFromTypeInPodFile())
 		specFinders.add(FindSpecInPodFile())
 		specFinders.add(FindSpecOnFileSystem())
-
-		f?.call(this)
 	}
 
 	** Runs the given Fancordion fixture.
@@ -150,9 +153,7 @@ class FancordionRunner {
 		fixCtx		:= FixtureCtx() {
 			it.fancordionRunner	= this
 			it.fixtureInstance	= fixtureInstance
-			it.skin				= gimmeSomeSkin
-			// FIXME:
-//			it.renderBuf		= StrBuf(specMeta.specificationSrc.size * 2)
+			it.skin				= gimmeSomeSkin()
 			it.errs				= Err[,]
 		}
 		
@@ -270,13 +271,6 @@ class FancordionRunner {
 	virtual Void fixtureTearDown(Obj fixtureInstance, FixtureResult result) {
 		pf := result.errors.isEmpty ? " ... Ok" : " ... FAILED!"
 		log.info(result.resultFile.normalize.osPath + pf)
-	}
-	
-	** A hook that creates an 'FancordionSkin' instance.
-	** 
-	** Simply returns 'skinType.make()' by default.
-	virtual FancordionSkin gimmeSomeSkin() {
-		skinType.make
 	}
 	
 	** Rendered when a Fixture fails for an unknown reason - usually due to an error in the skin.

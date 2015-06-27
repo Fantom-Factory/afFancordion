@@ -6,7 +6,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afFancordion"
 		summary = "A tool for creating automated acceptance tests and specification documents"
-		version = Version("1.0.3")
+		version = Version("1.0.4")
 
 		meta = [
 			"proj.name"		: "Fancordion",	
@@ -34,15 +34,15 @@ class Build : BuildPod {
 		resDirs = [`doc/`, `test/`, `res/classicSkin/`]
 	}
 	
-	** see http://fantom.org/forum/topic/2283
-	override Void onCompileFan(CompilerInput ci) {
-		ci.docTests = true
-	}
-
 	override Void compile() {
 		// remove test pods from final build
 		testPods := "afBounce afSizzle".split
 		depends = depends.exclude { testPods.contains(it.split.first) }
 		super.compile
+	}
+	
+	** see http://fantom.org/forum/topic/2283
+	override Void onCompileFan(CompilerInput ci) {
+		ci.docTests = true
 	}
 }

@@ -1,7 +1,7 @@
-#Fancordion v1.0.2
+#Fancordion v1.0.4
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.0.2](http://img.shields.io/badge/pod-v1.0.2-yellow.svg)](http://www.fantomfactory.org/pods/afFancordion)
+[![pod: v1.0.4](http://img.shields.io/badge/pod-v1.0.4-yellow.svg)](http://www.fantomfactory.org/pods/afFancordion)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -66,12 +66,12 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
         -- Run:  HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture...
            Pass: HelloWorldFixture_0::HelloWorldFixture.testFancordionFixture [0]
         
-        [info] [afFancordion] file:/C:/temp/fancordion/HelloWorldFixture.html
+        [info] [afFancordion] C:\temp\fancordion\from-script\HelloWorldFixture.html ... Ok
         
         Time: 691ms
         
         ***
-        *** All tests passed! [1 tests, 1 methods, 1 verifies]
+        *** All Fixtures Passed! [1 Fixtures]
         ***
 
 
@@ -127,7 +127,7 @@ runner.runFixture(fixture)
 - `fixtureTearDown()` is called after every fixture.
 - `skinType` & `gimmeSomeSkin()` determine & create an instance of the `FancordionSkin` class used to render the result HTML. You could, for instance, change this to use a Bootstrap skin.
 - `outputDir` is where the result files are saved.
-- `commands` is a map of all the [Commands](http://pods.fantomfactory.org/pods/afFancordion/api/Commands) made available to the test. To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
+- `commands` is a map of all the [Commands](http://pods.fantomfactory.org/pods/afFancordion/api/Command) made available to the test. To extend Fancordion, simply add your own Command implementation to the map! (Super easy!)
 
 ### Run as a Fantom Test
 

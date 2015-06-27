@@ -1,9 +1,10 @@
 Versions
 ********
-v1.1.0
+v1.0.4
 ======
  - Chg: 'FancordionSkin' methods now render direct to the skin's 'StrBuf' and return 'this'. (Breaking change.)
  - Chg: 'FancordionRunner.commands' now also accepts an immutable function of '|Str cmdUrl->Bool|' as a key.
+ - Chg: Converted 'FancordionRunner.gimmeSomeSkin()' from a virutal method to a field. (Breaking change.)
  - Bug: '#COL[0]' variables were not available in 'col[x]+XX:' commands.
 
 v1.0.2

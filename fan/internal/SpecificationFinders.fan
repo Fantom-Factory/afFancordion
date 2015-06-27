@@ -58,11 +58,19 @@ internal class FindSpecFromFacetValue : SpecificationFinder {
 		if (specUrl.isPathAbs)
 			specUrl = specUrl.toStr[1..-1].toUri
 		obj := `fan://${fixtureType.pod}/${specUrl}`.get(null, false)
-		if (obj == null)
-			throw Err(ErrMsgs.specFinder_specNotFound(specUrl, fixtureType))
-		if (!obj.typeof.fits(File#))
-			throw Err(ErrMsgs.specFinder_specNotFile(specUrl, fixtureType, obj.typeof))
-		return obj		
+		if (obj != null) {
+			if (!obj.typeof.fits(File#))
+				throw Err(ErrMsgs.specFinder_specNotFile(specUrl, fixtureType, obj.typeof))
+			return obj
+		}
+
+		obj = fixtureType.pod.files.find |podFile| {
+			podFile.name == specUrl.toStr
+		}
+		if (obj != null)
+			return obj		
+		
+		throw Err(ErrMsgs.specFinder_specNotFound(specUrl, fixtureType))
 	}
 }
 

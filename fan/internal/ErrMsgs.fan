@@ -34,11 +34,11 @@ internal const class ErrMsgs {
 	}
 
 	static Str specFinder_specNotFile(Uri specLoc, Type fixtureType, Type specType) {
-		"Template Uri `${specLoc}` for ${fixtureType.qname} does not resolve to a file : ${specType.qname}"
+		"Specification Uri `${specLoc}` for ${fixtureType.qname} does not resolve to a file : ${specType.qname}"
 	}
 
 	static Str specFinder_specNotFound(Uri specLoc, Type fixtureType) {
-		stripSys("Template Uri `${specLoc}` for ${fixtureType.qname} could not be resolved!")
+		stripSys("Specification Uri `${specLoc}` for ${fixtureType.qname} could not be resolved!")
 	}
 
 	static Str cmdRun_fixtureNotFound(Str fixtureType) {
