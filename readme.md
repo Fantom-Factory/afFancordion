@@ -18,6 +18,8 @@ Features:
 - **Extensible** - write your own custom commands with ease.
 - **Skinnable**  - customise your HTML reports as you see fit.
 
+![Fancordion Example](http://pods.fantomfactory.org/pods/afFancordion/doc/exampleScreenshot.png)
+
 Fancordion was inspired by Java's [Concordion](http://concordion.org/).
 
 For a great explanation of how to write great acceptance tests, along with do's and don't's, see [Hints and Tips](http://concordion.org/Technique.html) on the Concordion website.
