@@ -29,7 +29,18 @@ class FancordionRunner {
 	** 
 	** Simply returns 'skinType.make()' by default.
 	|->FancordionSkin| gimmeSomeSkin	:= |->FancordionSkin| { skinType.make }
-
+	
+	** Section functions determine which headings correspond to sections and should be wrapped in a special border. 
+	** The default function checks if the heading starts with the word *Example*:
+	** 
+	**   syntax: fantom
+	**   runner.sectionFuncs.add(
+	**       |Str heading, Int level->Bool| {
+	**           heading.lower.startsWith("example") 
+	**       }
+	**   )
+	|Str, Int->Bool|[] sectionFuncs		:= |Str, Int->Bool|[,]
+	
 	** Creates a 'FancordionRunner'.
 	new make() {
 		commands["verifyEq"]		= CmdVerify("verifyEq")
@@ -80,6 +91,10 @@ class FancordionRunner {
 		specFinders.add(FindSpecFromTypeInPodFile())
 		specFinders.add(FindSpecInPodFile())
 		specFinders.add(FindSpecOnFileSystem())
+		
+		sectionFuncs.add(
+			|Str heading, Int level->Bool| { heading.lower.startsWith("example") }
+		)
 	}
 
 	** Runs the given Fancordion fixture.
@@ -298,7 +313,7 @@ class FancordionRunner {
 	
 	private Str renderFixture(Doc doc, FixtureCtx fixCtx) {
 		cmds := Commands(commands)
-		fdw	 := FixtureDocWriter(cmds, fixCtx)
+		fdw	 := FixtureDocWriter(cmds, sectionFuncs, fixCtx)
 		fixCtx.skin.setup
 		try {
 			fdw.docStart(doc)

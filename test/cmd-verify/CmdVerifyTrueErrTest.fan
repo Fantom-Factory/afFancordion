@@ -20,7 +20,7 @@ class CmdVerifyTrueErrTest : ConTest {
 	override Void doTest() {
 		fail := Element("span.error").innerHtml
 		verifyEq(fail, "<del class='expected'>Kick Ass!</del>")
-		Element("span.exceptionMessage").verifyTextEq("Bang!")
+		Element("span.exceptionMessage").verifyTextEq("Err: Bang!")
 		input := Element("#stackTraceButton1").html
 		verifyEq(input, "<input id='stackTraceButton1' type='button' class='stackTraceButton' onclick='javascript:toggleStackTrace(&#39;1&#39;)' value='View Stack'/>")
 		Element(".stackTraceEntry").verifyExists

@@ -2,6 +2,8 @@ Versions
 ********
 v1.0.4
 ======
+ - New: 'FancordionRunner.sectionFuncs' determine which headings correspond to sections and should be wrapped in a special border.
+ - New: Added moar 'SpecificationFinders' to find standalone '.specification', '.spec' and '.fandoc' files.
  - Chg: 'FancordionSkin' methods now render direct to the skin's 'StrBuf' and return 'this'. (Breaking change.)
  - Chg: 'FancordionRunner.commands' now also accepts an immutable function of '|Str cmdUrl->Bool|' as a key.
  - Chg: Converted 'FancordionRunner.gimmeSomeSkin()' from a virutal method to a field. (Breaking change.)

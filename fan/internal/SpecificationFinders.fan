@@ -33,13 +33,21 @@ internal class FindSpecFromFacetValue : SpecificationFinder {
 		
 		// if absolute, it should resolve against a scheme (hopefully fan:!)
 		if (specUrl.isAbs) {
-			if (specUrl.isDir)
-				// TODO: should also look for .specification and .spec
-				specUrl = specUrl.plusName("${fixtureType.name}.fandoc")
-			obj := specUrl.get
-			if (!obj.typeof.fits(File#))
-				throw Err(ErrMsgs.specFinder_specNotFile(specUrl, fixtureType, obj.typeof))
-			return obj
+			if (!specUrl.isDir) {
+				obj := specUrl.get
+				if (!obj.typeof.fits(File#))
+					throw Err(ErrMsgs.specFinder_specNotFile(specUrl, fixtureType, obj.typeof))
+				return obj
+			}
+			if (specUrl.isDir) {
+				return "specification spec fandoc".split.eachrWhile |ext->File?| {
+					specUrl = specUrl.plusName("${fixtureType.name}.${ext}")
+					obj := specUrl.get(null, false)
+					if (obj != null && !obj.typeof.fits(File#))
+						throw Err(ErrMsgs.specFinder_specNotFile(specUrl, fixtureType, obj.typeof))
+					return obj
+				}
+			}
 		}
 		
 		// if relative, a local file maybe?
@@ -55,9 +63,8 @@ internal class FindSpecFromFacetValue : SpecificationFinder {
 			return file
 		
 		// last ditch attempt, look for a local pod resource
-		if (specUrl.isPathAbs)
-			specUrl = specUrl.toStr[1..-1].toUri
-		obj := `fan://${fixtureType.pod}/${specUrl}`.get(null, false)
+		specUrls = specUrls.map { it.isPathAbs ? it.pathStr[1..-1].toUri : it }
+		obj := specUrls.eachWhile { `fan://${fixtureType.pod}/${it}`.get(null, false) }
 		if (obj != null) {
 			if (!obj.typeof.fits(File#))
 				throw Err(ErrMsgs.specFinder_specNotFile(specUrl, fixtureType, obj.typeof))
