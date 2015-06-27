@@ -43,7 +43,7 @@ class CmdTableColumnTest : ConTest {
 		Element("td.failure")[0].verifyTextEq("FreddyFred")
 		Element("td.success")[4].verifyTextEq("Bloggs")
 
-		Element("td.error")[0].verifyTextContains("Steve EynonArgh!")
+		Element("td.error")[0].verifyTextContains("Steve EynonErr: Argh!")
 		Element("td.failure")[1].verifyTextEq("SteveFred")
 		Element("td.failure")[2].verifyTextEq("EynonBloggs")
 	}

@@ -1,21 +1,19 @@
 using fandoc
 
 internal class FixtureDocWriter : DocWriter {
-	private |Str, Int->Bool|[] sectionFuncs := [
-		|Str heading, Int level->Bool| { heading.lower.startsWith("example") }
-	]
+	private Bool 				inLink
+	private Bool 				inPre
+	private StrBuf?				linkText
+	private Bool 				inSection
 	
-	private Bool 	inLink
-	private Bool 	inPre
-	private StrBuf?	linkText
-	private Bool 	inSection
+	private |Str, Int->Bool|[]	sectionFuncs
+	private Commands 			cmds
+	private FixtureCtx			fixCtx
 	
-	private Commands 	cmds
-	private FixtureCtx	fixCtx
-	
-	new make(Commands cmds, FixtureCtx fixCtx) {
-		this.cmds	= cmds
-		this.fixCtx	= fixCtx
+	new make(Commands cmds, |Str, Int->Bool|[] sectionFuncs, FixtureCtx fixCtx) {
+		this.cmds			= cmds
+		this.sectionFuncs	= sectionFuncs
+		this.fixCtx			= fixCtx
 	}
 	
 	override Void docStart(Doc doc) {

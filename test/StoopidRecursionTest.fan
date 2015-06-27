@@ -21,6 +21,6 @@ class StoopidRecursionTest : ConTest {
 	}
 
 	override Void doTest() {
-		Element(".exceptionMessage").verifyTextEq("Recursion Error - Fixture 'afFancordion::StoopidRecursionTest' calls itself!")
+		Element(".exceptionMessage").verifyTextEq("Err: Recursion Error - Fixture 'afFancordion::StoopidRecursionTest' calls itself!")
 	}
 }
