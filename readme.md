@@ -28,7 +28,7 @@ For a great explanation of how to write great acceptance tests, along with do's 
 
 Install `Fancordion` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
-    C:\> fanr install -r http://repo.status302.com/fanr/ afFancordion
+    C:\> fanr install -r http://pods.fantomfactory.org/fanr/ afFancordion
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
@@ -694,7 +694,7 @@ using afFancordion
 class MyFancordionRunner : FancordionRunner {
     private BedServer? server
 
-    new make(|This|? f := null) : super(f) {
+    new make() {
         outputDir = `fancordion-results/`.toFile
 
         // other runner configuration...
