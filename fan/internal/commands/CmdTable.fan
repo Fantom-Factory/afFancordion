@@ -96,10 +96,10 @@ internal class CmdTable : Command {
 			
 			row.each |col, i| {
 				if (colCmds.containsKey(i)) {
-					commands.doCmd(fixCtx, colCmds[i], col, row)
+					commands.doCmd(fixCtx, colCmds[i], col, ri-1, row)
 
 				} else if (colCmds.containsKey("N")) {
-					commands.doCmd(fixCtx, colCmds["N"].replace("#N", i.toStr), col, row)
+					commands.doCmd(fixCtx, colCmds["N"].replace("#N", i.toStr), col, ri-1, row)
 
 				} else if (verifyRows != null) {
 					// do 2D tables
@@ -136,7 +136,7 @@ internal class CmdTable : Command {
 				}
 				
 				// run the command
-				commands.doCmd(rowFixCtx, rowCmd, row.toStr, row)
+				commands.doCmd(rowFixCtx, rowCmd, row.toStr, ri-1, row)
 				
 				// highlight the row with the appropriate class
 				// TODO: this is bad, shouldn't pass the css class in, should let the skin decide

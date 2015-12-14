@@ -24,17 +24,21 @@ const class CommandCtx {
 	** For table column commands this is the column text.
 	const Str		cmdText
 	
+	** The 0-based table row index. Only available in table row commands.
+	const Int?		tableRowIdx
+	
 	** The columns that make up a table row. Only available in table row commands.
 	const Str[]?	tableCols
 	
 	** Is set to 'true' if there has been previous errors in the fixture and this command should be ignored.
 	const Bool		ignore
 
-	internal new make(Str cmdScheme, Str cmdPath, Str cmdText, Str[]? tableCols, Bool ignore) {
+	internal new make(Str cmdScheme, Str cmdPath, Str cmdText, Int? tableRow, Str[]? tableCols, Bool ignore) {
 		this.cmdUri		= "${cmdScheme}:${cmdPath}"
 		this.cmdScheme	= cmdScheme
 		this.cmdPath	= cmdPath
 		this.cmdText	= cmdText
+		this.tableRowIdx= tableRow
 		this.tableCols	= tableCols
 		this.ignore		= ignore
 	}
@@ -43,6 +47,7 @@ const class CommandCtx {
 	** Specifically it replaces portions of the string with:
 	** 
 	**  - '#TEXT    -> cmdText.toCode'
+	**  - '#ROW     -> tableRowIdx'
 	**  - '#COLS    -> tableCols.toCode'
 	**  - '#COL[0]  -> tableCols[0].toCode'
 	**  - '#COL[1]  -> tableCols[1].toCode'
@@ -50,6 +55,8 @@ const class CommandCtx {
 	**  - '#FIXTURE -> "fixture"'
 	Str applyVariables(Str text := cmdPath) {
 		text = text.replace("#TEXT", cmdText.toCode)
+		if (tableRowIdx != null)
+			text = text.replace("#ROW", tableRowIdx.toCode)
 		tableCols?.each |col, i| {
 			text = text.replace("#COL[${i}]", tableCols[i].toCode)
 		}

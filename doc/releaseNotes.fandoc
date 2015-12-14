@@ -1,5 +1,9 @@
 Versions
 ********
+v1.0.6
+======
+ - New: Added '#ROW' macro as per this [StackOverflow question]`stackoverflow.com/questions/34236040/how-to-refer-to-a-row-index-in-a-fancordion-fixture-table/`.
+
 v1.0.4
 ======
  - New: 'FancordionRunner.sectionFuncs' determine which headings correspond to sections and should be wrapped in a special border.

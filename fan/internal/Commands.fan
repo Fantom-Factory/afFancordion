@@ -27,7 +27,7 @@ class Commands {
 	}
 
 	** We use a Str for cmdUrl so we get the *exact* text and not some URI standard form approximation of. 
-	Void doCmd(FixtureCtx fixCtx, Str cmdUrl, Str cmdText, Str[]? tableCols) {
+	Void doCmd(FixtureCtx fixCtx, Str cmdUrl, Str cmdText, Int? tableRow, Str[]? tableCols) {
 		fixFacet := (Fixture) Type#.method("facet").callOn(fixCtx.fixtureInstance.typeof, [Fixture#])	// Stoopid F4
 		try {
 			cmdScheme := cmdUrl.contains(":") ? cmdUrl.split(':').first : ""
@@ -42,7 +42,7 @@ class Commands {
 
 			else { 
 				cmdPath	  := cmdUrl.contains(":") ? cmdUrl[cmdScheme.size+1..-1] : cmdUrl
-				command.runCommand(fixCtx, CommandCtx(cmdScheme, cmdPath, cmdText, tableCols, ignore))
+				command.runCommand(fixCtx, CommandCtx(cmdScheme, cmdPath, cmdText, tableRow, tableCols, ignore))
 			}
 
 		} catch (Err err) {

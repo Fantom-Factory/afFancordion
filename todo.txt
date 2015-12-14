@@ -1,12 +1,11 @@
 
-For 1.0.2
+For 1.0.6
 =========
 
 
 
 For Future
 ==========
-Bootstrap skin
 logging / tooltip / popup cmd
 
 command - link to file?
