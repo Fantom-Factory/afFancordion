@@ -313,6 +313,18 @@ The other common macro is '#FIXTURE' which lets you reference your fixture. So i
 
 See the [table section]`#tables` for other table specific macros.
 
+Macro Summary:
+
+ - '#COL[0]'  - Table column text
+ - '#COL[1]'  - Table column text
+ - '#COL[2]'  - Table column text
+ - '#COL[3]'  - Table column text
+ - '#COLS'    - Table column array
+ - '#FIXTURE' - The fixture being run
+ - '#N'       - Table column text (use with 'col[n]' command)
+ - '#ROW'     - Table row index
+ - '#TEXT'    - Command text
+
 Note all macros must be UPPER CASE.
 
 
@@ -683,7 +695,6 @@ Row Commands
 Similar to column commands, you can specify commands to be run on each row. Use the prefix 'row+' when declaring a command.
 
 Use the Fancordion macros '#COL[0]', '#COL[1]', '#COL[2]', etc...  to reference the text in each column.
-You may also use '#COLS' to inject a 'Str[]' of all the column text in the row.
 
 pre>
 syntax: fantom
@@ -714,6 +725,10 @@ class TestSplittingNames : FixtureTest {
     }
 }
 <pre
+
+You may also use the '#COLS' macro to inject a 'Str[]' of all the column text in the row.
+
+Use the '#ROW' macro to inject the 0-based index of the row being executed.
 
 Note: Using both column *and* row commands in a table is not allowed.
 
