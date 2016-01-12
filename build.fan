@@ -6,7 +6,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afFancordion"
 		summary = "A tool for creating automated acceptance tests and specification documents"
-		version = Version("1.0.5")
+		version = Version("1.1.0")
 
 		meta = [
 			"proj.name"		: "Fancordion",	
@@ -21,16 +21,16 @@ class Build : BuildPod {
 			"fandoc     1.0",
 
 			// ---- Core ------------------------
-			"afBeanUtils  1.0.4  - 1.0",
-			"afConcurrent 1.0.6  - 1.0",
-			"afPlastic    1.0.16 - 1.0",			
+			"afBeanUtils  1.0.4 - 1.0",
+			"afConcurrent 1.0.6 - 1.0",
+			"afPlastic    1.1.0 - 1.1",			
 
 			// ---- Test ------------------------
-			"afBounce     1.0.18 - 1.0",
-			"afSizzle     1.0.2  - 1.0"
+			"afBounce     1.1.0 - 1.1",
+			"afSizzle     1.0.2 - 1.0"
 		]
 
-		srcDirs = [`test/`, `test/cmd-verifyErrType/`, `test/cmd-verifyErrMsg/`, `test/cmd-verify/`, `test/cmd-table/`, `test/cmd-set/`, `test/cmd-run/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/commands/`]
+		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/commands/`, `fan/public/`, `test/`, `test/cmd-run/`, `test/cmd-set/`, `test/cmd-table/`, `test/cmd-verify/`, `test/cmd-verifyErrMsg/`, `test/cmd-verifyErrType/`]
 		resDirs = [`doc/`, `test/`, `res/classicSkin/`]
 	}
 	
