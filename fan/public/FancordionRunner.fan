@@ -1,6 +1,5 @@
 using fandoc
 using afBeanUtils
-using afPlastic
 using concurrent
 
 ** Runs Fancordion fixtures.
