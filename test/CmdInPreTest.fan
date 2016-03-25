@@ -20,6 +20,6 @@ class CmdInPreTest : ConTest {
 	}
 
 	override Void doTest() {
-		Element("pre span.success").verifyTextEq("Kick Ass!")
+		Element("pre.success").verifyTextEq("Kick Ass!")
 	}
 }
