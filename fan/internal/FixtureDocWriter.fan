@@ -124,9 +124,9 @@ internal class FixtureDocWriter : DocWriter {
 					if (cmdUrl.toUri.scheme == "table")
 						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null, null)
 					else {
-						fixCtx.skin.pre
+						fixCtx.skin.inPre = true
 						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null, null)
-						fixCtx.skin.preEnd
+						fixCtx.skin.inPre = false
 					}
 					
 				} else {

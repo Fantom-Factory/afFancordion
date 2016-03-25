@@ -341,8 +341,14 @@ class FancordionSkin {
 	@NoDoc	// 'cos it's a bit of hack!
 	protected Bool inTable
 	@NoDoc	// 'cos it's a bit of hack!
+	protected Bool inPre
+	@NoDoc	// 'cos it's a bit of hack!
 	protected Str cmdElem() {
-		inTable ? "td" : "span"
+		if (inPre)
+			return "pre"
+		if (inTable)
+			return "td"
+		return "span"
 	}
 }
 
