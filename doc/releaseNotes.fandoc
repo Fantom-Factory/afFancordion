@@ -4,6 +4,7 @@ v1.1.0
 ======
  - New: Added '#ROW' macro as per this [StackOverflow question]`stackoverflow.com/questions/34236040/how-to-refer-to-a-row-index-in-a-fancordion-fixture-table/`.
  - Chg: Updated to use [Plastic 1.1]`pod:afPlastic`. (Potential breaking change.)
+ - Chg: Cmds in '<pre>' tags look better.
 
 v1.0.4
 ======
