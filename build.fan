@@ -6,7 +6,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afFancordion"
 		summary = "A tool for creating automated acceptance tests and specification documents"
-		version = Version("1.1.0")
+		version = Version("1.1.1")
 
 		meta = [
 			"proj.name"		: "Fancordion",	
