@@ -15,13 +15,13 @@ class Build : BuildPod {
 		]
 
 		depends = [
-			"sys        1.0",
-			"concurrent 1.0",
-			"compiler   1.0",
-			"fandoc     1.0",
+			"sys        1.0.68 - 1.0",
+			"concurrent 1.0.68 - 1.0",
+			"compiler   1.0.68 - 1.0",
+			"fandoc     1.0.68 - 1.0",
 
 			// ---- Core ------------------------
-			"afBeanUtils  1.0.4 - 1.0",
+			"afBeanUtils  1.0.8 - 1.0",
 			"afPlastic    1.1.0 - 1.1",			
 
 			// ---- Test ------------------------
@@ -31,13 +31,8 @@ class Build : BuildPod {
 
 		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/commands/`, `fan/public/`, `test/`, `test/cmd-run/`, `test/cmd-set/`, `test/cmd-table/`, `test/cmd-verify/`, `test/cmd-verifyErrMsg/`, `test/cmd-verifyErrType/`]
 		resDirs = [`doc/`, `test/`, `res/classicSkin/`]
-	}
-	
-	override Void compile() {
-		// remove test pods from final build
-		testPods := "afBounce afSizzle".split
-		depends = depends.exclude { testPods.contains(it.split.first) }
-		super.compile
+		
+		meta["afBuild.testPods"]	= "afBounce afSizzle"
 	}
 	
 	** see http://fantom.org/forum/topic/2283
