@@ -1,7 +1,7 @@
-#Fancordion v1.0.4
+#Fancordion v1.1.0
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.0.4](http://img.shields.io/badge/pod-v1.0.4-yellow.svg)](http://www.fantomfactory.org/pods/afFancordion)
+[![pod: v1.1.0](http://img.shields.io/badge/pod-v1.1.0-yellow.svg)](http://www.fantomfactory.org/pods/afFancordion)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -32,7 +32,7 @@ Install `Fancordion` with the Fantom Repository Manager ( [fanr](http://fantom.o
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afFancordion 1.0"]
+    depends = ["sys 1.0", ..., "afFancordion 1.1"]
 
 ## Documentation
 
@@ -293,6 +293,18 @@ The other common macro is `#FIXTURE` which lets you reference your fixture. So i
     [wotever]`execute:echo("Hello " + #FIXTURE.name)`
 
 See the [table section](#tables) for other table specific macros.
+
+Macro Summary:
+
+- `#COL[0]`  - Table column text
+- `#COL[1]`  - Table column text
+- `#COL[2]`  - Table column text
+- `#COL[3]`  - Table column text
+- `#COLS`    - Table column array
+- `#FIXTURE` - The fixture being run
+- `#N`       - Table column text (use with `col[n]` command)
+- `#ROW`     - Table row index
+- `#TEXT`    - Command text
 
 Note all macros must be UPPER CASE.
 
@@ -595,7 +607,7 @@ There is also a special `col[n]` command which is run on every column. This comm
 
 Similar to column commands, you can specify commands to be run on each row. Use the prefix `row+` when declaring a command.
 
-Use the Fancordion macros `#COL[0]`, `#COL[1]`, `#COL[2]`, etc...  to reference the text in each column. You may also use `#COLS` to inject a `Str[]` of all the column text in the row.
+Use the Fancordion macros `#COL[0]`, `#COL[1]`, `#COL[2]`, etc...  to reference the text in each column.
 
 ```
 using afFancordion
@@ -624,6 +636,10 @@ class TestSplittingNames : FixtureTest {
     }
 }
 ```
+
+You may also use the `#COLS` macro to inject a `Str[]` of all the column text in the row.
+
+Use the `#ROW` macro to inject the 0-based index of the row being executed.
 
 Note: Using both column *and* row commands in a table is not allowed.
 
@@ -695,7 +711,7 @@ class MyFancordionRunner : FancordionRunner {
     private BedServer? server
 
     new make() {
-        outputDir = `fancordion-results/`.toFile
+        super.outputDir = `fancordion-results/`.toFile
 
         // other runner configuration...
     }
