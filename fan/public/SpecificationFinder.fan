@@ -1,4 +1,3 @@
-using compiler
 
 ** Implement to create strategies for finding and reading Fandoc specifications from a given type.
 @NoDoc	// Don't overwhelm the masses

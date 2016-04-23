@@ -107,7 +107,7 @@ internal class FixtureDocWriter : DocWriter {
 		switch (elem.id) {
 			case DocNodeId.link:
 				inLink = false
-				cmds.doCmd(fixCtx, ((Link) elem).uri, linkText.toStr, null, null)
+				cmds.doCmd(fixCtx, ((Link) elem).uri, linkText.toStr, null, null, null)
 				linkText = null
 				
 			case DocNodeId.pre:
@@ -122,10 +122,10 @@ internal class FixtureDocWriter : DocWriter {
 					
 					// TODO: fix this dirty hack that prevents tables from being rendered in a <pre> tag
 					if (cmdUrl.toUri.scheme == "table")
-						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null, null)
+						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null, null, null)
 					else {
 						fixCtx.skin.inPre = true
-						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null, null)
+						cmds.doCmd(fixCtx, cmdUrl, preText.trim, null, null, null)
 						fixCtx.skin.inPre = false
 					}
 					
