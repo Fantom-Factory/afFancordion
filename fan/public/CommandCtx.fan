@@ -45,9 +45,9 @@ const class CommandCtx {
 		this.cmdPath	= cmdPath
 		this.cmdText	= cmdText
 		
-		this.table		= table
+		this.table		= table?.dup?.with { removeAt(0) }	// the first row is always empty, from the --- --- 
 		this.tableRowIdx= tableRowIdx
-		this.tableCols	= table?.getSafe(tableRowIdx)
+		this.tableCols	= this.table?.getSafe(tableRowIdx)
 		this.tableColIdx= tableColIdx
 		this.ignore		= ignore
 	}
