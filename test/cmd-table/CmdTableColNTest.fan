@@ -9,7 +9,7 @@ using afBounce
 ** -------
 ** 
 **   table:
-**   col[n]+verifyEq:names[#N]
+**   col[n]+verifyEq:names[#COL]
 ** 
 **   Full Name    First Name  Last Name
 **   -----------  ----------- ----------

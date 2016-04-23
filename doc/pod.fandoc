@@ -315,15 +315,21 @@ See the [table section]`#tables` for other table specific macros.
 
 Macro Summary:
 
- - '#COL[0]'  - Table column text
- - '#COL[1]'  - Table column text
- - '#COL[2]'  - Table column text
- - '#COL[3]'  - Table column text
- - '#COLS'    - Table column array
- - '#FIXTURE' - The fixture being run
- - '#N'       - Table column text (use with 'col[n]' command)
- - '#ROW'     - Table row index
- - '#TEXT'    - Command text
+  table:
+  Macro       Type       Desc
+  ----------  ---------  ---------------------------
+  '#COL'      'Int'      Current table column index
+  '#COL[0]'   'Str'      Table column
+  '#COL[1]'   'Str'      Table column
+  '#COL[2]'   'Str'      Table column
+  '#COLS'     'Str[]'    Current table column array
+  '#FIXTURE'  'Obj'      The fixture being run
+  '#ROW'      'Int'      Current table row index
+  '#ROW[0]'   'Str[]'    Table row
+  '#ROW[1]'   'Str[]'    Table row
+  '#ROW[2]'   'Str[]'    Table row
+  '#ROWS'     'Str[][]'  Table array
+  '#TEXT'     'Str'      Command text
 
 Note all macros must be UPPER CASE.
 
@@ -684,9 +690,9 @@ class TestSplittingNames : FixtureTest {
 }
 <pre
 
-There is also a special 'col[n]' command which is run on every column. This command makes use of the '#N' macro which relates to the (zero based) column index being processed. Example:
+There is also a special 'col[n]' command which is run on every column. This command makes use of the '#COL' macro which relates to the (zero based) column index being processed. Example:
 
-  col[n]+verifyEq:getDataForColumn(#N)
+  col[n]+verifyEq:getDataForColumn(#COL)
 
 
 
@@ -726,9 +732,9 @@ class TestSplittingNames : FixtureTest {
 }
 <pre
 
-You may also use the '#COLS' macro to inject a 'Str[]' of all the column text in the row.
-
 Use the '#ROW' macro to inject the 0-based index of the row being executed.
+
+Use the '#ROWS' macro to inject a 'Str[][]' array of the entire table. '#ROW[n]' may be used in a similar way to the '#COL[n]' cmds to inject individual rows. You may also use the '#COLS' macro to inject a 'Str[]' list of all the column text in the current row.
 
 Note: Using both column *and* row commands in a table is not allowed.
 
