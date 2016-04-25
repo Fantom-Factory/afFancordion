@@ -583,6 +583,21 @@ class ExampleFixture : FixtureTest {
 
 
 
+todo
+====
+'todo' simply ignores the command. Handy for commenting out tests.
+
+pre>
+syntax: fantom
+
+** Questions:
+** - [Why is the sky blue?]`todo:run:BlueSkyFixture#`.
+@Fixture
+class ExampleFixture { }
+<pre
+
+
+
 Pre-Formatted Text
 ******************
 Pre-formatted text may be used as the input for commands by writing the command URL as the first line of the text:
