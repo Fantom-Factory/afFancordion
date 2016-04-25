@@ -63,6 +63,7 @@ class FancordionRunner {
 		commands["mailto"]			= CmdLink()
 		commands["file"]			= CmdLink()
 		commands["fandoc"]			= CmdFandoc()
+		commands["todo"]			= CmdIgnore()
 
 		commands[|Str cmdUrl->Bool| {
 			cmdUrl.startsWith("#")

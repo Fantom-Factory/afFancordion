@@ -2,6 +2,7 @@ Versions
 ********
 v1.1.2
 ======
+ - New: Added 'todo' command.
  - New: Added table macros '#COL' and '#ROWS[n]'.
  - Chg: Deprecated '#N' macro in favour of '#COL'.
 
