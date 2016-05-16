@@ -59,6 +59,8 @@ class FancordionSkin {
 	** Starts a <head> tag - this should also render a <title> tag.
 	virtual This head() {
 		write("<head>\n\t<title>${fixtureMeta.title.toXml} : Fancordion</title>\n")
+		write("<meta charset=\"UTF-8\">\n")
+		return this
 	}
 	virtual This headEnd() { write("</head>\n") }
 	
