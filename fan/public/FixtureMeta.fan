@@ -25,6 +25,11 @@ const class FixtureMeta {
 
 	@NoDoc
 	new make(|This|? in := null) { in?.call(this) }
+	
+	** Returns the current 'FixtureMeta' instance in use, or 'null' if no tests are running.
+	static FixtureMeta? cur() {
+		ThreadStack.peek("afFancordion.fixtureMeta", false)
+	}
 }
 
 ** Contains contextual information about a Fancordion fixture.
@@ -48,4 +53,9 @@ class FixtureCtx {
 	
 	@NoDoc
 	new make(|This|? in := null) { in?.call(this) }
+	
+	** Returns the current 'FixtureCtx' instance in use, or 'null' if no tests are running.
+	static FixtureCtx? cur() {
+		ThreadStack.peek("afFancordion.fixtureCtx", false)
+	}
 }

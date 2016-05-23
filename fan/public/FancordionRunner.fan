@@ -308,8 +308,13 @@ class FancordionRunner {
    """
 	}
 	
-	** Returns the current 'FancordionRunner' in use, or 'null' if no tests are running. 
+	@Deprecated { msg="Use 'cur()' instead" } 
 	static FancordionRunner? current() {
+		ThreadStack.peek("afFancordion.runner", false)
+	}
+	
+	** Returns the current 'FancordionRunner' in use, or 'null' if no tests are running. 
+	static FancordionRunner? cur() {
 		ThreadStack.peek("afFancordion.runner", false)
 	}
 	
