@@ -9,6 +9,8 @@ using afBounce
 ** -------
 ** This should throw an [sys::ArgErr]`verifyErrType:dodgyMethod()`.
 ** 
+** This should throw an [ArgErr]`verifyErrType:dodgyMethod()`.
+** 
 @Fixture { failFast=false }
 class CmdVerifyErrTypeFailureTest : ConTest {
 

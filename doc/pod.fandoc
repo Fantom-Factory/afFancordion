@@ -476,7 +476,9 @@ class ExampleFixture : FixtureTest {
 }
 <pre
 
-Note that the Err Type must be qualified, for example 'sys::ArgErr' not 'ArgErr'.
+Note that the Err Type may or may not be qualified, for example the test will match both 'sys::ArgErr' and 'ArgErr'.
+
+The command will also strip any trailing '#' from the err type, allowing you to type 'sys::ArgErr#' and 'ArgErr#', which feels more *code like*.
 
 
 
