@@ -308,6 +308,15 @@ class FancordionRunner {
    """
 	}
 	
+//	meh - not convinced this is useful!
+//	** A quick win for calling cmds from within other cmds.
+//	Void runCmd(Str cmdText, Str cmdUri) {
+//		if (FixtureCtx.cur == null)
+//			throw Err("Could not find a current FixtureCtx - cmdRun() can only be called from within an executing fixture")
+//		cmds := Commands(commands)
+//		cmds.doCmd(FixtureCtx.cur, cmdUri, cmdText, null, null, null)
+//	}
+	
 	@NoDoc @Deprecated { msg="Use 'cur()' instead" } 
 	static FancordionRunner? current() {
 		ThreadStack.peek("afFancordion.runner", false)
