@@ -42,6 +42,10 @@ class FixtureCtx {
 	** A list of Errs encountered, passed to 'FixtureResult' for reporting.
 	Err[]			errs
 	
+	** A handy dumping ground to store fixture related info. 
+	** Custom cmds may use it to pass info to each other during a test. 
+	Str:Obj?		stash
+	
 	@NoDoc
 	new make(|This|? in := null) { in?.call(this) }
 }

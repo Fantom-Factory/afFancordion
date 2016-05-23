@@ -11,6 +11,8 @@ using afBounce
 ** 
 ** This should match the simple name [ArgErr#]`verifyErrType:dodgyMethod()`.
 ** 
+** Check can verify the err msg - [Whoops!]`verifyErrMsg:`.
+** 
 class CmdVerifyErrTypeSuccessTest : ConTest {
 
 	Void dodgyMethod() {
