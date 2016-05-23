@@ -29,6 +29,14 @@ using afBounce
 ** -------
 ** A link to [sys URI]`sys::Uri`
 ** 
+** Example
+** -------
+** A link to [this Test]`link:CmdLinkTest#`
+** 
+** Example
+** -------
+** A link to [this Test]`link:afFancordion::CmdLinkTest#`
+** 
 class CmdLinkTest : ConTest {
 
 	override Void testFixture() {
@@ -59,5 +67,13 @@ class CmdLinkTest : ConTest {
 		link = Link(".example a")[5] 
 		link.verifyTextEq("sys URI")
 		verifyEq(link.href, `http://fantom.org/doc/sys/Uri.html`)
+
+		link = Link(".example a")[6] 
+		link.verifyTextEq("this Test")
+		verifyEq(link.href, `CmdLinkTest.html`)
+
+		link = Link(".example a")[7] 
+		link.verifyTextEq("this Test")
+		verifyEq(link.href, `CmdLinkTest.html`)
 	}
 }

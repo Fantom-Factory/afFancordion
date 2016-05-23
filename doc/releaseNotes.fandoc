@@ -5,6 +5,7 @@ v1.1.2
  - New: Added 'todo' command.
  - New: Added table macros '#COL' and '#ROWS[n]'.
  - New: 'FancordionSkin' renders a '<meta charset="UTF-8"/>' tag for viewing results from the file system.
+ - New: Link cmd may also link to other fixtures.
  - Chg: Deprecated '#N' macro in favour of '#COL'.
  - Chg: 'VerifyErrType' matches both qualified and non-qualified type names.
  - Chg: 'VerifyErrType' and 'VerifyErrMsg' may test the same Err instance.

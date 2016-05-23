@@ -58,6 +58,7 @@ class FancordionRunner {
 		commands["run"]				= CmdRun()
 		commands["table"]			= CmdTable()
 		commands["embed"]			= CmdEmbed()
+		commands["link"]			= CmdLink()
 		commands["http"]			= CmdLink()
 		commands["https"]			= CmdLink()
 		commands["mailto"]			= CmdLink()
