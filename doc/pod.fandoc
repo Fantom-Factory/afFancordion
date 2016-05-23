@@ -582,6 +582,16 @@ using afFancordion
 class ExampleFixture : FixtureTest { }
 <pre
 
+You can also link to other fixtures using the scheme 'link' and the class name. Note the class name may, or may not be fully qualified.
+
+pre>
+syntax: fantom
+
+** See also
+** ========
+**  - [My other test]`link:OtherFixture#`
+<pre
+
 
 
 embed
