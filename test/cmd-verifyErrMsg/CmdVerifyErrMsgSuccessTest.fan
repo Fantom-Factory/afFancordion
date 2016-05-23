@@ -9,6 +9,8 @@ using afBounce
 ** -------
 ** This should throw an [Whoops!]`verifyErrMsg:dodgyMethod()`.
 ** 
+** Check can verify the err type - [ArgErr]`verifyErrType:`.
+** 
 class CmdVerifyErrMsgSuccessTest : ConTest {
 
 	Void dodgyMethod() {

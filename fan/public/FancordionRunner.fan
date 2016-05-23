@@ -170,6 +170,7 @@ class FancordionRunner {
 			it.fixtureInstance	= fixtureInstance
 			it.skin				= gimmeSomeSkin()
 			it.errs				= Err[,]
+			it.stash			= Str:Obj[:] { it.caseInsensitive = true }
 		}
 		
 		try {

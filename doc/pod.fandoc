@@ -480,6 +480,16 @@ Note that the Err Type may or may not be qualified, for example the test will ma
 
 The command will also strip any trailing '#' from the err type, allowing you to type 'sys::ArgErr#' and 'ArgErr#', which feels more *code like*.
 
+Any thrown Err is kept so you can subsequently check the msg:
+
+pre>
+syntax: fantom
+
+** Throw an [ArgErr]`verifyErrType:dodgyMethod()` with the msg [Whoops!]`verifyErrMsg:`.
+<pre
+
+Note that to verify a previously thrown Err, leave the cmd path empty.
+
 
 
 verifyErrMsg
@@ -499,6 +509,16 @@ class ExampleFixture : FixtureTest {
     }
 }
 <pre
+
+Any thrown Err is kept so you can subsequently check the type:
+
+pre>
+syntax: fantom
+
+** The err should have the msg [Whoops]`verifyErrMsg:dodgyMethod()` and be of type [ArgErr]`verifyErrType:`.
+<pre
+
+Note that to verify a previously thrown Err, leave the cmd path empty.
 
 
 

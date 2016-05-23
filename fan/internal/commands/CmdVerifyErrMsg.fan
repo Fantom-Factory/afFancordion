@@ -4,6 +4,9 @@ internal class CmdVerifyErrMsg : Command {
 		fcode := cmdCtx.applyVariables
 
 		try {
+			if (fcode.isEmpty && fixCtx.stash["afFancordion.verifyErr"] != null)
+				throw fixCtx.stash["afFancordion.verifyErr"]
+
 			// run the command!
 			cmdCtx.executeOnFixture(fixCtx.fixtureInstance, fcode)
 
@@ -12,6 +15,9 @@ internal class CmdVerifyErrMsg : Command {
 			fixCtx.skin.cmdFailure(cmdCtx.cmdText, failErr.msg)
 
 		} catch (Err err) {
+			// stash the err for use by CmdVerifyErrMsg
+			fixCtx.stash["afFancordion.verifyErr"] = err
+
 			// try to use the real fixture if we can so it notches up the verify count
 			test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
 			try {
