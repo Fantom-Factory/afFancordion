@@ -308,7 +308,7 @@ class FancordionRunner {
    """
 	}
 	
-	@Deprecated { msg="Use 'cur()' instead" } 
+	@NoDoc @Deprecated { msg="Use 'cur()' instead" } 
 	static FancordionRunner? current() {
 		ThreadStack.peek("afFancordion.runner", false)
 	}
