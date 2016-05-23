@@ -7,7 +7,9 @@ using afBounce
 ** 
 ** Example
 ** -------
-** This should throw an [sys::ArgErr]`verifyErrType:dodgyMethod()`.
+** This should match the qname [sys::ArgErr#]`verifyErrType:dodgyMethod()`.
+** 
+** This should match the simple name [ArgErr#]`verifyErrType:dodgyMethod()`.
 ** 
 class CmdVerifyErrTypeSuccessTest : ConTest {
 

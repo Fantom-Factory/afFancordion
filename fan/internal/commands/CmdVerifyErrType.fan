@@ -16,13 +16,16 @@ internal class CmdVerifyErrType : Command {
 			test 	:= (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
 			errType := cmdCtx.cmdText.endsWith("#") ? cmdCtx.cmdText[0..<-1] : cmdCtx.cmdText 
 			try {
-				test.typeof.method("verifyEq").callOn(test, [errType, err.typeof.qname])
+				if (errType.contains("::"))
+					test.typeof.method("verifyEq").callOn(test, [errType, err.typeof.qname])
+				else
+					test.typeof.method("verifyEq").callOn(test, [errType, err.typeof.name])
 				fixCtx.skin.cmdSuccess(cmdCtx.cmdText)
 				
 			} catch (Err err2) {
 				fixCtx.errs.add(err2)
 				fixCtx.skin.cmdErr(cmdCtx.cmdUri, cmdCtx.cmdText, err)
-			}				
-		}		
+			}
+		}
 	}
 }
