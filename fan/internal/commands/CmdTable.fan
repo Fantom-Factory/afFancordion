@@ -133,6 +133,7 @@ internal class CmdTable : Command {
 					it.fixtureInstance	= fixCtx.fixtureInstance
 					it.skin				= tableSkin
 					it.errs				= fixCtx.errs
+					it.stash			= Str:Obj[:] { it.caseInsensitive = true }
 				}
 				
 				// run the command
