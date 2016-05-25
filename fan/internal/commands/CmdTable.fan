@@ -159,6 +159,7 @@ internal class CmdTable : Command {
 		
 		// fail if the actual data has more rows than the table
 		if (verifyRows != null && verifyRows.size > (table.size-1)) {
+			moar := Str[,]
 			verifyRows.eachRange(table.size-1..-1) |actualRow| {
 				skin.tr
 				noOfCols.times |i| {
@@ -166,11 +167,13 @@ internal class CmdTable : Command {
 					if (noOfCols > 1 && actualRow isnot List)
 						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
 					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
-					actual     := TypeCoercer().coerce(actualCell, Str?#) 
-					fixCtx.skin.cmdFailure(Str.defVal, actual)				
+					actual     := TypeCoercer().coerce(actualCell, Str?#)
+					fixCtx.skin.cmdFailure(Str.defVal, actual)
+					moar.add(actual)
 				}
 				skin.trEnd
 			}
+			fixCtx.errs.add(Err("Actual data contains more rows that the table: " + moar.join(", ")))
 		}
 
 		skin.tableEnd

@@ -10,6 +10,7 @@ v1.1.2
  - Chg: Deprecated '#N' macro in favour of '#COL'.
  - Chg: 'VerifyErrType' matches both qualified and non-qualified type names.
  - Chg: 'VerifyErrType' and 'VerifyErrMsg' may test the same Err instance.
+ - Bug: Test still passed if table container fewer rows than actual test data.
 
 v1.1.0
 ======
