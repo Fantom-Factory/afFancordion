@@ -8,10 +8,6 @@ For Future
 ==========
 logging / tooltip / popup cmd
 
-command - link to file?
-
-contribute section title funcs
-
 Add listeners for verifyEq / execute...?
  - https://github.com/concordion/concordion/blob/master/src/main/java/org/concordion/api/extension/ConcordionExtender.java
  - have a generic cmd listener?
