@@ -1,7 +1,7 @@
-#Fancordion v1.1.0
+#Fancordion v1.1.2
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.1.0](http://img.shields.io/badge/pod-v1.1.0-yellow.svg)](http://www.fantomfactory.org/pods/afFancordion)
+[![pod: v1.1.2](http://img.shields.io/badge/pod-v1.1.2-yellow.svg)](http://www.fantomfactory.org/pods/afFancordion)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -296,15 +296,21 @@ See the [table section](#tables) for other table specific macros.
 
 Macro Summary:
 
-- `#COL[0]`  - Table column text
-- `#COL[1]`  - Table column text
-- `#COL[2]`  - Table column text
-- `#COL[3]`  - Table column text
-- `#COLS`    - Table column array
-- `#FIXTURE` - The fixture being run
-- `#N`       - Table column text (use with `col[n]` command)
-- `#ROW`     - Table row index
-- `#TEXT`    - Command text
+    table:
+    Macro       Type       Desc
+    ----------  ---------  ---------------------------
+    '#COL'      'Int'      Current table column index
+    '#COL[0]'   'Str'      Table column
+    '#COL[1]'   'Str'      Table column
+    '#COL[2]'   'Str'      Table column
+    '#COLS'     'Str[]'    Current table column array
+    '#FIXTURE'  'Obj'      The fixture being run
+    '#ROW'      'Int'      Current table row index
+    '#ROW[0]'   'Str[]'    Table row
+    '#ROW[1]'   'Str[]'    Table row
+    '#ROW[2]'   'Str[]'    Table row
+    '#ROWS'     'Str[][]'  Table array
+    '#TEXT'     'Str'      Command text
 
 Note all macros must be UPPER CASE.
 
@@ -425,7 +431,17 @@ class ExampleFixture : FixtureTest {
 }
 ```
 
-Note that the Err Type must be qualified, for example `sys::ArgErr` not `ArgErr`.
+Note that the Err Type may or may not be qualified, for example the test will match both `sys::ArgErr` and `ArgErr`.
+
+The command will also strip any trailing `#` from the err type, allowing you to type `sys::ArgErr#` and `ArgErr#`, which feels more *code like*.
+
+Any thrown Err is kept so you can subsequently check the msg:
+
+```
+** Throw an [ArgErr]`verifyErrType:dodgyMethod()` with the msg [Whoops!]`verifyErrMsg:`.
+```
+
+Note that to verify a previously thrown Err, leave the cmd path empty.
 
 ### verifyErrMsg
 
@@ -442,6 +458,14 @@ class ExampleFixture : FixtureTest {
     }
 }
 ```
+
+Any thrown Err is kept so you can subsequently check the type:
+
+```
+** The err should have the msg [Whoops]`verifyErrMsg:dodgyMethod()` and be of type [ArgErr]`verifyErrType:`.
+```
+
+Note that to verify a previously thrown Err, leave the cmd path empty.
 
 ### fail
 
@@ -490,6 +514,14 @@ using afFancordion
 class ExampleFixture : FixtureTest { }
 ```
 
+You can also link to other fixtures using the scheme `link` and the class name. Note the class name may, or may not be fully qualified.
+
+```
+** See also
+** ========
+**  - [My other test]`link:OtherFixture#`
+```
+
 ### embed
 
 The `embed` command executes the given function against the fixture and embeds the results as raw HTML.
@@ -505,6 +537,17 @@ class ExampleFixture : FixtureTest {
     """<span class="danger">${text}</span>"""
   }
 }
+```
+
+### todo
+
+`todo` simply ignores the command. Handy for commenting out tests.
+
+```
+** Questions:
+** - [Why is the sky blue?]`todo:run:BlueSkyFixture#`.
+@Fixture
+class ExampleFixture { }
 ```
 
 ## Pre-Formatted Text
@@ -599,9 +642,9 @@ class TestSplittingNames : FixtureTest {
 }
 ```
 
-There is also a special `col[n]` command which is run on every column. This command makes use of the `#N` macro which relates to the (zero based) column index being processed. Example:
+There is also a special `col[n]` command which is run on every column. This command makes use of the `#COL` macro which relates to the (zero based) column index being processed. Example:
 
-    col[n]+verifyEq:getDataForColumn(#N)
+    col[n]+verifyEq:getDataForColumn(#COL)
 
 ### Row Commands
 
@@ -637,9 +680,9 @@ class TestSplittingNames : FixtureTest {
 }
 ```
 
-You may also use the `#COLS` macro to inject a `Str[]` of all the column text in the row.
-
 Use the `#ROW` macro to inject the 0-based index of the row being executed.
+
+Use the `#ROWS` macro to inject a `Str[][]` array of the entire table. `#ROW[n]` may be used in a similar way to the `#COL[n]` cmds to inject individual rows. You may also use the `#COLS` macro to inject a `Str[]` list of all the column text in the current row.
 
 Note: Using both column *and* row commands in a table is not allowed.
 
