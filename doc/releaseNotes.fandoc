@@ -1,5 +1,9 @@
 Versions
 ********
+v1.1.4
+======
+ - Chg: Added more extensive docs on BedSheet testing.
+
 v1.1.2
 ======
  - New: Added 'todo' command.

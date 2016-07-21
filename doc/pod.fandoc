@@ -886,7 +886,7 @@ class MyFancordionRunner : FancordionRunner {
 
         super.fixtureSetup(fixtureInstance)
         webFixture.client = server.makeClient
-        server.injectIntoFields(webFixture)
+        server.inject(webFixture)
         webFixture.fixtureSetup()
     }
 
@@ -898,7 +898,7 @@ class MyFancordionRunner : FancordionRunner {
     }
 }
 
-class WebTestModule {
+const class WebTestModule {
 
     @Override
     static IocEnv overrideIocEnv() {
@@ -924,4 +924,103 @@ abstract class WebFixture : FixtureTest {
     // loginAs(...), logout(), gotoPage(...), etc...
 }
 <pre
+
+A simple smoke test for a website then may look like:
+
+pre>
+syntax: fantom
+using afBounce::Element
+
+** Smoke Test
+** ##########
+** Just a quick bimble about the website, making sure no errors appear.
+**
+** Example
+** -------
+** 1. Goto [/]`exe:gotoUrl(#TEXT)`
+** 1. Goto [/aboutMe]`exe:gotoUrl(#TEXT)`
+** 1. Verify the title is [Mr Awesome!]`eq:h1.text`
+**
+class TestWebsite : WebFixture {
+
+    override Void fixtureSetup() {
+        client.webSession?.delete  // clear user session
+    }
+
+    Element h1() {
+        Element("h1")
+    }
+
+    // ---- Useful Navigation Methods ----
+
+    Void gotoUrl(Str pageUrl) {
+        client.get(pageUrl.toUri)
+    }
+
+    // ---- User Debug Methods ----
+
+    Str dumpPage() { echoPage }
+    Str echoPage() { Element("html").html { echo(it) } }
+}
+<pre
+
+Note that most of the methods could, or rather should, be moved to 'WebFixture' for reuse.
+
+As your website grows, a common problem you may encounter when testing, is you visit *Page A* but through redirects or error handling, it is actually *Page B* that gets rendered. So just because no errors are thrown, it doesn't mean everything is okay.
+
+If you're using [Pillow]`pod:afPillow` then it's easy to assert that the page you visit, is the page rendered. Being able to use class names instead of URLs also makes your code more refactor friendly.
+
+The following code is the same test, but written with Pillow in mind:
+
+pre>
+syntax: fantom
+using afBounce::Element
+using afPillow::Pages
+using afIoc::Inject
+
+** Smoke Test
+** ##########
+** Just a quick bimble about the website, making sure no errors appear.
+**
+** Example
+** -------
+** 1. Show the [Index Page]`exe:showPage(#TEXT)`
+** 1. Show the [About Me Page]`exe:showPage(#TEXT)`
+** 1. Verify the title is [Mr Awesome!]`eq:h1.text`
+**
+class TestWebsite : WebFixture {
+
+    override Void fixtureSetup() {
+        client.webSession?.delete  // clear user session
+    }
+
+    Element h1() {
+        Element("h1")
+    }
+
+    // ---- Useful Navigation Methods ----
+
+    Void showPage(Str pageName, Obj? ctx := null) {
+        pageType := gotoPage(pageName, ctx)
+        verifyEq(renderedPageType, pageType)
+    }
+
+    Type gotoPage(Str pageName, Obj? ctx := null) {
+        pageType := Pod.of(this).type(pageName.fromDisplayName.capitalize)
+        pageUrl     := ctx == null ? pages[pageType].pageUrl : pages[pageType].withContext(ctx is List ? ctx : [ctx]).pageUrl
+        client.get(pageUrl)
+        return pageType
+    }
+
+    Type renderedPageType() {
+        Type.find(client.lastResponse.headers["X-afPillow-renderedPage"])
+    }
+
+    Str renderedPageName() {
+        renderedPageType.name.toDisplayName
+    }
+}
+<pre
+
+Again, most of the above methods should be moved to a common base class / mixin for reuse.
 
