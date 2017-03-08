@@ -71,6 +71,17 @@ class TestTableParsing : Test {
 		verifyEq(data4[3][0], "Fred Bloggs")
 		verifyEq(data4[3][1], "Fred")
 		verifyEq(data4[3][2], "")
+		
+		
+		table5 := 
+"""
+      Key      Name
+     -------  -------------
+      Bruce    batWings 0+
+   """
+		data5 := TableParser().parseTable(table5.splitLines)
+		verifyEq(data5[1][0], "Bruce")
+		verifyEq(data5[1][1], "batWings 0+")
 	}
 	
 	private Void verifyTable(Str[][] data) {

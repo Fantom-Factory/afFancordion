@@ -3,6 +3,7 @@ Versions
 v1.1.4
 ======
  - Chg: Added more extensive docs on BedSheet testing.
+ - Bug: Table parsing stripped off any trailing '+' characters.
 
 v1.1.2
 ======
