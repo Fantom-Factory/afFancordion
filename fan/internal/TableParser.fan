@@ -71,9 +71,9 @@ internal const class TableParser {
 			return data
 
 		// special case for fancy tables - needed for the last column where we grab all we can
-		if (!data.isEmpty && (data[-1] == '|' || data[-1] == '+'))
+		if (!data.isEmpty && data[-1] == '|')
 			data = data[0..<-1].trim
 		
-		return data.chars.all { it == '-' || it == '=' || it.isSpace } ? null : data
+		return data.chars.all { it == '-' || it == '=' || it == '|' || it == '+' || it.isSpace } ? null : data
 	}
 }
