@@ -1,18 +1,20 @@
 using afBeanUtils
 
 internal class CmdTable : Command {
+	private static const TypeCoercer 	typeCoercer	:= TypeCoercer()
 	private static const Regex 			regexCol	:= "col\\[([0-9n]+)\\]".toRegex
 	private static const Regex 			regexRow	:= "row\\[([0-9n]+)\\]".toRegex
 	private static const Regex 			regexReplce	:= "\\+?col\\[[0-9n]\\]\\+?".toRegex
 	private static const TableParser	tableParser	:= TableParser()
 				override Bool 			canFailFast := false
 	
+	
 	** Meh, this class is messy and needs clean up... at least it works... kind of!
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
 		
 		// limit the number of commands, i.e. only one cmd per col
 		// that way, it makes skinning the table easier...
-		// we don't have to blend 2 failures 1 pass into a single table cell!
+		// we don't have to blend 2 failures & 1 pass into a single table cell!
 		
 		// ---- parse the commands --------------
 		
@@ -108,7 +110,7 @@ internal class CmdTable : Command {
 						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
 					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
 					
-					actual   := TypeCoercer().coerce(actualCell, Str?#) 
+					actual   := typeCoercer.coerce(actualCell, Str?#) 
 					expected := col 
 					try {
 						test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
@@ -167,7 +169,7 @@ internal class CmdTable : Command {
 					if (noOfCols > 1 && actualRow isnot List)
 						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
 					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
-					actual     := TypeCoercer().coerce(actualCell, Str?#)
+					actual     := typeCoercer.coerce(actualCell, Str?#)
 					fixCtx.skin.cmdFailure(Str.defVal, actual)
 					moar.add(actual)
 				}
