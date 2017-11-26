@@ -70,6 +70,8 @@ const class CommandCtx {
 	**  - '#ROW[n]  -> table[n].toCode'
 	**  - '#ROWS    -> table.toCode'
 	Str applyVariables(Str text := cmdPath) {
+		if (text.isEmpty) return text	// a tiny optimisation
+
 		text = text.replace("#TEXT", 	cmdText.toCode)
 		text = text.replace("#FIXTURE",	"fixture")
 		

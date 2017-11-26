@@ -147,7 +147,7 @@ internal const class FandocUri {
 		fandocUri := fromFantomUri(str, false) ?: fromFandocUri(uri, false)
 		return fandocUri ?: (checked ? throw ParseErr("Invalid FandocUri: ${str}") : null)
 	}
-
+	
 	Uri toFantomUri() {
 		if (isSummary)
 			return `${pod}::index`
