@@ -13,7 +13,7 @@ internal class CmdFandoc : Command {
 internal const class FandocUri {
 
 	private static const Str[] coreDocNames := "docIntro docLang docFanr docTools".split
-	private static const Str[] corePodNames := "docIntro docLang docFanr docTools build compiler compilerDoc compilerJava compilerJs concurrent dom email fandoc fanr fansh flux fluxText fwt gfx inet obix sql syntax sys util web webfwt webmod wisp xml".split
+	private static const Str[] corePodNames := "docDomkit docIntro docLang docFanr docTools build compiler compilerDoc compilerJava compilerJs concurrent dom domkit email fandoc fanr fansh flux fluxText fwt gfx graphics inet obix sql syntax sys util web webfwt webmod wisp xml".split
 
 	const Str	pod
 	const Str?	type
