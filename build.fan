@@ -6,12 +6,12 @@ class Build : BuildPod {
 	new make() {
 		podName = "afFancordion"
 		summary = "A tool for creating automated acceptance tests and specification documents"
-		version = Version("1.1.3")
+		version = Version("1.1.4")
 
 		meta = [
-			"proj.name"		: "Fancordion",	
+			"pod.dis"		: "Fancordion",
 			"repo.tags"		: "testing",
-			"repo.public"	: "false"
+			"repo.public"	: "true"
 		]
 
 		depends = [
@@ -22,7 +22,7 @@ class Build : BuildPod {
 
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.8 - 1.0",
-			"afPlastic    1.1.0 - 1.1",			
+			"afPlastic    1.1.0 - 1.1",
 
 			// ---- Test ------------------------
 			"afBounce     1.1.0 - 1.1",
@@ -31,10 +31,10 @@ class Build : BuildPod {
 
 		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/commands/`, `fan/public/`, `test/`, `test/cmd-run/`, `test/cmd-set/`, `test/cmd-table/`, `test/cmd-verify/`, `test/cmd-verifyErrMsg/`, `test/cmd-verifyErrType/`]
 		resDirs = [`doc/`, `test/`, `res/classicSkin/`]
-		
+
 		meta["afBuild.testPods"]	= "afBounce afSizzle"
 	}
-	
+
 	** see http://fantom.org/forum/topic/2283
 	override Void onCompileFan(CompilerInput ci) {
 		ci.docTests = true

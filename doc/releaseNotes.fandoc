@@ -1,5 +1,6 @@
-Versions
-********
+v1.1
+****
+
 v1.1.4
 ======
  - Chg: Added more extensive docs on BedSheet testing.
@@ -22,6 +23,11 @@ v1.1.0
  - New: Added '#ROW' macro as per this [StackOverflow question]`http://stackoverflow.com/questions/34236040/how-to-refer-to-a-row-index-in-a-fancordion-fixture-table`.
  - Chg: Updated to use [Plastic 1.1]`pod:afPlastic`. (Potential breaking change.)
  - Chg: Cmds in '<pre>' tags look better.
+
+
+
+v1.0
+****
 
 v1.0.4
 ======
@@ -58,6 +64,11 @@ v1.0.0
  - Bug: Could not render plain anchor / frag links.
  - Bug: Fixture macros were not applied to verify commands.
  - Bug: Tables could not have empty cells.
+
+
+
+v0.0
+****
 
 v0.0.6
 ======
