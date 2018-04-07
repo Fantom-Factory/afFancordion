@@ -110,11 +110,11 @@ internal class CmdTable : Command {
 						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
 					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
 
-					actual   := typeCoercer.coerce(actualCell, Str?#)
+					actual   := typeCoercer.coerce(actualCell, Str?#) ?: ""	// we can never compare against 'null', so coerce to empty string instead
 					expected := col
 					try {
 						test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
-						test.verifyEq(expected, actual)
+						test.verifyEq(expected, actual) 
 						fixCtx.skin.cmdSuccess(actual)
 
 					} catch (Err err) {
