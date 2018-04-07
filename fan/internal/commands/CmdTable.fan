@@ -161,7 +161,7 @@ internal class CmdTable : Command {
 		
 		// fail if the actual data has more rows than the table
 		if (verifyRows != null && verifyRows.size > (table.size-1)) {
-			moar := Str[,]
+			moar := Str?[,]
 			verifyRows.eachRange(table.size-1..-1) |actualRow| {
 				skin.tr
 				noOfCols.times |i| {
