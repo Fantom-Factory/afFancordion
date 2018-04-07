@@ -7,17 +7,17 @@ internal class CmdTable : Command {
 	private static const Regex 			regexReplce	:= "\\+?col\\[[0-9n]\\]\\+?".toRegex
 	private static const TableParser	tableParser	:= TableParser()
 				override Bool 			canFailFast := false
-	
-	
+
+
 	** Meh, this class is messy and needs clean up... at least it works... kind of!
 	override Void runCommand(FixtureCtx fixCtx, CommandCtx cmdCtx) {
-		
+
 		// limit the number of commands, i.e. only one cmd per col
 		// that way, it makes skinning the table easier...
 		// we don't have to blend 2 failures & 1 pass into a single table cell!
-		
+
 		// ---- parse the commands --------------
-		
+
 		colNCmd			:= (Str?) null
 		colCmds 		:= Obj:Str[:]
 		rowCmd 			:= (Str?) null
@@ -40,7 +40,7 @@ internal class CmdTable : Command {
 					verifyRowsCmd = line
 					return true
 				}
-				
+
 				// assume non-matching lines are *not* commands
 				matcher := regexCol.matcher(scheme)
 				if (matcher.find) {
@@ -56,19 +56,19 @@ internal class CmdTable : Command {
 			return false
 		}
 		table := tableParser.parseTable(lines)
-		
+
 		if (colCmds.containsKey("N") && colCmds.size > 1)
 			throw Err(ErrMsgs.cmdTable_onlyCmdPerColAllowed("N", colCmds[colCmds.keys[0]], colCmds[colCmds.keys[1]]))
 		if (verifyRowsCmd != null && (rowCmd != null || !colCmds.isEmpty))
 			throw Err(ErrMsgs.cmdTable_cantMixAndMatchCommands(verifyRowsCmd))
-		
+
 
 		if (cmdCtx.ignore) {
 			renderTable(fixCtx, table, "ignored")
 			return
 		}
-		
-		
+
+
 		verifyRows := (Obj[]?) null
 		if (verifyRowsCmd != null) {
 			vrcScheme := verifyRowsCmd.split(':')[0]
@@ -82,20 +82,20 @@ internal class CmdTable : Command {
 			}
 		}
 
-		
+
 		commands := Commands(fixCtx.fancordionRunner.commands)
-		
+
 		skin := fixCtx.skin
 		skin.table
 		skin.tr
 		table[0].each { skin.th(it) }
 		skin.trEnd
-		
+
 		noOfCols := table[0].size
 		table.eachRange(1..-1) |row, ri| {
 			skin.tr
 			trIdx := fixCtx.skin.renderBuf.size-1
-			
+
 			row.each |col, i| {
 				if (colCmds.containsKey(i)) {
 					commands.doCmd(fixCtx, colCmds[i], col, table, ri-1, i)
@@ -109,14 +109,14 @@ internal class CmdTable : Command {
 					if (noOfCols > 1 && actualRow isnot List)
 						throw Err(ErrMsgs.cmdTable_expectingList(actualRow))
 					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
-					
-					actual   := typeCoercer.coerce(actualCell, Str?#) 
-					expected := col 
+
+					actual   := typeCoercer.coerce(actualCell, Str?#)
+					expected := col
 					try {
 						test := (fixCtx.fixtureInstance is Test) ? (Test) fixCtx.fixtureInstance : TestImpl()
 						test.verifyEq(expected, actual)
 						fixCtx.skin.cmdSuccess(actual)
-			
+
 					} catch (Err err) {
 						fixCtx.errs.add(err)
 						fixCtx.skin.cmdFailure(expected, actual)
@@ -125,7 +125,7 @@ internal class CmdTable : Command {
 				} else
 					skin.td(col)
 			}
-			
+
 			// ---- do row commands ----
 			if (rowCmd != null) {
 				// create a fake skin so successful cmds aren't rendered
@@ -137,10 +137,10 @@ internal class CmdTable : Command {
 					it.errs				= fixCtx.errs
 					it.stash			= Str:Obj[:] { it.caseInsensitive = true }
 				}
-				
+
 				// run the command
 				commands.doCmd(rowFixCtx, rowCmd, row.toStr, table, ri-1, null)
-				
+
 				// highlight the row with the appropriate class
 				// TODO: this is bad, shouldn't pass the css class in, should let the skin decide
 				if (tableSkin.error)
@@ -155,13 +155,13 @@ internal class CmdTable : Command {
 				// render the errors and failures
 				tableSkin.funcs.each { it.call(fixCtx.skin) }
 			}
-			
+
 			skin.trEnd
 		}
-		
+
 		// fail if the actual data has more rows than the table
 		if (verifyRows != null && verifyRows.size > (table.size-1)) {
-			moar := Str?[,]
+			moar := Str[,]
 			verifyRows.eachRange(table.size-1..-1) |actualRow| {
 				skin.tr
 				noOfCols.times |i| {
@@ -171,7 +171,7 @@ internal class CmdTable : Command {
 					actualCell := noOfCols == 1 ? actualRow : ((List) actualRow).getSafe(i)
 					actual     := typeCoercer.coerce(actualCell, Str?#)
 					fixCtx.skin.cmdFailure(Str.defVal, actual)
-					moar.add(actual)
+					moar.add(actual ?: "")
 				}
 				skin.trEnd
 			}
@@ -180,8 +180,8 @@ internal class CmdTable : Command {
 
 		skin.tableEnd
 	}
-	
-	
+
+
 	private Void renderTable(FixtureCtx fixCtx, Str[][] table, Str css) {
 		skin := fixCtx.skin
 
@@ -190,15 +190,15 @@ internal class CmdTable : Command {
 		skin.tr
 		table[0].each { skin.th(it) }
 		skin.trEnd
-		
+
 		noOfCols := table[0].size
 		table.eachRange(1..-1) |row, ri| {
 			skin.tr
 			row.each |col, i| { skin.td(col) }
 			skin.trEnd
 		}
-		
-		skin.tableEnd		
+
+		skin.tableEnd
 	}
 }
 
@@ -207,7 +207,7 @@ internal class TableSkinWrapper : FancordionSkin {
 	Bool 			ignored		:= false
 	Bool 			failure		:= false
 	Bool 			error		:= false
-	
+
 	override This cmdIgnored(Str text) {
 		ignored = true
 		return this
