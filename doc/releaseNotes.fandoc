@@ -1,5 +1,8 @@
 v1.1
 ****
+v1.1.6
+======
+ - Bug: Table commands couldn't always handle null results.
 
 v1.1.4
 ======
